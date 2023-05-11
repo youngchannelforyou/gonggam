@@ -9,5 +9,6 @@ class GonggamApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+	'git test'
 
 }
