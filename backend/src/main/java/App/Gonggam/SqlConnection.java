@@ -14,18 +14,17 @@ public class SqlConnection {
 
         try (Connection conn = DriverManager.getConnection(url, username, sql_password)) {
             // Member 테이블 생성
-            String createMemberTableSql = "CREATE TABLE IF NOT EXISTS TEAM5_Member ("
+            String createMemberTableSql = "CREATE TABLE IF NOT EXISTS Team5_Member ("
                     + "Id VARCHAR(320) NOT NULL, "
                     + "Password VARCHAR(100)  NOT NULL, "
-                    + "NicName VARCHAR(100) NOT NULL, "
-                    + "Age VARCHAR(100) NOT NULL, "
-                    + "AccountList VARCHAR(MAX) "
+                    + "NickName VARCHAR(100) NOT NULL, "
+                    + "AccountList TEXT, "
                     + "PRIMARY KEY (Id))";
             try (PreparedStatement createTableStmt = conn.prepareStatement(createMemberTableSql)) {
                 createTableStmt.executeUpdate();
                 if (createTableStmt.getUpdateCount() == 0) {
                     System.out.println("Member 테이블이 존재합니다.");
-                    String showColumnsSql = "SHOW COLUMNS FROM TEAM5_Member";
+                    String showColumnsSql = "SHOW COLUMNS FROM Team5_Member";
                     try (PreparedStatement showColumnsStmt = conn.prepareStatement(showColumnsSql)) {
                         ResultSet rs = showColumnsStmt.executeQuery();
                         while (rs.next()) {
@@ -38,28 +37,27 @@ public class SqlConnection {
             }
 
             // AccountBook 테이블 생성
-            String createAccountBookTableSql = "CREATE TABLE IF NOT EXISTS TEAM5_AccountBook ("
+            String createAccountBookTableSql = "CREATE TABLE IF NOT EXISTS Team5_AccountBook ("
                     + "Name VARCHAR(320) NOT NULL, "
                     + "Public VARCHAR(100) NOT NULL, "
                     + "Budget BIGINT, "
                     + "Word VARCHAR(320) NOT NULL, "
-                    + "Member VARCHAR(MAX)"
+                    + "Member TEXT, "
                     + "PRIMARY KEY (Name))";
             try (PreparedStatement createTableStmt = conn.prepareStatement(createAccountBookTableSql)) {
                 createTableStmt.executeUpdate();
-                System.out.println("AccountBook 테이블이 생성되었습니다.");
-            }
-
-            // AccountBookMember 테이블 생성
-            String createAccountBookMemberTableSql = "CREATE TABLE IF NOT EXISTS TEAM5_AccountBookMember ("
-                    + "ID VARCHAR(320) NOT NULL, "
-                    + "AccountBook VARCHAR(320) NOT NULL, "
-                    + "Role VARCHAR(100) NOT NULL, "
-                    + "FOREIGN KEY (AccountBook) REFERENCES TEAM5_AccountBook(Name), "
-                    + "FOREIGN KEY (Id) REFERENCES TEAM5_Member(Id))";
-            try (PreparedStatement createTableStmt = conn.prepareStatement(createAccountBookMemberTableSql)) {
-                createTableStmt.executeUpdate();
-                System.out.println("AccountBookMember 테이블이 생성되었습니다.");
+                if (createTableStmt.getUpdateCount() == 0) {
+                    System.out.println("Team5_AccountBook 테이블이 존재합니다.");
+                    String showColumnsSql = "SHOW COLUMNS FROM Team5_Member";
+                    try (PreparedStatement showColumnsStmt = conn.prepareStatement(showColumnsSql)) {
+                        ResultSet rs = showColumnsStmt.executeQuery();
+                        while (rs.next()) {
+                            MemberexistingColumns.add(rs.getString("Field"));
+                        }
+                    }
+                } else {
+                    System.out.println("Team5_AccountBook 테이블이 생성되었습니다.");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

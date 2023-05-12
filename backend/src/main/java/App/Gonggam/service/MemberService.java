@@ -10,23 +10,59 @@ public class MemberService {
 
     // DB에 멤버 추가
 
-    public void AddMember(Member newMember) {
+    public boolean AddMember(Member newMember) {
 
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             // 데이터 추가
-            String insertSql = "INSERT INTO TEAM5_Member (Id, Password, NicName, Age) VALUES (?, ?, ?, ?, ?)";
+            String insertSql = "INSERT INTO Team5_Member (Id, Password, NickName) VALUES (?, ?, ?)";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                 insertStmt.setString(1, newMember.getMember_Id());
                 insertStmt.setString(2, newMember.getMember_password());
-                insertStmt.setString(4, newMember.getMember_NickName());
-                insertStmt.setString(5, newMember.getMember_Age());
+                insertStmt.setString(3, newMember.getMember_NickName());
                 insertStmt.executeUpdate();
 
                 System.out.println("데이터가 추가되었습니다.");
+                return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    public Member GetMember(String Id) {
+        Member member = null;
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            // 데이터 검색
+            String selectSql = "SELECT * FROM Team5_Member WHERE Id = ?";
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setString(1, Id);
+
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        // ResultSet에서 데이터 추출
+                        String member_id = rs.getString("Id");
+                        String member_password = rs.getString("Password");
+                        String member_nickName = rs.getString("NickName");
+                        String member_accountList = rs.getString("AccountList");
+                        // Member 객체 생성
+                        if (member_accountList == null) {
+                            member = new Member(member_id, member_password, member_nickName);
+                        } else {
+                            member = new Member(member_id, member_password, member_nickName, member_accountList);
+                        }
+                        System.out.println("검색된 멤버 정보: " + member);
+                        return member;
+                    } else {
+                        System.out.println("멤버를 찾을 수 없습니다.");
+                    }
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return member;
     }
 
     // 특정 멤버의 가계부를 추가하는 방법
@@ -34,7 +70,7 @@ public class MemberService {
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             String memberEmail = Member; // 멤버 이메일
             String accountBookName = AccountBook; // 추가할 AccountBook의 이름
-            String updateMemberSql = "UPDATE Member SET AccountList = CONCAT(AccountList, ?) WHERE Email = ?";
+            String updateMemberSql = "UPDATE Team5_Member SET AccountList = CONCAT(AccountList, ?) WHERE Email = ?";
 
             try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
                 updateStmt.setString(1, "," + accountBookName);
@@ -52,7 +88,7 @@ public class MemberService {
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             String memberEmail = Member; // 멤버 이메일
             String ChangeEmail = Email; // 추가할 AccountBook의 이름
-            String updateMemberSql = "UPDATE Member SET Email = ? WHERE Email = ?"; // SQL 쿼리문
+            String updateMemberSql = "UPDATE Team5_Member SET Email = ? WHERE Email = ?"; // SQL 쿼리문
             try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
                 updateStmt.setString(1, ChangeEmail);
                 updateStmt.setString(2, memberEmail);
@@ -69,7 +105,7 @@ public class MemberService {
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             String memberEmail = Member; // 멤버 이메일
             String ChangeName = Name; // 추가할 AccountBook의 이름
-            String updateMemberSql = "UPDATE Member SET Name = ? WHERE Email = ?"; // SQL 쿼리문
+            String updateMemberSql = "UPDATE Team5_Member SET Name = ? WHERE Email = ?"; // SQL 쿼리문
             try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
                 updateStmt.setString(1, ChangeName);
                 updateStmt.setString(2, memberEmail);

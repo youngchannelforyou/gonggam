@@ -11,21 +11,30 @@ import java.util.ArrayList;
 
 public class Member {
     private String Member_NickName;
-    private String Member_Age;
     private String Member_Id;
     private String Member_password;
+    private String Member_accountList;
     private ArrayList<AccountBook> Member_accountBook = new ArrayList<AccountBook>();
 
     @JsonCreator
     public Member(
-            @JsonProperty("NickName") String member_NickName,
-            @JsonProperty("Age") String member_Age,
             @JsonProperty("Id") String member_Id,
-            @JsonProperty("password") String member_password) {
+            @JsonProperty("Password") String member_password,
+            @JsonProperty("NickName") String member_NickName) {
         Member_NickName = member_NickName;
-        Member_Age = member_Age;
         Member_Id = member_Id;
         Member_password = member_password;
+    }
+
+    public Member(
+            String member_NickName,
+            String member_Id,
+            String member_password,
+            String member_accountList) {
+        Member_NickName = member_NickName;
+        Member_Id = member_Id;
+        Member_password = member_password;
+        Member_accountList = member_accountList;
     }
 
     public String getMember_NickName() {
@@ -34,14 +43,6 @@ public class Member {
 
     public void setMember_NickName(String NickName) {
         this.Member_NickName = NickName;
-    }
-
-    public String getMember_Age() {
-        return Member_Age;
-    }
-
-    public void setMember_Age(String Age) {
-        this.Member_Age = Age;
     }
 
     public String getMember_Id() {
