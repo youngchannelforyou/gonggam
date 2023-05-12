@@ -83,38 +83,44 @@ public class MemberService {
         }
     }
 
-    // Email 변경
-    public void ChangeEmail(String Member, String Email) {
-        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
-            String memberEmail = Member; // 멤버 이메일
-            String ChangeEmail = Email; // 추가할 AccountBook의 이름
-            String updateMemberSql = "UPDATE Team5_Member SET Email = ? WHERE Email = ?"; // SQL 쿼리문
-            try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
-                updateStmt.setString(1, ChangeEmail);
-                updateStmt.setString(2, memberEmail);
-                updateStmt.executeUpdate();
-                System.out.println(memberEmail + "의 AccountList에 " + ChangeEmail + "이(가) 추가되었습니다.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 이름 변경
-    public void ChangeName(String Member, String Name) {
-        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
-            String memberEmail = Member; // 멤버 이메일
-            String ChangeName = Name; // 추가할 AccountBook의 이름
-            String updateMemberSql = "UPDATE Team5_Member SET Name = ? WHERE Email = ?"; // SQL 쿼리문
-            try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
-                updateStmt.setString(1, ChangeName);
-                updateStmt.setString(2, memberEmail);
-                updateStmt.executeUpdate();
-                System.out.println(memberEmail + "의 AccountList에 " + ChangeName + "이(가) 추가되었습니다.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
+
+// Email 변경
+// public void ChangeEmail(String Member, String Email) {
+// try (Connection conn = DriverManager.getConnection(URL, USERNAME,
+// SQL_PASSWORD)) {
+// String memberEmail = Member; // 멤버 이메일
+// String ChangeEmail = Email; // 추가할 AccountBook의 이름
+// String updateMemberSql = "UPDATE Team5_Member SET Email = ? WHERE Email = ?";
+// // SQL 쿼리문
+// try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
+// updateStmt.setString(1, ChangeEmail);
+// updateStmt.setString(2, memberEmail);
+// updateStmt.executeUpdate();
+// System.out.println(memberEmail + "의 AccountList에 " + ChangeEmail + "이(가)
+// 추가되었습니다.");
+// }
+// } catch (SQLException e) {
+// e.printStackTrace();
+// }
+// }
+
+// // 이름 변경
+// public void ChangeName(String Member, String Name) {
+// try (Connection conn = DriverManager.getConnection(URL, USERNAME,
+// SQL_PASSWORD)) {
+// String memberEmail = Member; // 멤버 이메일
+// String ChangeName = Name; // 추가할 AccountBook의 이름
+// String updateMemberSql = "UPDATE Team5_Member SET Name = ? WHERE Email = ?";
+// // SQL 쿼리문
+// try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
+// updateStmt.setString(1, ChangeName);
+// updateStmt.setString(2, memberEmail);
+// updateStmt.executeUpdate();
+// System.out.println(memberEmail + "의 AccountList에 " + ChangeName + "이(가)
+// 추가되었습니다.");
+// }
+// } catch (SQLException e) {
+// e.printStackTrace();
+// }
+// }

@@ -40,8 +40,8 @@ public class SqlConnection {
             String createAccountBookTableSql = "CREATE TABLE IF NOT EXISTS Team5_AccountBook ("
                     + "Name VARCHAR(320) NOT NULL, "
                     + "Public VARCHAR(100) NOT NULL, "
+                    + "Manager TEXT NOT NULL, "
                     + "Budget BIGINT, "
-                    + "Word VARCHAR(320) NOT NULL, "
                     + "Member TEXT, "
                     + "PRIMARY KEY (Name))";
             try (PreparedStatement createTableStmt = conn.prepareStatement(createAccountBookTableSql)) {
