@@ -20,6 +20,7 @@ public class AccountBook {
     private String AccountBook_main_manager;
     private long AccountBook_Budget;
     private String AccountBook_Member;
+    private String AccountBook_Db;
     // private ArrayList<Member> Member_accountBook = new ArrayList<Member>();
     // private List<Member> AccountBook_list_member;
     // private List<Member> AccountBook_sub_manager;
@@ -44,6 +45,14 @@ public class AccountBook {
             // Member_accountBook = GetMemberList(bookMember);
             AccountBook_Member = bookMember;
         }
+    }
+
+    public String getAccountBook_Db() {
+        return AccountBook_Db;
+    }
+
+    public void setAccountBook_Db(String accountBook_Db) {
+        AccountBook_Db = accountBook_Db;
     }
 
     public String getAccountBook_Name() {

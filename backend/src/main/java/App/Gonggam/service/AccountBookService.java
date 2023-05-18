@@ -24,6 +24,28 @@ public class AccountBookService {
                 insertStmt.executeUpdate();
 
                 System.out.println("데이터가 추가되었습니다.");
+
+                String tableName = "Team5_" + newBook.getAccountBook_Name();
+
+                newBook.setAccountBook_Db(tableName);
+
+                try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+                    String sql = "CREATE TABLE " + tableName + " (" +
+                            "Num INT AUTO_INCREMENT PRIMARY KEY, " +
+                            "Type VARCHAR(255), " +
+                            "Date DATE, " +
+                            "Text TEXT, " +
+                            "Image MEDIUMBLOB, " +
+                            "Used_Budget BIGINT" +
+                            ")";
+
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate(sql);
+                    System.out.println("테이블이 성공적으로 생성되었습니다.");
+                } catch (SQLException e) {
+                    System.out.println("테이블 생성 중 오류가 발생했습니다: " + e.getMessage());
+                }
+
                 return true;
             }
         } catch (SQLException e) {
