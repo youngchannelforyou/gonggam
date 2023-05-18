@@ -4,7 +4,7 @@ import java.sql.*;
 import App.Gonggam.model.Member;;
 
 public class MemberService {
-    String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_1_pbl3";
+    String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/1_pbl3";
     String USERNAME = "pbl3_team5";
     String SQL_PASSWORD = "12345678";
 
