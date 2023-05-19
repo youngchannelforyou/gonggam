@@ -6,7 +6,6 @@ function App() {
   const [pw, setPw] = useState('');
 
   function onChange(e) {
-    //const {name, value} = event.target 과 같음
     const {
       target: { name, value },
     } = e;
@@ -18,14 +17,31 @@ function App() {
     }
   }
 
-  async function requestLogin() {
-    await fetch('localhost:8080/login', {
-      method: 'POST',
-      body: JSON.stringify({
-        Id: id,
-        Password: pw,
-      }),
-    });
+  async function requestLogin(event) {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8080/Member/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'Id': id,
+          'Password': pw,
+        }),
+
+      });
+
+      // Cannot read properties of undefined (reading 'preventDefault")
+      // TypeError: Cannot read properties of undefined (reading 'preventDefault')
+
+
+      const json = await response.json();
+      console.log(json);
+    } catch (err) {
+      console.error(err);
+    }
+
   }
 
   console.log(`${id} : ${pw}`);
@@ -44,7 +60,7 @@ function App() {
           <input name='id' onChange={onChange} />
           <label>비밀번호</label>
           <input name='pw' onChange={onChange} />
-          <button onClick={() => requestLogin()}>로그인</button>
+          <button onClick={requestLogin}>로그인</button>
           <button onClick={() => requestLogin()}>회원가입</button>
         </form>
       </div>
