@@ -43,17 +43,23 @@ public class MemberController {
         String password = member.getMember_password();
         Member checkMember = memberservice.GetMember(Id);
         if (checkMember == null) {
+            System.out.println("id 못 찾음");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id를 찾을 수 없습니다.");
         } else {
+            System.out.println(checkMember.getMember_password());
             if (password.equals(checkMember.getMember_password())) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
                     String json = objectMapper.writeValueAsString(checkMember);
                     return ResponseEntity.ok(json);
                 } catch (JsonProcessingException e) {
+                    System.out.println("서버 오류");
+
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
                 }
             } else {
+                System.out.println("비밀번호 틀림");
+
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 틀림");
             }
         }

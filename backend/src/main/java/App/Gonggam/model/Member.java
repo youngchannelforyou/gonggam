@@ -13,28 +13,32 @@ public class Member {
     private String Member_NickName;
     private String Member_Id;
     private String Member_password;
-    private String Member_accountList;
     private ArrayList<AccountBook> Member_accountBook = new ArrayList<AccountBook>();
+    private String Member_token;
 
     @JsonCreator
     public Member(
             @JsonProperty("Id") String member_Id,
             @JsonProperty("Password") String member_password,
-            @JsonProperty("NickName") String member_NickName) {
+            @JsonProperty("NickName") String member_NickName,
+            @JsonProperty("Token") String member_token) {
         Member_NickName = member_NickName;
         Member_Id = member_Id;
         Member_password = member_password;
+        Member_token = member_token;
     }
 
     public Member(
-            String member_NickName,
             String member_Id,
             String member_password,
-            String member_accountList) {
+            String member_NickName,
+            ArrayList<AccountBook> member_accountBook,
+            String member_token) {
         Member_NickName = member_NickName;
         Member_Id = member_Id;
         Member_password = member_password;
-        Member_accountList = member_accountList;
+        Member_accountBook = member_accountBook;
+        Member_token = member_token;
     }
 
     public String getMember_NickName() {
@@ -77,4 +81,11 @@ public class Member {
         this.Member_accountBook.remove(loc);
     }
 
+    public String getMember_token() {
+        return Member_token;
+    }
+
+    public void setMember_token(String member_token) {
+        Member_token = member_token;
+    }
 }

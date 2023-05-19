@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SqlConnection {
     public void Connection() {
-        String url = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_1_pbl3";
+        String url = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_pbl3";
         String username = "pbl3_team5";
         String sql_password = "12345678";
 

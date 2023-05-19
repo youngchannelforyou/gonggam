@@ -4,7 +4,7 @@ import java.sql.*;
 import App.Gonggam.model.AccountBook;;
 
 public class AccountBookService {
-    String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_1_pbl3";
+    String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_pbl3";
     String USERNAME = "pbl3_team5";
     String SQL_PASSWORD = "12345678";
 
@@ -32,9 +32,11 @@ public class AccountBookService {
                 try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
                     String sql = "CREATE TABLE " + tableName + " (" +
                             "Num INT AUTO_INCREMENT PRIMARY KEY, " +
-                            "Type VARCHAR(255), " +
-                            "Date DATE, " +
+                            "Type VARCHAR(255) NOT NULL, " +
+                            "Date DATE NOT NULL, " +
+                            "Title VARCHAR(255) NOT NULL, " +
                             "Text TEXT, " +
+                            "Comment TEXT, " +
                             "Image MEDIUMBLOB, " +
                             "Used_Budget BIGINT" +
                             ")";

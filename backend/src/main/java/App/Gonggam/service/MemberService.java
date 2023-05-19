@@ -1,10 +1,11 @@
 package App.Gonggam.service;
 
 import java.sql.*;
-import App.Gonggam.model.Member;;
+import App.Gonggam.model.Member;
+import java.util.UUID;
 
 public class MemberService {
-    String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_1_pbl3";
+    String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_pbl3";
     String USERNAME = "pbl3_team5";
     String SQL_PASSWORD = "12345678";
 
@@ -45,12 +46,11 @@ public class MemberService {
                         String member_password = rs.getString("Password");
                         String member_nickName = rs.getString("NickName");
                         String member_accountList = rs.getString("AccountList");
-                        // Member 객체 생성
-                        if (member_accountList == null) {
-                            member = new Member(member_id, member_password, member_nickName);
-                        } else {
-                            member = new Member(member_id, member_password, member_nickName, member_accountList);
-                        }
+                        String token = UUID.randomUUID().toString();
+                        token = token + member_id;
+
+                        member = new Member(member_id, member_password, member_nickName, member_accountList, token);
+
                         System.out.println("검색된 멤버 정보: " + member);
                         return member;
                     } else {
