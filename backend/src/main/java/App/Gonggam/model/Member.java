@@ -13,7 +13,7 @@ public class Member {
     private String Member_NickName;
     private String Member_Id;
     private String Member_password;
-    private ArrayList<AccountBook> Member_accountBook = new ArrayList<AccountBook>();
+    private ArrayList<String> Member_accountBook = new ArrayList<String>();
     private String Member_token;
 
     @JsonCreator
@@ -32,7 +32,7 @@ public class Member {
             String member_Id,
             String member_password,
             String member_NickName,
-            ArrayList<AccountBook> member_accountBook,
+            ArrayList<String> member_accountBook,
             String member_token) {
         Member_NickName = member_NickName;
         Member_Id = member_Id;
@@ -65,15 +65,15 @@ public class Member {
         this.Member_password = password;
     }
 
-    public ArrayList<AccountBook> getMember_accountBook() {
+    public ArrayList<String> getMember_accountBook() {
         return Member_accountBook;
     }
 
-    public void setMember_accountBook(ArrayList<AccountBook> accountBook) {
+    public void setMember_accountBook(ArrayList<String> accountBook) {
         this.Member_accountBook = accountBook;
     }
 
-    public void addMember_accountBook(AccountBook accountBook) {
+    public void addMember_accountBook(String accountBook) {
         this.Member_accountBook.add(accountBook);
     }
 
