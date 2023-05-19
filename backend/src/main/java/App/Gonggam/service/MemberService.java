@@ -2,6 +2,8 @@ package App.Gonggam.service;
 
 import java.sql.*;
 import App.Gonggam.model.Member;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class MemberService {
@@ -46,10 +48,20 @@ public class MemberService {
                         String member_password = rs.getString("Password");
                         String member_nickName = rs.getString("NickName");
                         String member_accountList = rs.getString("AccountList");
+
+                        ArrayList<String> accountBook = new ArrayList<String>();
+                        if (member_accountList != null && !member_accountList.isEmpty()) {
+                            String[] accountListArray = member_accountList.split("/");
+
+                            for (String account : accountListArray) {
+                                accountBook.add(account);
+                            }
+                        }
+
                         String token = UUID.randomUUID().toString();
                         token = token + member_id;
 
-                        member = new Member(member_id, member_password, member_nickName, member_accountList, token);
+                        member = new Member(member_id, member_password, member_nickName, accountBook, token);
 
                         System.out.println("검색된 멤버 정보: " + member);
                         return member;
