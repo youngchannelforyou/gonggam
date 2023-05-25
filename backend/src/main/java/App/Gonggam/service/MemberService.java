@@ -33,7 +33,7 @@ public class MemberService {
         return false;
     }
 
-    public Member GetMember(String Id) {
+    public Member LoginMember(String Id) {
         Member member = null;
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             // 데이터 검색
@@ -60,6 +60,25 @@ public class MemberService {
 
                         String token = UUID.randomUUID().toString();
                         token = token + member_id;
+
+                        String sql = "UPDATE member SET column_name = ? WHERE id = ?";
+                        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                            // 쿼리 매개변수 설정
+                            stmt.setString(1, token);
+                            stmt.setString(2, member_id);
+
+                            // 쿼리 실행
+                            int rowsAffected = stmt.executeUpdate();
+
+                            if (rowsAffected > 0) {
+                                System.out.println("토큰 값 변경 성공");
+                            } else {
+                                System.out.println("토큰 값 변경 실패");
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
 
                         member = new Member(member_id, member_password, member_nickName, accountBook, token);
 

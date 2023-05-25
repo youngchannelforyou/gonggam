@@ -41,7 +41,7 @@ public class MemberController {
     public ResponseEntity<String> Login(@RequestBody Member member) {
         String Id = member.getMember_Id();
         String password = member.getMember_password();
-        Member checkMember = memberservice.GetMember(Id);
+        Member checkMember = memberservice.LoginMember(Id);
         if (checkMember == null) {
             System.out.println("id 못 찾음");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id를 찾을 수 없습니다.");

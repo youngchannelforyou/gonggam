@@ -19,6 +19,7 @@ public class SqlConnection {
                     + "Password VARCHAR(100)  NOT NULL, "
                     + "NickName VARCHAR(100) NOT NULL, "
                     + "AccountList TEXT, "
+                    + "Token TEXT, "
                     + "PRIMARY KEY (Id))";
             try (PreparedStatement createTableStmt = conn.prepareStatement(createMemberTableSql)) {
                 createTableStmt.executeUpdate();

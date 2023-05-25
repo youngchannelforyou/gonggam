@@ -1,7 +1,20 @@
 package App.Gonggam.service;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
-import App.Gonggam.model.AccountBook;;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import App.Gonggam.model.AccountBook;
+import App.Gonggam.model.Post;
+import javassist.bytecode.stackmap.BasicBlock.Catch;;
 
 public class AccountBookService {
     String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_pbl3";
@@ -14,13 +27,11 @@ public class AccountBookService {
 
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             // 데이터 추가
-            String insertSql = "INSERT INTO Team5_Member (Name, Public, Manager, Budget, Member) VALUES (?, ?, ?, ?, ?)";
+            String insertSql = "INSERT INTO Team5_AccountBook (Name, Public, Manager) VALUES (?, ?, ?)";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                 insertStmt.setString(1, newBook.getAccountBook_Name());
                 insertStmt.setString(2, newBook.getAccountBook_public());
                 insertStmt.setString(3, newBook.getAccountBook_main_manager());
-                insertStmt.setLong(4, newBook.getAccountBook_Budget());
-                insertStmt.setString(5, newBook.getAccountBook_Member());
                 insertStmt.executeUpdate();
 
                 System.out.println("데이터가 추가되었습니다.");
@@ -56,102 +67,208 @@ public class AccountBookService {
         return false;
     }
 
-    // public Member GetMember(String Id) {
-    // Member member = null;
-    // try (Connection conn = DriverManager.getConnection(URL, USERNAME,
-    // SQL_PASSWORD)) {
-    // // 데이터 검색
-    // String selectSql = "SELECT * FROM Team5_Member WHERE Id = ?";
-    // try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
-    // selectStmt.setString(1, Id);
+    public List<AccountBook> getAllBooks() {
+        List<AccountBook> books = new ArrayList<>();
 
-    // try (ResultSet rs = selectStmt.executeQuery()) {
-    // if (rs.next()) {
-    // // ResultSet에서 데이터 추출
-    // String member_id = rs.getString("Id");
-    // String member_password = rs.getString("Password");
-    // String member_nickName = rs.getString("NickName");
-    // String member_accountList = rs.getString("AccountList");
-    // // Member 객체 생성
-    // if (member_accountList == null) {
-    // member = new Member(member_id, member_password, member_nickName);
-    // } else {
-    // member = new Member(member_id, member_password, member_nickName,
-    // member_accountList);
-    // }
-    // System.out.println("검색된 멤버 정보: " + member);
-    // return member;
-    // } else {
-    // System.out.println("멤버를 찾을 수 없습니다.");
-    // }
-    // }
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            String selectSql = "SELECT * FROM Team5_AccountBook";
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                ResultSet resultSet = selectStmt.executeQuery();
 
-    // }
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-    // return member;
-    // }
+                while (resultSet.next()) {
+                    AccountBook book = new AccountBook();
+                    book.setAccountBook_Name(resultSet.getString("Name"));
+                    book.setAccountBook_public(resultSet.getString("Public"));
+                    book.setAccountBook_main_manager(resultSet.getString("Manager"));
+                    book.setAccountBook_Budget(resultSet.getLong("Budget"));
+                    book.setAccountBook_Member(resultSet.getString("Member"));
 
-    // // 특정 멤버의 가계부를 추가하는 방법
-    // public void AddACountBookInMember(String Member, String AccountBook) {
-    // try (Connection conn = DriverManager.getConnection(URL, USERNAME,
-    // SQL_PASSWORD)) {
-    // String memberEmail = Member; // 멤버 이메일
-    // String accountBookName = AccountBook; // 추가할 AccountBook의 이름
-    // String updateMemberSql = "UPDATE Team5_Member SET AccountList =
-    // CONCAT(AccountList, ?) WHERE Email = ?";
+                    books.add(book);
+                }
 
-    // try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
-    // updateStmt.setString(1, "," + accountBookName);
-    // updateStmt.setString(2, memberEmail);
-    // updateStmt.executeUpdate();
-    // System.out.println(memberEmail + "의 AccountList에 " + accountBookName + "이(가)
-    // 추가되었습니다.");
-    // }
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-    // }
+                resultSet.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
+        return books;
+    }
+
+    public ArrayList<String> FindBook(String newBook) {
+        ArrayList<String> booklist = new ArrayList<String>();
+
+        // SQL 쿼리
+        String sql = "SELECT Name FROM Team5_AccountBook WHERE Name LIKE ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD);
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // 쿼리 매개변수 설정
+            stmt.setString(1, "%" + newBook + "%");
+
+            // 쿼리 실행
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String name = rs.getString("Name");
+                booklist.add(name);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println(booklist);
+        return booklist;
+    }
+
+    public List<Post> getAllPosts(String tableName) {
+        List<Post> posts = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            String selectSql = "SELECT * FROM " + tableName;
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                ResultSet resultSet = selectStmt.executeQuery();
+
+                while (resultSet.next()) {
+                    Post post = new Post();
+                    post.setPost_type(resultSet.getString("Type"));
+                    post.setPost_date(resultSet.getString("Date"));
+                    post.setPost_title(resultSet.getString("Title"));
+                    post.setPost_text(resultSet.getString("Text"));
+                    post.setPost_comment(resultSet.getString("Comment"));
+                    // 이미지 데이터 추출
+                    InputStream imageStream = resultSet.getBinaryStream("Image");
+                    BufferedImage image = ImageIO.read(imageStream);
+                    post.getPost_image_list().add(image);
+                    post.setPost_used_budget(resultSet.getLong("Used_Budget"));
+
+                    posts.add(post);
+                }
+
+                resultSet.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return posts;
+    }
+
+    public boolean AddPost(Post newPost, String book) {
+        String tableName = "Team5_" + book;
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            // 데이터 추가
+            String insertSql = "INSERT INTO " + tableName
+                    + " (Type, Date, Title, Text, Comment, Image, Used_Budget) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                insertStmt.setString(1, newPost.getPost_type());
+                insertStmt.setString(2, newPost.getPost_date());
+                insertStmt.setString(3, newPost.getPost_title());
+                insertStmt.setString(4, newPost.getPost_text());
+                insertStmt.setString(5, newPost.getPost_comment());
+
+                // 이미지 데이터를 Base64로 인코딩하여 바이트 배열로 변환
+                ArrayList<BufferedImage> post_image_list = newPost.getPost_image_list();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                for (BufferedImage image : post_image_list) {
+                    try {
+                        ImageIO.write(image, "png", baos);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                baos.flush();
+                byte[] imageBytes = baos.toByteArray();
+                baos.close();
+
+                // 바이트 배열을 InputStream으로 변환
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
+
+                insertStmt.setBinaryStream(6, inputStream, imageBytes.length);
+                insertStmt.setLong(7, newPost.getPost_used_budget());
+                insertStmt.executeUpdate();
+
+                System.out.println("데이터가 추가되었습니다.");
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean updatePostString(String tableName, int postId, String column, String value) {
+        String updateSql = "UPDATE " + tableName + " SET " + column + " = ? WHERE Num = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                updateStmt.setString(1, value);
+                updateStmt.setInt(2, postId);
+                int affectedRows = updateStmt.executeUpdate();
+
+                if (affectedRows > 0) {
+                    System.out.println("게시물이 업데이트되었습니다.");
+                    return true;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updatePostLong(String tableName, int postId, String column, Long value) {
+        String updateSql = "UPDATE " + tableName + " SET " + column + " = ? WHERE Num = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                updateStmt.setLong(1, value);
+                updateStmt.setInt(2, postId);
+                int affectedRows = updateStmt.executeUpdate();
+
+                if (affectedRows > 0) {
+                    System.out.println("게시물이 업데이트되었습니다.");
+                    return true;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 수정 필요
+
+    public boolean updateImage(String tableName, int postId, String column, Long value) {
+        String updateSql = "UPDATE " + tableName + " SET " + column + " = ? WHERE Num = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                updateStmt.setLong(1, value);
+                updateStmt.setInt(2, postId);
+                int affectedRows = updateStmt.executeUpdate();
+
+                if (affectedRows > 0) {
+                    System.out.println("게시물이 업데이트되었습니다.");
+                    return true;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
-
-// Email 변경
-// public void ChangeEmail(String Member, String Email) {
-// try (Connection conn = DriverManager.getConnection(URL, USERNAME,
-// SQL_PASSWORD)) {
-// String memberEmail = Member; // 멤버 이메일
-// String ChangeEmail = Email; // 추가할 AccountBook의 이름
-// String updateMemberSql = "UPDATE Team5_Member SET Email = ? WHERE Email = ?";
-// // SQL 쿼리문
-// try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
-// updateStmt.setString(1, ChangeEmail);
-// updateStmt.setString(2, memberEmail);
-// updateStmt.executeUpdate();
-// System.out.println(memberEmail + "의 AccountList에 " + ChangeEmail + "이(가)
-// 추가되었습니다.");
-// }
-// } catch (SQLException e) {
-// e.printStackTrace();
-// }
-// }
-
-// // 이름 변경
-// public void ChangeName(String Member, String Name) {
-// try (Connection conn = DriverManager.getConnection(URL, USERNAME,
-// SQL_PASSWORD)) {
-// String memberEmail = Member; // 멤버 이메일
-// String ChangeName = Name; // 추가할 AccountBook의 이름
-// String updateMemberSql = "UPDATE Team5_Member SET Name = ? WHERE Email = ?";
-// // SQL 쿼리문
-// try (PreparedStatement updateStmt = conn.prepareStatement(updateMemberSql)) {
-// updateStmt.setString(1, ChangeName);
-// updateStmt.setString(2, memberEmail);
-// updateStmt.executeUpdate();
-// System.out.println(memberEmail + "의 AccountList에 " + ChangeName + "이(가)
-// 추가되었습니다.");
-// }
-// } catch (SQLException e) {
-// e.printStackTrace();
-// }
-// }

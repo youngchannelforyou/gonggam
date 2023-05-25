@@ -47,6 +47,9 @@ public class AccountBook {
         }
     }
 
+    public AccountBook() {
+    }
+
     public String getAccountBook_Db() {
         return AccountBook_Db;
     }
