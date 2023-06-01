@@ -1,5 +1,5 @@
 import React from 'react';
-import LoginForm from '../components/login/LoginForm';
+import LoginForm from '../components/Login/LoginForm';
 import { css } from '@emotion/css';
 
 function LoginPage(props) {
