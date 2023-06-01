@@ -42,6 +42,7 @@ public class SqlConnection {
                     + "Name VARCHAR(320) NOT NULL, "
                     + "Public VARCHAR(100) NOT NULL, "
                     + "Manager TEXT NOT NULL, "
+                    + "SubManager TEXT NOT NULL, "
                     + "Budget BIGINT, "
                     + "Member TEXT, "
                     + "PRIMARY KEY (Name))";
@@ -65,18 +66,3 @@ public class SqlConnection {
         }
     }
 }
-
-// sql 서버 시작 mysql.server start
-// sql 서버 종료 mysql.server stop
-// sql 종료 exit
-// CREATE DATABASE [데이터베이스명];
-
-// // 추가할 컬럼 정보 DBUG
-// String newColumnName = "new_column_name";
-// String newColumnDataType = "VARCHAR(100)";
-
-// // 추가할 컬럼이 존재하지 않으면 추가
-// if (!existingColumns.contains(newColumnName)) {
-// String alterTableSql = "ALTER TABLE TEAM5_Member ADD COLUMN " + newColumnName
-// + " " + newColumnDataType;
-// try
