@@ -12,7 +12,7 @@ public class AccountBookService {
     String URL = "jdbc:mysql://selab.hknu.ac.kr:51714/2023_pbl3";
     String USERNAME = "pbl3_team5";
     String SQL_PASSWORD = "12345678";
-
+    MemberService mService = new MemberService();
     // DB에 멤버 추가
 
     public boolean addBook(AccountBook newBook) {
@@ -30,6 +30,38 @@ public class AccountBookService {
 
                 String Comment_tableName = "Team5_" + newBook.getAccountBookName() + "_Comment";
                 String Post_tableName = "Team5_" + newBook.getAccountBookName() + "_Post";
+
+                String selectSql = "SELECT AccountList FROM Team5_Member WHERE Id = ?";
+                try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                    selectStmt.setString(1, newBook.getAccountBookMainManager());
+
+                    try (ResultSet rs = selectStmt.executeQuery()) {
+                        if (rs.next()) {
+                            String existingAccountList = rs.getString("AccountList");
+                            String updatedAccountList;
+                            if (existingAccountList != null) {
+                                // 기존의 AccountList가 비어있지 않다면, 새로운 데이터를 이어서 추가합니다.
+                                updatedAccountList = existingAccountList + "/" + "(M)" + newBook.getAccountBookName();
+                            } else {
+                                // 기존의 AccountList가 비어있다면, 새로운 데이터를 그대로 할당합니다.
+                                updatedAccountList = "(M)" + newBook.getAccountBookName();
+                            }
+
+                            String updateSql = "UPDATE Team5_Member SET AccountList = ? WHERE Id = ?";
+                            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                                updateStmt.setString(1, updatedAccountList);
+                                updateStmt.setString(2, newBook.getAccountBookMainManager());
+                                updateStmt.executeUpdate();
+
+                                System.out.println("AccountList가 업데이트되었습니다.");
+                            }
+                        } else {
+                            System.out.println("해당 Id의 멤버가 존재하지 않습니다.");
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
 
                 try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
                     String sql = "CREATE TABLE " + Comment_tableName + " (" +
@@ -73,6 +105,136 @@ public class AccountBookService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public String addMember(String Manager, String Member, String TableName) {
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            String selectSql = "SELECT * FROM Team5_AccountBook WHERE Name = ?";
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setString(1, TableName);
+
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        if (rs.getString("Manager").equals(mService.FindMemberUseToken(Manager))) {
+                            String Memberid = mService.FindMemberUseToken(Member);
+                            String existingMember = rs.getString("Member");
+                            String updatedMember;
+                            if (existingMember != null) {
+                                // 기존의 AccountList가 비어있지 않다면, 새로운 데이터를 이어서 추가합니다.
+                                updatedMember = existingMember + "/" + Memberid;
+                            } else {
+                                // 기존의 AccountList가 비어있다면, 새로운 데이터를 그대로 할당합니다.
+                                updatedMember = Memberid;
+                            }
+
+                            String updateSql = "UPDATE Team5_AccountBook SET Member = ? WHERE Name = ?";
+                            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                                updateStmt.setString(1, updatedMember);
+                                updateStmt.setString(2, TableName);
+                                updateStmt.executeUpdate();
+
+                                System.out.println("Team5_AccountBook가 업데이트되었습니다.");
+                            }
+
+                            String selectSql2 = "SELECT * FROM Team5_Member WHERE Id = ?";
+                            System.out.println("Memberid.: " + Memberid);
+                            try (PreparedStatement selectStmt2 = conn.prepareStatement(selectSql2)) {
+                                selectStmt2.setString(1, Memberid);
+                                try (ResultSet rs2 = selectStmt2.executeQuery()) {
+                                    if (rs2.next()) {
+                                        /////
+                                        String existingAccountList = rs2.getString("AccountList");
+                                        String updatedAccountList;
+                                        if (existingAccountList != null) {
+                                            // 기존의 AccountList가 비어있지 않다면, 새로운 데이터를 이어서 추가합니다.
+                                            updatedAccountList = existingMember + "/" + "(P)" + TableName;
+                                        } else {
+                                            // 기존의 AccountList가 비어있다면, 새로운 데이터를 그대로 할당합니다.
+                                            updatedAccountList = "(P)" + TableName;
+                                        }
+
+                                        String updateSql2 = "UPDATE Team5_Member SET AccountList = ? WHERE Id = ?";
+                                        try (PreparedStatement updateStmt = conn.prepareStatement(updateSql2)) {
+                                            updateStmt.setString(1, updatedAccountList);
+                                            updateStmt.setString(2, Memberid);
+                                            updateStmt.executeUpdate();
+
+                                            System.out.println("Team5_Member가 업데이트되었습니다.");
+                                        }
+
+                                        return "정상";
+
+                                    } else {
+                                        System.out.println("selectSql2에러.");
+                                    }
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                    return "서버에러2-1";
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                return "서버에러2";
+                            }
+
+                        } else {
+                            System.out.println("관리자 권한 없음.");
+                        }
+                    } else {
+                        System.out.println("관리자 Id의 멤버가 존재하지 않습니다.");
+                    }
+
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return "서버에러";
+            }
+        } catch (SQLException e) {
+            System.out.println("테이블 이름 에러.");
+            return "테이블 에러";
+        }
+        return "실패";
+    }
+
+    public AccountBook getBook(String name) {
+        AccountBook book = null;
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            String sql = "SELECT * FROM Team5_AccountBook WHERE Name = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, name);
+
+                // Execute the query
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        // Create a new AccountBook object and populate it with the retrieved data
+                        book = new AccountBook();
+                        book.setAccountBookName(rs.getString("Name"));
+                        book.setAccountBookPublic(rs.getBoolean("Public"));
+                        book.setAccountBookMainManager(rs.getString("Manager"));
+
+                        String subManagerString = rs.getString("SubManager");
+                        if (subManagerString != null) {
+                            ArrayList<String> subManagers = new ArrayList<>(Arrays.asList(subManagerString.split("/")));
+                            book.setAccountBookSubManager(subManagers);
+                        }
+                        book.setAccountBook_Budget(rs.getLong("Budget"));
+                        String memberString = rs.getString("Member");
+
+                        if (memberString != null) {
+                            ArrayList<String> Member = new ArrayList<>(Arrays.asList(memberString.split("/")));
+                            book.setAccountBook_Member(Member);
+                        }
+                    } else {
+                        System.out.println("해당 이름의 계정북이 존재하지 않습니다.");
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return book;
     }
 
     // public List<AccountBook> getAllBooks() {

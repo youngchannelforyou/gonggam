@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import App.Gonggam.model.Member;
 import App.Gonggam.service.MemberService;
+import jakarta.servlet.http.Cookie;
 
 @RestController
 @RequestMapping(value = "/Member")
@@ -55,9 +59,19 @@ public class MemberController {
                 System.out.println(checkMember.getMemberPassword());
                 if (password.equals(checkMember.getMemberPassword())) {
                     try {
-                        String json = objectMapper.writeValueAsString(checkMember);
-                        return ResponseEntity.ok(json);
-                    } catch (JsonProcessingException e) {
+                        try {
+                            String json = objectMapper.writeValueAsString(checkMember);
+                            HttpHeaders headers = new HttpHeaders();
+                            headers.add("Set-Cookie", "memberId=" + checkMember.getMemberToken());
+
+                            return ResponseEntity.ok().headers(headers).body(json);
+                        } catch (Exception e) {
+                            System.out.println("쿠키에러");
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("쿠키에러");
+                        }
+
+                        // return ResponseEntity.ok(json);
+                    } catch (Exception e) {
                         System.out.println("서버 오류");
 
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
