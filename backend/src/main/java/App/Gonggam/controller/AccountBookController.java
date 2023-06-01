@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import App.Gonggam.service.AccountBookService;
-
+import App.Gonggam.service.MemberService;
 import App.Gonggam.model.Post;
 import App.Gonggam.model.AccountBook;
 
@@ -34,16 +34,57 @@ import App.Gonggam.model.AccountBook;
 @RequestMapping("/AccountBook")
 public class AccountBookController {
     AccountBookService service = new AccountBookService();
+    MemberService mService = new MemberService();
 
     @PostMapping(path = "/addBook", produces = "application/json", consumes = "application/json")
     public String AddBook(
-            @RequestBody AccountBook new_book) {
-
+            @RequestBody String inputjson) {
+        AccountBook new_book = new AccountBook();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            new_book.setAccountBookName(jsonNode.get("Name").asText());
+            new_book.setAccountBookPublic(jsonNode.get("Public").asBoolean());
+            new_book.setAccountBookMainManager(mService.FindMemberUseToken(jsonNode.get("Manager").asText())); // Manager토큰
+            new_book.setAccountBook_Budget(jsonNode.get("Budget").asLong());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (new_book.getAccountBookMainManager() == null) {
+            return "토큰실패";
+        }
         boolean check = service.addBook(new_book);
         if (check == true) {
             return "정상처리 완료";
         } else {
             return "실패";
+        }
+    }
+
+    @PostMapping(path = "/getBook", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> GetBook(
+            @RequestBody String inputjson) {
+        String book = "";
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            book = jsonNode.get("book").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(book);
+
+        AccountBook booklist = service.getBook(book);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(booklist);
+            System.out.println("json");
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            System.out.println("서버 오류");
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
         }
     }
 
@@ -167,5 +208,29 @@ public class AccountBookController {
             e.printStackTrace();
         }
         return "실패";
+    }
+
+    @PostMapping(path = "/addmember", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> AddMember(
+            @RequestBody String inputjson) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            String Manager = jsonNode.get("Manager").asText();
+            String Member = jsonNode.get("Member").asText();
+            String TableName = jsonNode.get("TableName").asText();
+
+            String result = service.addMember(Manager, Member, TableName);
+            try {
+                String json = objectMapper.writeValueAsString(result);
+                return ResponseEntity.ok(json);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
     }
 }

@@ -42,7 +42,7 @@ public class SqlConnection {
                     + "Name VARCHAR(320) NOT NULL, "
                     + "Public VARCHAR(100) NOT NULL, "
                     + "Manager TEXT NOT NULL, "
-                    + "SubManager TEXT NOT NULL, "
+                    + "SubManager TEXT, "
                     + "Budget BIGINT, "
                     + "Member TEXT, "
                     + "PRIMARY KEY (Name))";

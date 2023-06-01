@@ -51,9 +51,11 @@ public class MemberService {
 
                         ArrayList<String> manage_accountBook = new ArrayList<String>();
                         ArrayList<String> parti_accountBook = new ArrayList<String>();
-                        if (member_accountList != null && !member_accountList.isEmpty()) {
-                            String[] accountListArray = member_accountList.split("/");
+                        System.out.println(member_accountList);
 
+                        if (member_accountList != null) {
+                            String[] accountListArray = member_accountList.split("/");
+                            System.out.println("2222");
                             for (String account : accountListArray) {
                                 if (account.startsWith("(M)")) {
                                     manage_accountBook.add(account.substring(3));
@@ -66,7 +68,7 @@ public class MemberService {
                         String token = UUID.randomUUID().toString();
                         token = token + member_id;
 
-                        String sql = "UPDATE member SET column_name = ? WHERE id = ?";
+                        String sql = "UPDATE Team5_Member SET Token = ? WHERE id = ?";
                         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                             // 쿼리 매개변수 설정
@@ -130,4 +132,21 @@ public class MemberService {
         }
     }
 
+    public String FindMemberUseToken(String token) {
+        String id = null;
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD);
+                PreparedStatement statement = conn
+                        .prepareStatement("SELECT Id FROM Team5_Member WHERE Token = ?")) {
+            statement.setString(1, token);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                id = resultSet.getString("Id");
+            }
+        } catch (SQLException e) {
+            System.out.println("id 조회 실패");
+            e.printStackTrace();
+        }
+        return id;
+    }
 }
