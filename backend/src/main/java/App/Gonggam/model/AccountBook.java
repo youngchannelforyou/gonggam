@@ -1,85 +1,78 @@
 package App.Gonggam.model;
 
+import java.util.ArrayList;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
-import java.util.ArrayList;
 import App.Gonggam.service.MemberService;
-import jakarta.persistence.Lob;
 
+/*
+한 가계부의 정보를 담는 AccountBook 클래스입니다.
+처음 시작될 때 생성되는 AccountBook 테이블에 대한 한 행의 데이터를 담는 클래스.
+@@ 표시는 필수로 있어야 하는 항목 X null
+*/
 @Entity
 @Table(name = "AccountBook")
-
 public class AccountBook {
     MemberService memberservice = new MemberService();
 
-    private String AccountBook_Name;
-    private String AccountBook_public;
-    private String AccountBook_main_manager;
-    private long AccountBook_Budget;
-    private String AccountBook_Member;
-    private String AccountBook_Db;
-    // private ArrayList<Member> Member_accountBook = new ArrayList<Member>();
-    // private List<Member> AccountBook_list_member;
-    // private List<Member> AccountBook_sub_manager;
+    private String AccountBookName; // @@ 가계부 이름
+    private boolean AccountBookPublic; // true=> public false = private
+    private String AccountBookMainManager; // @@ 실제 매니져
+    private ArrayList<String> AccountBookSubManager; // 서브 매니져
+    private ArrayList<String> AccountBook_Member; // 멤버
+    private long AccountBook_Budget; // 현재 예산
 
     @JsonCreator
     public AccountBook(
             @JsonProperty("Name") String Name,
-            @JsonProperty("Public") String Public,
+            @JsonProperty("Public") Boolean Public,
             @JsonProperty("Budget") long Budget,
-            @JsonProperty("Member") String bookMember,
             @JsonProperty("Manager") String bookManager) {
-        AccountBook_Name = Name;
-        AccountBook_public = Public;
-        // AccountBook_main_manager = memberservice.GetMember(bookManager);
-        AccountBook_main_manager = bookManager;
-        if (Budget <= 0) {
-            AccountBook_Budget = 0;
-        } else {
-            AccountBook_Budget = Budget;
+        AccountBookName = Name;
+        if (Public == null) {
+            Public = true;
         }
-        if (bookManager != null) {
-            // Member_accountBook = GetMemberList(bookMember);
-            AccountBook_Member = bookMember;
-        }
+        AccountBookPublic = Public;
+        AccountBookMainManager = bookManager;
+        AccountBook_Budget = Budget;
     }
 
     public AccountBook() {
     }
 
-    public String getAccountBook_Db() {
-        return AccountBook_Db;
+    public ArrayList<String> getAccountBookSubManager() {
+        return AccountBookSubManager;
     }
 
-    public void setAccountBook_Db(String accountBook_Db) {
-        AccountBook_Db = accountBook_Db;
+    public void setAccountBookSubManager(ArrayList<String> accountBookSubManager) {
+        AccountBookSubManager = accountBookSubManager;
     }
 
-    public String getAccountBook_Name() {
-        return AccountBook_Name;
+    public String getAccountBookName() {
+        return AccountBookName;
     }
 
-    public void setAccountBook_Name(String accountBook_Name) {
-        AccountBook_Name = accountBook_Name;
+    public void setAccountBookName(String accountBook_Name) {
+        AccountBookName = accountBook_Name;
     }
 
-    public String getAccountBook_public() {
-        return AccountBook_public;
+    public boolean getAccountBookPublic() {
+        return AccountBookPublic;
     }
 
-    public void setAccountBook_public(String accountBook_public) {
-        AccountBook_public = accountBook_public;
+    public void setAccountBookPublic(Boolean accountBook_public) {
+        AccountBookPublic = accountBook_public;
     }
 
-    public String getAccountBook_main_manager() {
-        return AccountBook_main_manager;
+    public String getAccountBookMainManager() {
+        return AccountBookMainManager;
     }
 
-    public void setAccountBook_main_manager(String accountBook_main_manager) {
-        AccountBook_main_manager = accountBook_main_manager;
+    public void setAccountBookMainManager(String accountBook_main_manager) {
+        AccountBookMainManager = accountBook_main_manager;
     }
 
     public long getAccountBook_Budget() {
@@ -90,21 +83,11 @@ public class AccountBook {
         AccountBook_Budget = accountBook_Budget;
     }
 
-    public String getAccountBook_Member() {
+    public ArrayList<String> getAccountBook_Member() {
         return AccountBook_Member;
     }
 
-    public void setAccountBook_Member(String member_accountBook) {
+    public void setAccountBook_Member(ArrayList<String> member_accountBook) {
         AccountBook_Member = member_accountBook;
     }
-
-    // 멤버 , 로 구분해서 불러오는 코드
-    // public ArrayList<Member> GetMemberList(String memberlist) {
-    // String[] fruits = memberlist.split(",");
-    // for (String fruit : fruits) {
-    // Member member = memberservice.GetMember(fruit);
-    // Member_accountBook.add(member);
-    // }
-    // return Member_accountBook;
-    // }
 }

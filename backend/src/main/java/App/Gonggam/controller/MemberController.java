@@ -1,16 +1,15 @@
 package App.Gonggam.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import App.Gonggam.model.Member;
 import App.Gonggam.service.MemberService;
@@ -38,30 +37,40 @@ public class MemberController {
     // @RequestParam("Id") String Id,
     // @RequestParam("Password") String password) {
     // Member member = memberservice.GetMember(Id);
-    public ResponseEntity<String> Login(@RequestBody Member member) {
-        String Id = member.getMember_Id();
-        String password = member.getMember_password();
-        Member checkMember = memberservice.LoginMember(Id);
-        if (checkMember == null) {
-            System.out.println("id 못 찾음");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id를 찾을 수 없습니다.");
-        } else {
-            System.out.println(checkMember.getMember_password());
-            if (password.equals(checkMember.getMember_password())) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                try {
-                    String json = objectMapper.writeValueAsString(checkMember);
-                    return ResponseEntity.ok(json);
-                } catch (JsonProcessingException e) {
-                    System.out.println("서버 오류");
+    public ResponseEntity<String> Login(@RequestBody String inputjson) {
+        String Id;
+        String password;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            Id = jsonNode.get("Id").asText();
+            password = jsonNode.get("Password").asText();
 
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
-                }
+            Member checkMember = memberservice.LoginMember(Id);
+
+            if (checkMember == null) {
+                System.out.println("id 못 찾음");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id를 찾을 수 없습니다.");
             } else {
-                System.out.println("비밀번호 틀림");
+                System.out.println(checkMember.getMemberPassword());
+                if (password.equals(checkMember.getMemberPassword())) {
+                    try {
+                        String json = objectMapper.writeValueAsString(checkMember);
+                        return ResponseEntity.ok(json);
+                    } catch (JsonProcessingException e) {
+                        System.out.println("서버 오류");
 
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 틀림");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+                    }
+                } else {
+                    System.out.println("비밀번호 틀림");
+
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 틀림");
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
     }
 }

@@ -5,106 +5,120 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
-import java.awt.image.BufferedImage;
 
 @Entity
 @Table(name = "Post")
 
+/*
+ * 사용 내역 글을 담는 Post 클래스입니다.
+ * 하나의 가계부는 하나의 사용내역 테이블을 가지며 해당 테이블의 한 행 데이터에 맞춘 클래스입니다.
+ * 
+ * @@ 표시는 필수로 있어야 하는 항목 X null
+ */
 public class Post {
-    private String Post_key;
-    private String Post_type;
-    private String Post_date;
-    private String Post_title;
-    private String Post_text;
-    private String Post_comment;
-    private ArrayList<BufferedImage> Post_image_list = new ArrayList<BufferedImage>();
-    private Long Post_used_budget;
+    private Long PostId; // @@ 사용 내역의 행, 순번을 나타내는 번호입니다.
+    private String PostTag; // 사용 내역의 소비된 활동을 나타냄 [ ex) 축제준비, 체육대회 ]
+    private boolean PostType; // @@ 사용 내역의 수입 지출을 나타냄 [true = 수입, false = 지출]
+    private String PostDate; // @@ 사용된 날짜를 기입 [ ex)2023/01/01 ]
+    private String PostTitle; // @@ 사용내역의 제목
+    private String PostText; // 내용 내역의 텍스트
+    private ArrayList<String> PostImage = new ArrayList<String>(); // 사용내역에 첨부되는 이미지 경로
+    // 이미지 경로는 ,로 구분되며 순번에 인식됨 ex) ["path/img1","path/img2","path/img3"]
+    private Long PostUsedBudget; // @@ 사용된 금액
+    private Long PostTotalBudget; // @@ 그때 당시 총액
 
-    @JsonCreator
+    @JsonCreator // json 호출시 바로 클래스로 생성해서 만드는 방법
     public Post(
-            @JsonProperty("Key") String post_key,
-            @JsonProperty("Type") String post_type,
+            @JsonProperty("Id") Long post_id,
+            @JsonProperty("Tag") String post_tag,
+            @JsonProperty("Type") boolean post_type,
             @JsonProperty("Date") String post_date,
             @JsonProperty("Title") String post_title,
             @JsonProperty("Text") String post_text,
-            @JsonProperty("Comment") String post_comment,
-            @JsonProperty("Image") ArrayList<BufferedImage> post_image,
+            @JsonProperty("Image") ArrayList<String> post_image,
             @JsonProperty("Used_Budget") Long post_used_budget) {
-        Post_key = post_key;
-        Post_type = post_type;
-        Post_date = post_date;
-        Post_title = post_title;
-        Post_text = post_text;
-        Post_comment = post_comment;
-        Post_image_list = post_image;
-        Post_used_budget = post_used_budget;
+        PostId = post_id;
+        PostTag = post_tag;
+        PostType = post_type;
+        PostDate = post_date;
+        PostTitle = post_title;
+        PostText = post_text;
+        PostImage = post_image;
+        PostUsedBudget = post_used_budget;
     }
 
     public Post() {
     }
 
-    public String getPost_key() {
-        return Post_key;
+    public Long getPostId() {
+        return PostId;
     }
 
-    public void setPost_key(String post_key) {
-        Post_key = post_key;
+    public void setPostId(Long postId) {
+        PostId = postId;
     }
 
-    public String getPost_type() {
-        return Post_type;
+    public String getPostTag() {
+        return PostTag;
     }
 
-    public void setPost_type(String post_type) {
-        Post_type = post_type;
+    public void setPostTag(String postTag) {
+        PostTag = postTag;
     }
 
-    public String getPost_date() {
-        return Post_date;
+    public boolean getPostType() {
+        return PostType;
     }
 
-    public void setPost_date(String post_date) {
-        Post_date = post_date;
+    public void setPostType(boolean postType) {
+        PostType = postType;
     }
 
-    public String getPost_title() {
-        return Post_title;
+    public String getPostDate() {
+        return PostDate;
     }
 
-    public void setPost_title(String post_title) {
-        Post_title = post_title;
+    public void setPostDate(String postDate) {
+        PostDate = postDate;
     }
 
-    public String getPost_text() {
-        return Post_text;
+    public String getPostTitle() {
+        return PostTitle;
     }
 
-    public void setPost_text(String post_text) {
-        Post_text = post_text;
+    public void setPostTitle(String postTitle) {
+        PostTitle = postTitle;
     }
 
-    public String getPost_comment() {
-        return Post_comment;
+    public String getPostText() {
+        return PostText;
     }
 
-    public void setPost_comment(String post_comment) {
-        Post_comment = post_comment;
+    public void setPostText(String postText) {
+        PostText = postText;
     }
 
-    public ArrayList<BufferedImage> getPost_image_list() {
-        return Post_image_list;
+    public ArrayList<String> getPostImage() {
+        return PostImage;
     }
 
-    public void setPost_image_list(ArrayList<BufferedImage> post_image_list) {
-        Post_image_list = post_image_list;
+    public void setPostImage(ArrayList<String> postImage) {
+        PostImage = postImage;
     }
 
-    public Long getPost_used_budget() {
-        return Post_used_budget;
+    public Long getPostUsedBudget() {
+        return PostUsedBudget;
     }
 
-    public void setPost_used_budget(Long post_used_budget) {
-        Post_used_budget = post_used_budget;
+    public void setPostUsedBudget(Long postUsedBudget) {
+        PostUsedBudget = postUsedBudget;
     }
 
+    public Long getPostTotalBudget() {
+        return PostTotalBudget;
+    }
+
+    public void setPostTotalBudget(Long postTotalBudget) {
+        PostTotalBudget = postTotalBudget;
+    }
 }
