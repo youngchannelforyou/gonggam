@@ -33,13 +33,13 @@ const titleWrapper = css`
 `;
 
 const mainTitle = css`
-  font-size: 35px;
+  font-size: 48px;
   color: white;
-  margin-bottom: 21px;
+  margin-bottom: 29px;
 `;
 
 const subTitle = css`
-  font-size: 18px;
+  font-size: 25px;
   color: #7a7a7a;
-  margin-bottom: 74px;
+  margin-bottom: 102px;
 `;

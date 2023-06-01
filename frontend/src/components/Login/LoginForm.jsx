@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { css } from '@emotion/css';
 import NormalTypeInput from '../Form/NormalTypeInput';
 import NormalTypeButton from '../Form/NormalTypeButton';
+import Logo from '../../assets/gonggamLogoRemove.png'
+import Logo2 from '../../assets/logo.png'
 
 function LoginForm() {
   const [id, setId] = useState(null);
@@ -43,7 +45,8 @@ function LoginForm() {
     <div className={container}>
       <form>
         <div className={mainTitle}>
-          <p>ID 로그인</p>
+          <img src={Logo} alt='draw' />
+          <img src={Logo2} alt='img' />
         </div>
         <div className={inputWrapper}>
           <NormalTypeInput labelText='아이디' onChangeFuc={onChange} />
@@ -61,41 +64,46 @@ function LoginForm() {
 export default LoginForm;
 
 const container = css`
-  width: 300px;
-  height: 362px;
+  width: 414px;
+  height: 500px;
  
   margin: 0 auto;
-  background-color: white;
-  border-radius: 8px;
-  padding: 22px 23px;
+  background-color: black;
+  border-radius: 20px;
+  padding: 30px 32px;
 `;
 
 const mainTitle = css`
+  height: 55px;
   font-size: 15px;
+
+  img {
+    height: 100%;
+  }
 `;
 
 const inputWrapper = css`
-    margin-top: 32px;
-    font-size: 12px;
+    margin-top: 30px;
+    font-size: 14px;
 `;
 
 const buttonWrapper = css`
-  margin-top: 20px;
+  margin-top: 27.6px;
 `;
 
 const loginButton = css`
 background-color: #fff;
   &:hover {
-    background-color: #eee;
+    background-color: #cdcbcb;
   }
-  transition: 0.5s;
+  transition: 0.3s;
 `;
 
 const joinButton = css`
   background-color: #232526;
   color: white;
   &:hover {
-    background-color: #000000;
+    background-color: #101010;
   }
-  transition: 1s;
+  transition: 0.3s;
 `;
