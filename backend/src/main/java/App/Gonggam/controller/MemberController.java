@@ -12,11 +12,9 @@ import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import App.Gonggam.model.Member;
 import App.Gonggam.service.MemberService;
-import jakarta.servlet.http.Cookie;
 
 @RestController
 @RequestMapping(value = "/Member")

@@ -1,7 +1,5 @@
 package App.Gonggam.service;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.sql.*;
 import App.Gonggam.model.Member;
 
@@ -10,19 +8,8 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
