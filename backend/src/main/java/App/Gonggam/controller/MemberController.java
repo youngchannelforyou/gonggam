@@ -12,16 +12,30 @@ import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import App.Gonggam.model.Member;
 import App.Gonggam.service.MemberService;
-import jakarta.servlet.http.Cookie;
 
 @RestController
 @RequestMapping(value = "/Member")
 public class MemberController {
     MemberService memberservice = new MemberService();
+
+    @PostMapping(path = "/createcode", produces = "application/json", consumes = "application/json")
+    public String CreateCode(
+            @RequestBody String inputjson) {
+        String result = "서버에러";
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            String Email = jsonNode.get("Email").asText();
+            result = memberservice.sendEmail(Email);
+        } catch (Exception e) {
+
+        }
+
+        return result;
+    }
 
     // http://localhost:8080/Member/signupmember?name=유찬영&nick_name=UUU&Age=17&Email=youngchannl4u@gmail.com&password=12341234
     @PostMapping(path = "/signupmember", produces = "application/json", consumes = "application/json")
