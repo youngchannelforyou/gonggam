@@ -21,24 +21,40 @@ function LoginForm() {
     }
   }
 
-  async function requestLogin() {
-    await fetch('localhost:8080/login', {
+  async function requestLogin(e) {
+    e.preventDefault();
+    console.log(e);
+
+    const data = await fetch('http://localhost:8080/Member/login', {
       method: 'POST',
       body: JSON.stringify({
         Id: id,
         Password: pw,
       }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
     });
+
+    console.log(data);
   }
 
   async function requestJoin() {
-    await fetch('localhost:8080/login', {
+    const data = await fetch('http://localhost:8080/Member/signupmember', {
       method: 'POST',
       body: JSON.stringify({
-        Id: id,
-        Password: pw,
+        "Id": "test",
+        "Password": "12341234",
+        "NickName": "가가가"
       }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
     });
+
+    console.log(data);
   }
 
   return (
@@ -53,8 +69,10 @@ function LoginForm() {
           <NormalTypeInput labelText='비밀번호' onChangeFuc={onChange} />
         </div>
         <div className={buttonWrapper}>
+          <button type='button' onClick={requestLogin}>ㅇㅇㅇㅇㅇ</button>
           <NormalTypeButton title='로그인' onChangeFuc={requestLogin} styles={loginButton} />
           <NormalTypeButton title='회원가입' onChangeFuc={requestJoin} styles={joinButton} />
+          <button type='button' onClick={requestJoin}>회원가입</button>
         </div>
       </form >
     </div >

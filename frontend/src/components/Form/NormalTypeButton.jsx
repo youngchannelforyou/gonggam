@@ -3,7 +3,7 @@ import { cx, css } from '@emotion/css';
 
 function NormalTypeButton({ onClickFuc, title, styles }) {
   return (
-    <button className={cx(basicButton, styles)} onClick={() => onClickFuc()}>{title}</button>
+    <button className={cx(basicButton, styles)} type='button' onClick={onClickFuc}>{title}</button>
   );
 }
 
