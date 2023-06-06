@@ -6,8 +6,8 @@ import Logo from '../../assets/gonggamLogoRemove.png'
 import Logo2 from '../../assets/logo.png'
 
 function LoginForm() {
-  const [id, setId] = useState(null);
-  const [pw, setPw] = useState(null);
+  const [id, setId] = useState('test1');
+  const [pw, setPw] = useState('1234');
 
   function onChange(e) {
     const {
@@ -21,11 +21,17 @@ function LoginForm() {
     }
   }
 
+
+  console.log(id);
+  console.log(pw);
+
   async function requestLogin(e) {
     e.preventDefault();
     console.log(e);
 
-    const data = await fetch('http://localhost:8080/Member/login', {
+    console.log(id);
+    console.log(pw);
+    const responseData = await fetch('http://localhost:8080/Member/login', {
       method: 'POST',
       body: JSON.stringify({
         Id: id,
@@ -35,8 +41,8 @@ function LoginForm() {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       }
-    });
-
+    })
+    const data = await responseData.json();
     console.log(data);
   }
 
