@@ -1,5 +1,6 @@
 package App.Gonggam.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import App.Gonggam.service.MemberService;
 
 @RestController
 @RequestMapping(value = "/Member")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MemberController {
     MemberService memberservice = new MemberService();
 
@@ -64,11 +66,13 @@ public class MemberController {
             Id = jsonNode.get("Id").asText();
             password = jsonNode.get("Password").asText();
 
+            System.out.println(Id);
+
             Member checkMember = memberservice.LoginMember(Id);
 
             if (checkMember == null) {
                 System.out.println("id 못 찾음");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("id를 찾을 수 없습니다.");
             } else {
                 System.out.println(checkMember.getMemberPassword());
                 if (password.equals(checkMember.getMemberPassword())) {
