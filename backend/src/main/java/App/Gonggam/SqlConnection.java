@@ -36,6 +36,37 @@ public class SqlConnection {
                     System.out.println("Member 테이블이 생성되었습니다.");
                 }
             }
+            // signup 테이블 생성
+            String signupSql = "CREATE TABLE IF NOT EXISTS Team5_SignUp ("
+                    + "Id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "Email VARCHAR(320) NOT NULL, "
+                    + "Code VARCHAR(100) NOT NULL, "
+                    + "Updated_At DATETIME DEFAULT NULL, "
+                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+
+            try (PreparedStatement createTableStmt = conn.prepareStatement(signupSql)) {
+                createTableStmt.executeUpdate();
+                if (createTableStmt.getUpdateCount() == 0) {
+                    System.out.println("Team5_SignUp 테이블이 이미 존재합니다.");
+                    String showColumnsSql = "SHOW COLUMNS FROM Team5_SignUp";
+                    try (PreparedStatement showColumnsStmt = conn.prepareStatement(showColumnsSql)) {
+                        ResultSet rs = showColumnsStmt.executeQuery();
+                        while (rs.next()) {
+                            MemberexistingColumns.add(rs.getString("Field"));
+                        }
+                    }
+                } else {
+                    System.out.println("Team5_SignUp 테이블이 생성되었습니다.");
+                }
+            }
+            // 스케줄링된 작업 생성
+            String createEventSql = "CREATE EVENT IF NOT EXISTS delete_rows_event "
+                    + "ON SCHEDULE EVERY 1 MINUTE "
+                    + "DO "
+                    + "DELETE FROM Team5_SignUp WHERE Created_At < NOW() - INTERVAL 3 MINUTE AND Updated_At IS NULL";
+            try (PreparedStatement createEventStmt = conn.prepareStatement(createEventSql)) {
+                createEventStmt.executeUpdate();
+            }
 
             // AccountBook 테이블 생성
             String createAccountBookTableSql = "CREATE TABLE IF NOT EXISTS Team5_AccountBook ("

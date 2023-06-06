@@ -48,6 +48,19 @@ public class Member {
         MemberToken = member_token;
     }
 
+    public Member(
+            String member_id,
+            String member_password,
+            String member_nickname,
+            ArrayList<String> member_maccountBook,
+            ArrayList<String> member_paccountBook) {
+        MemberNickName = member_nickname;
+        MemberId = member_id;
+        MemberPassword = member_password;
+        MemberMAccountBook = member_maccountBook;
+        MemberPAccountBook = member_paccountBook;
+    }
+
     public ArrayList<String> getMemberPAccountBook() {
         return MemberPAccountBook;
     }

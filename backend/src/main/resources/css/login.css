@@ -1,0 +1,37 @@
+/* style.css */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 20px;
+    border: 1px solid #dddddd;
+}
+
+h1 {
+    color: #333333;
+    font-family: Arial;
+}
+
+p {
+    color: #666666;
+    font-family: Arial;
+}
+
+hr {
+    border: 1px solid #dddddd;
+}
+
+body {
+    background-color: black;
+    color: white;
+}
+
+
+.verification-code {
+    color: #ff0000;
+    font-family: Arial;
+    font-size: 24px;
+    font-weight: bold;
+}

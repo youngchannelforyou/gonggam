@@ -329,17 +329,21 @@ public class AccountBookService {
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             // 데이터 추가
             String insertSql = "INSERT INTO " + tableName
-                    + " (Num, Tag, Type, Date, Title, Text, Image, Total_Budget, Used_Budget) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + " (Tag, Type, Date, Title, Text, Image, Total_Budget, Used_Budget) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
-                insertStmt.setString(2, newPost.getPostTag());
-                insertStmt.setBoolean(3, newPost.getPostType());
-                insertStmt.setString(4, newPost.getPostDate());
-                insertStmt.setString(5, newPost.getPostTitle());
-                insertStmt.setString(6, newPost.getPostText());
+                insertStmt.setString(1, newPost.getPostTag());
+                insertStmt.setBoolean(2, newPost.getPostType());
+                insertStmt.setString(3, newPost.getPostDate());
+                insertStmt.setString(4, newPost.getPostTitle());
+                insertStmt.setString(5, newPost.getPostText());
                 String joinedString = String.join(",", newPost.getPostImage());
-                insertStmt.setString(7, joinedString);
-                insertStmt.setLong(8, newPost.getPostTotalBudget());
-                insertStmt.setLong(9, newPost.getPostUsedBudget());
+                insertStmt.setString(6, joinedString);
+                Long usedBudget = 0L;
+                if (newPost.getPostTotalBudget() != null) {
+                    usedBudget = newPost.getPostTotalBudget().longValue();
+                }
+                insertStmt.setLong(7, usedBudget);
+                insertStmt.setLong(8, newPost.getPostUsedBudget());
                 insertStmt.executeUpdate();
 
                 System.out.println("데이터가 추가되었습니다.");

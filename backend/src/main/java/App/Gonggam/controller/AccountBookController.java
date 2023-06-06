@@ -5,6 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -14,9 +16,12 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -139,66 +144,79 @@ public class AccountBookController {
         }
     }
 
-    @PostMapping(path = "/addpost", produces = "application/json", consumes = "application/json")
-    public String AddPost(
-            @RequestBody String inputjson) {
+    // // 전송된 데이터 사용
+    // System.out.println("Tag: " + );
+    // System.out.println("Type: " + );
+    // System.out.println("Date: " + );
+    // System.out.println("Title: " + title);
+    // System.out.println("Text: " + text);
+    // System.out.println("File: " + file.getOriginalFilename());
+
+    // // 처리 로직 추가
+    // // 파일 저장
+
+    // file.transferTo(dest);
+
+    // // 처리 로직 추가
+
+    // return "success";
+    // }
+
+    // }
+
+    @PostMapping(path = "/addpost", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String AddPost(@RequestParam(value = "file", required = false) MultipartFile[] file,
+            @RequestParam("Budget") Long Used_Budget,
+            @RequestParam(value = "Text", required = false) String text,
+            @RequestParam("Title") String title,
+            @RequestParam("Date") String date,
+            @RequestParam("Type") String type,
+            @RequestParam("Table") String table,
+            @RequestParam(value = "Tag", required = false) String tag) {
         Post new_post = new Post();
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(inputjson);
-            new_post.setPostTag(jsonNode.get("Tag").asText());
-            new_post.setPostType(jsonNode.get("Type").asBoolean());
-            new_post.setPostDate(jsonNode.get("Date").asText());
-            new_post.setPostTitle(jsonNode.get("Title").asText());
-            new_post.setPostText(jsonNode.get("Text").asText());
-
+            // 테스트
+            new_post.setPostTag(tag);
+            new_post.setPostType(Boolean.parseBoolean(type));
+            new_post.setPostDate(date);
+            new_post.setPostTitle(title);
+            new_post.setPostText(text);
+            String uploadDir = "";
+            Path absolutePath = null;
             // String image = jsonNode.get("Image").as();
-            JsonNode imageNode = jsonNode.get("Image");
-            ArrayList<BufferedImage> imageList = new ArrayList<>();
+            try {
+                // 이미지 폴더 경로 설정
+                uploadDir = "./dataset/img";
 
-            if (imageNode.isArray()) {
-                for (JsonNode image : imageNode) {
-                    String imageData = image.asText();
-                    byte[] decodedData = Base64.getDecoder().decode(imageData);
+                absolutePath = Paths.get(uploadDir).toAbsolutePath();
 
-                    try (InputStream inputStream = new ByteArrayInputStream(decodedData)) {
-                        BufferedImage bufferedImage = ImageIO.read(inputStream);
-                        imageList.add(bufferedImage);
-                    } catch (IOException e) {
-                        // 이미지 변환 중 오류 처리
-                    }
+                File directory = new File(absolutePath.toString());
+                if (!directory.exists()) {
+                    directory.mkdirs(); // 폴더가 없으면 생성
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "error";
             }
-
             ArrayList<String> filePaths = new ArrayList<>();
 
-            for (int i = 0; i < imageList.size(); i++) {
-                BufferedImage image = imageList.get(i);
+            if (file != null && file.length > 0) {
+                for (MultipartFile img : file) {
+                    String fileName = img.getOriginalFilename();
+                    String filePath = absolutePath + "/" + fileName;
+                    File dest = new File(filePath);
 
-                try {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                    Date currentDate = new Date();
-                    String dateTime = dateFormat.format(currentDate);
-                    String fileName = "image_" + dateTime + "_" + i + ".png";
-
-                    String filePath = "./save/" + fileName;
-
-                    File file = new File(filePath);
-                    String absolutePath = file.getAbsolutePath();
-
-                    File outputFile = new File(filePath);
-                    ImageIO.write(image, "png", outputFile);
-
-                    filePaths.add(absolutePath);
-                } catch (IOException e) {
+                    filePaths.add(filePath);
+                    // 파일 저장
+                    img.transferTo(dest);
                 }
             }
 
             new_post.setPostImage(filePaths);
 
-            new_post.setPostUsedBudget(jsonNode.get("Used_Budget").asLong());
+            new_post.setPostUsedBudget(Used_Budget);
 
-            boolean check = service.AddPost(new_post, jsonNode.get("Table").asText());
+            boolean check = service.AddPost(new_post, table);
             if (check == true) {
                 return "정상처리 완료";
             } else {
