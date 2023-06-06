@@ -1,5 +1,8 @@
 package App.Gonggam.service;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.*;
 import App.Gonggam.model.Member;
 
@@ -157,7 +160,7 @@ public class MemberService {
         return id;
     }
 
-    public String sendEmail(String Email) {
+    public String sendEmail(String email) {
         try {
             // JavaMailSenderImpl 객체 생성
             JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -176,56 +179,120 @@ public class MemberService {
             props.put("mail.debug", "true");
 
             Random random = new Random();
-            StringBuilder IntverificationCode = new StringBuilder();
+            StringBuilder verificationCode = new StringBuilder();
 
             // 6자리의 랜덤 숫자 생성
             for (int i = 0; i < 6; i++) {
                 int digit = random.nextInt(10); // 0부터 9까지의 숫자
-                IntverificationCode.append(digit);
+                verificationCode.append(digit);
             }
 
-            String verificationCode = IntverificationCode.toString();
-
-            // // 이메일 메시지 생성
-            // SimpleMailMessage message = new SimpleMailMessage();
-            // message.setTo(Email);
-            // message.setFrom("youngchannel4u@outlook.com");
-            // message.setSubject("[공감] 회원가입 완료 안내 메일입니다.");
-            // message.setText("이메일 인증번호 입니다. \n" + msg);
             // 이메일 메시지 생성
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo("youngchannel4u@gmail.com");
+            helper.setTo(email);
             helper.setFrom("youngchannel4u@outlook.com");
             helper.setSubject("[공감] 회원가입 완료 안내 메일입니다.");
 
-            String htmlContent = "<table width='100%' style='border-collapse: collapse;'>"
-                    + "<tr>"
-                    + "<td align='center' style='padding: 20px; border: 1px solid #dddddd;'>"
-                    + "<h1 style='color: #333333; font-family: Arial;'>마음을 함께하는 공동 가계부 공감</h1>"
-                    + "<p style='color: #666666; font-family: Arial;'>안녕하세요!</p>"
-                    + "<p style='color: #666666; font-family: Arial;'>회원가입을 위한 인증번호를 안내해드립니다.</p>"
-                    + "<p style='color: #666666; font-family: Arial;'>이것은 소개글 입니다.</p>"
-                    + "<p style='color: #666666; font-family: Arial;'>이것은 소개글 입니다.</p>"
-                    + "<hr style='border: 1px solid #dddddd;'>"
-                    + "<p style='color: #ff0000; font-family: Arial; font-size: 24px; font-weight: bold;'>인증번호: <strong>"
-                    + verificationCode + "</strong></p>"
-                    + "<hr style='border: 1px solid #dddddd;'>"
-                    + "<p style='color: #666666; font-family: Arial;'>감사합니다!</p>"
-                    + "</td>"
-                    + "</tr>"
-                    + "</table>";
+            // HTML 파일 경로
+            ClassLoader classLoader = getClass().getClassLoader();
+            File htmlFile = new File(classLoader.getResource("html/login.html").getFile());
+            String htmlContent = new String(Files.readAllBytes(htmlFile.toPath()), StandardCharsets.UTF_8);
 
-            helper.setText(htmlContent, true);
+            // verificationCode 값으로 대체
+            String replacedHtmlContent = htmlContent.replace("{{verificationCode}}", verificationCode.toString());
+
+            // CSS 파일 경로
+            File cssFile = new File(classLoader.getResource("css/login.css").getFile());
+            String cssContent = new String(Files.readAllBytes(cssFile.toPath()), StandardCharsets.UTF_8);
+            String cssLink = "<style>" + cssContent + "</style>";
+
+            // Attach the CSS file and set the modified HTML as the email body
+            helper.setText(cssLink + replacedHtmlContent, true);
 
             // 이메일 전송
             mailSender.send(message);
 
-            return verificationCode;
+            return verificationCode.toString();
         } catch (Exception e) {
             // 이메일 전송 실패 시 예외 처리
             e.printStackTrace();
             return "이메일 전송 실패";
         }
     }
+
+    // public String sendEmail(String Email) {
+    // try {
+    // // JavaMailSenderImpl 객체 생성
+    // JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+    // // Gmail SMTP 설정
+    // mailSender.setHost("smtp.office365.com");
+    // mailSender.setPort(587);
+    // mailSender.setUsername("youngchannel4u@outlook.com");
+    // mailSender.setPassword("gkdmscksdud22");
+
+    // // Gmail SMTP 속성 설정
+    // Properties props = mailSender.getJavaMailProperties();
+    // props.put("mail.transport.protocol", "smtp");
+    // props.put("mail.smtp.auth", "true");
+    // props.put("mail.smtp.starttls.enable", "true");
+    // props.put("mail.debug", "true");
+
+    // Random random = new Random();
+    // StringBuilder IntverificationCode = new StringBuilder();
+
+    // // 6자리의 랜덤 숫자 생성
+    // for (int i = 0; i < 6; i++) {
+    // int digit = random.nextInt(10); // 0부터 9까지의 숫자
+    // IntverificationCode.append(digit);
+    // }
+
+    // String verificationCode = IntverificationCode.toString();
+
+    // // // 이메일 메시지 생성
+    // // SimpleMailMessage message = new SimpleMailMessage();
+    // // message.setTo(Email);
+    // // message.setFrom("youngchannel4u@outlook.com");
+    // // message.setSubject("[공감] 회원가입 완료 안내 메일입니다.");
+    // // message.setText("이메일 인증번호 입니다. \n" + msg);
+    // // 이메일 메시지 생성
+    // MimeMessage message = mailSender.createMimeMessage();
+    // MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+    // helper.setTo("youngchannel4u@gmail.com");
+    // helper.setFrom("youngchannel4u@outlook.com");
+    // helper.setSubject("[공감] 회원가입 완료 안내 메일입니다.");
+
+    // String htmlContent = "<table width='100%' style='border-collapse:
+    // collapse;'>"
+    // + "<tr>"
+    // + "<td align='center' style='padding: 20px; border: 1px solid #dddddd;'>"
+    // + "<h1 style='color: #333333; font-family: Arial;'>마음을 함께하는 공동 가계부 공감</h1>"
+    // + "<p style='color: #666666; font-family: Arial;'>안녕하세요!</p>"
+    // + "<p style='color: #666666; font-family: Arial;'>회원가입을 위한 인증번호를
+    // 안내해드립니다.</p>"
+    // + "<p style='color: #666666; font-family: Arial;'>이것은 소개글 입니다.</p>"
+    // + "<p style='color: #666666; font-family: Arial;'>이것은 소개글 입니다.</p>"
+    // + "<hr style='border: 1px solid #dddddd;'>"
+    // + "<p style='color: #ff0000; font-family: Arial; font-size: 24px;
+    // font-weight: bold;'>인증번호: <strong>"
+    // + verificationCode + "</strong></p>"
+    // + "<hr style='border: 1px solid #dddddd;'>"
+    // + "<p style='color: #666666; font-family: Arial;'>감사합니다!</p>"
+    // + "</td>"
+    // + "</tr>"
+    // + "</table>";
+
+    // helper.setText(htmlContent, true);
+
+    // // 이메일 전송
+    // mailSender.send(message);
+
+    // return verificationCode;
+    // } catch (Exception e) {
+    // // 이메일 전송 실패 시 예외 처리
+    // e.printStackTrace();
+    // return "이메일 전송 실패";
+    // }
+    // }
 }
