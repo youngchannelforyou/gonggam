@@ -1,16 +1,22 @@
 import React from 'react';
 import { css } from '@emotion/css';
 
-function NormalTypeInput({ labelText, onChangeFuc, styles }) {
+function NormalTypeInput({ labelText, onChangeFuc, value, styles }) {
   return (
     <div className={inputForm}>
       <label className={inputLabel}>{labelText}</label>
-      <input name={labelText} className={idInput} onChange={onChangeFuc} />
+      <input name={labelText} className={idInput} value={value} onChange={onChangeFuc} />
     </div>
   );
 }
 
 export default NormalTypeInput;
+
+NormalTypeInput.defaultProps = {
+  labelText: "loading...",
+  onChangeFuc: () => { },
+  styles: css``
+}
 
 
 const inputForm = css`
@@ -34,6 +40,7 @@ const idInput = css`
   font-size: 14px;
   color: white;
   background-color: #242B29;
+  filter: drop-shadow(0 0 15rem white);
   border-radius: 5px;
   margin-bottom: 17px;
 `;

@@ -9,13 +9,14 @@ function AccountBookPage(props) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (receiptImg) {
             await sendReceipt(receiptImg);
             alert('전송되었습니다.');
         }
     };
 
-    const sendReceipt = async () => {
+    const sendReceipt = async (receiptImg) => {
         const formData = new FormData();
         formData.append("file", receiptImg);
         formData.append("file", receiptImg);

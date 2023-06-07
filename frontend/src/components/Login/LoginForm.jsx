@@ -2,35 +2,33 @@ import { useState } from 'react';
 import { css } from '@emotion/css';
 import NormalTypeInput from '../Form/NormalTypeInput';
 import NormalTypeButton from '../Form/NormalTypeButton';
-import Logo from '../../assets/gonggamLogoRemove.png'
-import Logo2 from '../../assets/logo.png'
+import imgLogo from '../../assets/imgLogo.png'
+import textLogo from '../../assets/textLogo.png'
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
-  const [id, setId] = useState('test1');
-  const [pw, setPw] = useState('1234');
+  const [id, setId] = useState('');
+  const [pw, setPw] = useState('');
+  const movePage = useNavigate();
+
 
   function onChange(e) {
     const {
       target: { name, value },
     } = e;
 
-    if (name === 'id') {
+    if (name === '아이디') {
       setId(value);
-    } else if (name === 'pw') {
+    } else if (name === '비밀번호') {
       setPw(value);
     }
   }
 
-
-  console.log(id);
-  console.log(pw);
-
   async function requestLogin(e) {
     e.preventDefault();
-    console.log(e);
 
-    console.log(id);
-    console.log(pw);
+    console.log(`id: ${id}`);
+    console.log(`pw: ${pw}`);
     const responseData = await fetch('http://localhost:8080/Member/login', {
       method: 'POST',
       body: JSON.stringify({
@@ -42,43 +40,41 @@ function LoginForm() {
         'Accept': 'application/json',
       }
     })
-    const data = await responseData.json();
-    console.log(data);
+    try {
+      await responseData.json()
+        .then((data) => {
+          console.log(data);
+          if (data.status === "404") {
+            console.log('frontend_404');
+          } else if (data.status === "403") {
+            console.log('frontend_403');
+          } else {
+            movePage('/main');
+          }
+        })
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async function requestJoin() {
-    const data = await fetch('http://localhost:8080/Member/signupmember', {
-      method: 'POST',
-      body: JSON.stringify({
-        "Id": "test",
-        "Password": "12341234",
-        "NickName": "가가가"
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      }
-    });
-
-    console.log(data);
+    movePage('/join')
   }
 
   return (
     <div className={container}>
       <form>
         <div className={mainTitle}>
-          <img src={Logo} alt='draw' />
-          <img src={Logo2} alt='img' />
+          <img src={imgLogo} alt='draw' />
+          <img src={textLogo} alt='img' />
         </div>
         <div className={inputWrapper}>
-          <NormalTypeInput labelText='아이디' onChangeFuc={onChange} />
-          <NormalTypeInput labelText='비밀번호' onChangeFuc={onChange} />
+          <NormalTypeInput labelText='아이디' value={id} onChangeFuc={onChange} />
+          <NormalTypeInput labelText='비밀번호' value={pw} onChangeFuc={onChange} />
         </div>
         <div className={buttonWrapper}>
-          <button type='button' onClick={requestLogin}>ㅇㅇㅇㅇㅇ</button>
-          <NormalTypeButton title='로그인' onChangeFuc={requestLogin} styles={loginButton} />
-          <NormalTypeButton title='회원가입' onChangeFuc={requestJoin} styles={joinButton} />
-          <button type='button' onClick={requestJoin}>회원가입</button>
+          <NormalTypeButton title='로그인' onClickFuc={requestLogin} styles={loginButton} />
+          <NormalTypeButton title='회원가입' onClickFuc={requestJoin} styles={joinButton} />
         </div>
       </form >
     </div >
@@ -86,6 +82,8 @@ function LoginForm() {
 }
 
 export default LoginForm;
+
+
 
 const container = css`
   width: 414px;

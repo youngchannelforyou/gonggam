@@ -9,6 +9,12 @@ function NormalTypeButton({ onClickFuc, title, styles }) {
 
 export default NormalTypeButton;
 
+NormalTypeButton.defaultPorps = {
+  onClickFuc: () => { },
+  title: 'loading...',
+  styles: css``
+}
+
 const basicButton = css`
   display: block;
   width: 190px;

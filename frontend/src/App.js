@@ -24,6 +24,8 @@ function App() {
 export default App;
 
 const container = css`
+  width: 100%;
   height: 100%;
-  background-color: #121416;
+  padding: 0;
+  margin: 0;
 `;
