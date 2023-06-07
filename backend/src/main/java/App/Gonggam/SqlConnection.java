@@ -76,6 +76,7 @@ public class SqlConnection {
                     + "SubManager TEXT, "
                     + "Budget BIGINT, "
                     + "Member TEXT, "
+                    + "IconImage TEXT, "
                     + "PRIMARY KEY (Name))";
             try (PreparedStatement createTableStmt = conn.prepareStatement(createAccountBookTableSql)) {
                 createTableStmt.executeUpdate();
