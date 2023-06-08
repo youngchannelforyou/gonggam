@@ -143,6 +143,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
     }
 
+    @PostMapping(path = "/getmemberinfo", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> getMemberInfo(@RequestBody String inputjson,
             @CookieValue("memberId") String memberId) {
 
