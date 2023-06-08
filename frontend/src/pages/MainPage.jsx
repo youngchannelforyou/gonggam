@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { css } from '@emotion/css';
+import React, { useEffect, useState } from 'react';
+import { css, keyframes } from '@emotion/css';
 import imgLogo from '../assets/imgLogo.png';
 import textLogo from '../assets/textLogo.png';
 import AccountSlider from '../components/AccountList/AccountSlider.jsx'
@@ -8,8 +8,27 @@ import MakeNewCalcPopup from '../components/Main/MakeNewCalcPopup';
 function MainPage(props) {
     const [value, setValue] = useState('');
     const [isPopup, setIsPopup] = useState(false);
+    const [memberInfo, setMemberInfo] = useState(null);
+    const [loadingDots, setLoadingDots] = useState('');
 
-    const userName = '홍길동';
+    useEffect(() => {
+        getMemberInfo();
+    }, [])
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setLoadingDots(loadingDots => {
+                if (loadingDots === '...') {
+                    return '';
+                }
+                return loadingDots + '.';
+            });
+        }, 500);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
 
     async function getMemberInfo() {
         await fetch('http://localhost:8080/Member/getmemberinfo', {
@@ -25,32 +44,10 @@ function MainPage(props) {
         })
             .then((responseData) => responseData.json())
             .then((data) => {
+                setTimeout(() => { setMemberInfo(data); }, 3000);
                 console.log(data);
             });
     }
-
-    getMemberInfo();
-
-    async function getMemberInfo() {
-        await fetch('http://localhost:8080/Member/getmemberinfo', {
-            method: 'POST',
-            body: JSON.stringify({
-                "book": value
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            credentials: 'include' // 서버로 쿠키를 자동으로 전송합니다.
-
-        })
-            .then((responseData) => responseData.json())
-            .then((data) => {
-                console.log(data);
-            });
-    }
-
-    getMemberInfo();
 
     function onChange(e) {
         if (e.target.name === 'search')
@@ -86,31 +83,44 @@ function MainPage(props) {
 
     return (
         <div className={container}>
-            {isPopup ? <MakeNewCalcPopup setIsPopup={setIsPopup} /> : <></>}
-            <div className={header}>
-                <p className={userNameTag}>{userName}님</p>
-                <button className={logoutButton} onClick={logout}>로그아웃</button>
-            </div>
-            <div className={main}>
-                <div className={titleLogoWrapper}>
-                    <img src={textLogo} alt='text_ogo' />
-                </div>
-                <div className={searchInputWrapper}>
-                    <input className={searchInput} name='search' type='search' value={value} onChange={onChange} onKeyPress={handleOnKeyPress} />
-                    <button className={submitButton} name='submit' type='submit' onClick={requestSearch}>
-                        <img src={imgLogo} alt='search' />
-                    </button>
-                </div>
+            {memberInfo?.memberNickName ?
+                <>
+                    {isPopup ? <MakeNewCalcPopup setIsPopup={setIsPopup} /> : <></>}
+                    <div className={header}>
+                        <p className={userNameTag}>
+                            {memberInfo.memberNickName}님</p>
+                        <button className={logoutButton} onClick={logout}>로그아웃</button>
+                    </div>
+                    <div className={main}>
+                        <div className={titleLogoWrapper}>
+                            <img src={textLogo} alt='text_ogo' />
+                        </div>
+                        <div className={searchInputWrapper}>
+                            <input className={searchInput} name='search' type='search' value={value} onChange={onChange} onKeyPress={handleOnKeyPress} />
+                            <button className={submitButton} name='submit' type='submit' onClick={requestSearch}>
+                                <img src={imgLogo} alt='search' />
+                            </button>
+                        </div>
 
-                <div className={makeNewCalcButtonWrapper}>
-                    <button className={makeNewCalcButton} type='button' onClick={() => setIsPopup(!isPopup)}>새 가계부 만들기</button>
+                        <div className={makeNewCalcButtonWrapper}>
+                            <button className={makeNewCalcButton} type='button' onClick={() => setIsPopup(!isPopup)}>새 가계부 만들기</button>
+                        </div>
+                    </div>
+                    <div className={accountBookList}>
+                        <AccountSlider />
+                        <AccountSlider />
+                    </div>
+                </>
+                :
+                <div className={loadingWrapper}>
+                    <div className={loadingImg}>
+                        <img src={imgLogo} alt='loading' />
+                    </div>
+                    <div className={loadingText}>
+                        <h1>로딩중{loadingDots}</h1>
+                    </div>
                 </div>
-            </div>
-            <div className={accountBookList}>
-                <AccountSlider />
-                <AccountSlider />
-            </div>
-
+            }
         </div>
     );
 }
@@ -220,4 +230,41 @@ const accountBookList = css`
 
     width: 607.5px;
     margin: 0 auto 75px;
+`;
+
+const loadingWrapper = css`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    width: 300px;
+    margin: auto;
+
+    color: white;
+`;
+
+const loadingText = css`
+    width: 100%;
+    margin-top: 50px;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bolder;
+`;
+
+const rotate_image = keyframes`
+    100% {
+        transform: rotate(360deg);
+    }
+`;
+
+const loadingImg = css`
+    top: 10.5px;
+    right: 14.25px;
+    width: 300px;
+    height: 300px;
+    scale: 1;
+    img {
+        width: 100%;
+    }
+    animation: ${rotate_image} 2s linear infinite;
 `;

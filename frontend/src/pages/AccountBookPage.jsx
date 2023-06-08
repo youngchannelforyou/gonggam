@@ -28,12 +28,10 @@ function AccountBookPage(props) {
         formData.append("Budget", 123);
         formData.append("Table", "testbook1");
 
-        console.log(formData)
-        const txt = "test";
+        console.log(formData);
+
         await fetch("http://localhost:8080/AccountBook/addpost", {
             method: "POST",
-            headers: {
-            },
             body: formData,
             headers: {
                 'Accept': 'application/json',
