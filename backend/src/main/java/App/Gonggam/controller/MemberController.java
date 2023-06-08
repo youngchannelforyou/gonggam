@@ -19,6 +19,7 @@ import com.mysql.cj.xdevapi.SqlResult;
 
 import App.Gonggam.model.Member;
 import App.Gonggam.service.MemberService;
+import jakarta.servlet.http.Cookie;
 
 @RestController
 @RequestMapping(value = "/Member")
@@ -106,9 +107,19 @@ public class MemberController {
                     try {
                         try {
                             HttpHeaders headers = new HttpHeaders();
-                            headers.add("Set-Cookie", "memberId=" + checkMember.getMemberToken());
+                            Cookie cookie = new Cookie("memberId", checkMember.getMemberToken());
+                            cookie.setMaxAge(3600); // 쿠키의 유효 기간을 초 단위로 설정 (예: 1시간)
+                            cookie.setPath("/"); // 쿠키의 전송 경로를 루트 경로로 설정
 
-                            return ResponseEntity.ok().headers(headers).build();
+                            // cookie.setDomain(".example.com"); // 쿠키의 도메인을 설정 (예: .example.com, 서브도메인 포함)
+                            // cookie.setSecure(true); // 쿠키를 보안 연결(HTTPS)에서만 전송하도록 설정
+                            // cookie.setHttpOnly(true); // 클라이언트 스크립트에서 쿠키에 접근하지 못하도록 설정
+                            // headers.add("Access-Control-Allow-Origin", "http://localhost:3000");
+                            headers.add("Access-Control-Allow-Credentials", "true");
+                            headers.add(HttpHeaders.SET_COOKIE,
+                                    cookie.getName() + "=" + cookie.getValue());
+
+                            return ResponseEntity.ok().headers(headers).body("{\"result\": \"success\"}");
                         } catch (Exception e) {
                             System.out.println("쿠키에러");
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("쿠키에러");

@@ -6,9 +6,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import App.config.WebConfig;
 
+@Import(WebConfig.class)
 @SpringBootApplication
 @ComponentScan(basePackages = "App.Gonggam.controller")
-@Import(WebConfig.class)
 public class GonggamApplication {
 	public static void main(String[] args) {
 		SqlConnection SC = new SqlConnection();

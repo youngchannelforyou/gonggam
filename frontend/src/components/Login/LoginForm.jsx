@@ -38,7 +38,7 @@ function LoginForm() {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      }
+      },
     })
     try {
       await responseData.json()
