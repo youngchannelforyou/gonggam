@@ -16,6 +16,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("https://gonggam.vercel.app/");
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://gonggam.vercel.app");
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
