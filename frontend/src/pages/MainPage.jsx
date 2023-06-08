@@ -31,6 +31,27 @@ function MainPage(props) {
 
     getMemberInfo();
 
+    async function getMemberInfo() {
+        await fetch('http://localhost:8080/Member/getmemberinfo', {
+            method: 'POST',
+            body: JSON.stringify({
+                "book": value
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include' // 서버로 쿠키를 자동으로 전송합니다.
+
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
+            });
+    }
+
+    getMemberInfo();
+
     function onChange(e) {
         if (e.target.name === 'search')
             setValue(e.target.value);

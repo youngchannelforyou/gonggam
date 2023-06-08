@@ -215,7 +215,22 @@ public class MemberService {
                 selectStmt.setString(1, email);
                 selectStmt.setString(2, code);
                 ResultSet resultSet = selectStmt.executeQuery();
-                return resultSet.next(); // 결과가 존재하면 true, 그렇지 않으면 false 반환
+
+                if (resultSet.next()) {
+                    // Matching row found, update Verified_At column
+                    int id = resultSet.getInt("Id");
+                    String updateSql = "UPDATE Team5_SignUp SET Verified_At = NOW() WHERE Id = ?";
+                    try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                        updateStmt.setInt(1, id);
+                        int rowsAffected = updateStmt.executeUpdate();
+                        return rowsAffected > 0;
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                } else {
+                    return false; // No matching row found
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
@@ -242,7 +257,7 @@ public class MemberService {
 
                 if (count > 0) {
                     // 이메일이 이미 존재하는 경우 코드 업데이트
-                    String updateSql = "UPDATE Team5_SignUp SET Code = ? WHERE Email = ?";
+                    String updateSql = "UPDATE Team5_SignUp SET Code = ?, Updated_At = NOW() WHERE Email = ?";
                     try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                         updateStmt.setString(1, code);
                         updateStmt.setString(2, email);
@@ -283,8 +298,8 @@ public class MemberService {
             // Gmail SMTP 설정
             mailSender.setHost("smtp.office365.com");
             mailSender.setPort(587);
-            mailSender.setUsername("youngchannel4u@outlook.com");
-            mailSender.setPassword("gkdmscksdud22");
+            mailSender.setUsername("OfficialGongGam@outlook.com");
+            mailSender.setPassword("gonggam123");
 
             // Gmail SMTP 속성 설정
             Properties props = mailSender.getJavaMailProperties();
@@ -306,7 +321,7 @@ public class MemberService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(email);
-            helper.setFrom("youngchannel4u@outlook.com");
+            helper.setFrom("OfficialGongGam@outlook.com");
             helper.setSubject("[공감] 회원가입 완료 안내 메일입니다.");
 
             // HTML 파일 경로
@@ -333,6 +348,27 @@ public class MemberService {
             // 이메일 전송 실패 시 예외 처리
             e.printStackTrace();
             return "이메일 전송 실패";
+        }
+    }
+
+    public boolean checkVerified(String email) {
+        String selectSql = "SELECT * FROM Team5_SignUp WHERE Email = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setString(1, email);
+                ResultSet resultSet = selectStmt.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getObject("Verified_At") != null;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
