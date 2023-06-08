@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 import App.config.CorsConfig;
-import App.config.WebConfig;
 
 @Import(CorsConfig.class)
 @SpringBootApplication
