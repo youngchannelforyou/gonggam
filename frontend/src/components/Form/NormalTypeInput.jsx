@@ -4,7 +4,7 @@ import { css, cx } from '@emotion/css';
 function NormalTypeInput({ labelText, onChangeFuc, value, styles, type, children }) {
   return (
     <div className={cx(inputForm, styles)}>
-      <label className={inputLabel}>{labelText}</label>
+      {labelText && <label className={inputLabel}>{labelText}</label>}
       <div className={inputWrapper}>
         <input name={labelText} className={idInput} value={value} onChange={onChangeFuc} type={type} />
         {children}
