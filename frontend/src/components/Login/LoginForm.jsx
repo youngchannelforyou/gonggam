@@ -38,7 +38,8 @@ function LoginForm() {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      }
+      },
+      credentials: 'same-origin', // 쿠키 전송을 위해 credentials 옵션을 include로 설정
     })
     try {
       await responseData.json()
