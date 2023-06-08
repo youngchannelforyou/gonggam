@@ -39,7 +39,7 @@ public class MemberController {
                     .body("{\"message\": \"success\", \"status\": \"200\"}");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"message\": \"false create code\", \"status\": \"500\"}");
+                    .body("{\"message\": \"fail create code\", \"status\": \"500\"}");
         }
     }
 
@@ -61,22 +61,28 @@ public class MemberController {
                     .body("{\"message\": \"success\", \"status\": \"200\"}");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"message\": \"false check code\", \"status\": \"500\"}");
+                    .body("{\"message\": \"fail check code\", \"status\": \"500\"}");
         }
     }
 
-    // http://localhost:8080/Member/signupmember?name=유찬영&nick_name=UUU&Age=17&Email=youngchannl4u@gmail.com&password=12341234
     @PostMapping(path = "/signupmember", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> SignUpMember(
-            @RequestBody Member new_member) {
+    public ResponseEntity<String> SignUpMember(@RequestBody Member new_member) {
+        String memberId = new_member.getMemberId();
 
-        boolean check = memberservice.AddMember(new_member);
-        if (check == true) {
-            return ResponseEntity.ok()
-                    .body("{\"message\": \"success\", \"status\": \"200\"}");
+        // Check if Verified_At is not null for the matching email in Team5_SignUp table
+        boolean isVerified = memberservice.checkVerified(memberId);
+        if (isVerified) {
+            boolean check = memberservice.AddMember(new_member);
+            if (check) {
+                return ResponseEntity.ok()
+                        .body("{\"message\": \"success\", \"status\": \"200\"}");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"fail add member\", \"status\": \"500\"}");
+            }
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"message\": \"false add member\", \"status\": \"500\"}");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("{\"message\": \"email not verified\", \"status\": \"400\"}");
         }
     }
 

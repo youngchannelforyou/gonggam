@@ -42,7 +42,8 @@ public class SqlConnection {
                     + "Email VARCHAR(320) NOT NULL, "
                     + "Code VARCHAR(100) NOT NULL, "
                     + "Updated_At DATETIME DEFAULT NULL, "
-                    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+                    + "Verified_At DATETIME DEFAULT NULL, "
+                    + "Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
             try (PreparedStatement createTableStmt = conn.prepareStatement(signupSql)) {
                 createTableStmt.executeUpdate();
@@ -59,11 +60,12 @@ public class SqlConnection {
                     System.out.println("Team5_SignUp 테이블이 생성되었습니다.");
                 }
             }
+
             // 스케줄링된 작업 생성
             String createEventSql = "CREATE EVENT IF NOT EXISTS delete_rows_event "
                     + "ON SCHEDULE EVERY 1 MINUTE "
                     + "DO "
-                    + "DELETE FROM Team5_SignUp WHERE Created_At < NOW() - INTERVAL 3 MINUTE AND Updated_At IS NULL";
+                    + "DELETE FROM Team5_SignUp WHERE Created_At < NOW() - INTERVAL 24 HOUR AND Updated_At IS NULL";
             try (PreparedStatement createEventStmt = conn.prepareStatement(createEventSql)) {
                 createEventStmt.executeUpdate();
             }
