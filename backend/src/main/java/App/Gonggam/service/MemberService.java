@@ -43,6 +43,23 @@ public class MemberService {
         return false;
     }
 
+    public boolean LogoutMember(String token) {
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            if (token != null) {
+                String updateSql = "UPDATE Team5_Member SET Token = NULL WHERE Token = ?";
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                    updateStmt.setString(1, token);
+                    int rowsAffected = updateStmt.executeUpdate();
+                    return rowsAffected > 0; // 토큰 삭제 성공 여부 반환
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // 토큰 삭제 실패
+    }
+
     public Member LoginMember(String Id) {
         Member member = null;
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {

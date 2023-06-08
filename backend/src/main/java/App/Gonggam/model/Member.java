@@ -105,7 +105,7 @@ public class Member {
         this.MemberMAccountBook.add(accountBook);
     }
 
-    public void delMember_accountBook(Integer loc) {
+    public void delMember_accountBook(String loc) {
         this.MemberMAccountBook.remove(loc);
     }
 
