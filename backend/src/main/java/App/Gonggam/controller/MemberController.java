@@ -41,9 +41,9 @@ public class MemberController {
         } catch (Exception e) {
         }
         if (SqlResult != null) {
-            return ResponseEntity.ok().body("코드 생성 완료");
+            return ResponseEntity.ok().body("success");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 : 코드 생성 실패");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Making Email code false");
         }
     }
 
@@ -115,7 +115,7 @@ public class MemberController {
                             // cookie.setSecure(true); // 쿠키를 보안 연결(HTTPS)에서만 전송하도록 설정
                             // cookie.setHttpOnly(true); // 클라이언트 스크립트에서 쿠키에 접근하지 못하도록 설정
                             // headers.add("Access-Control-Allow-Origin", "http://localhost:3000");
-                            headers.add("Access-Control-Allow-Credentials", "true");
+                            // headers.add("Access-Control-Allow-Credentials", "true");
                             headers.add(HttpHeaders.SET_COOKIE,
                                     cookie.getName() + "=" + cookie.getValue());
 

@@ -4,9 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+
+import App.config.CorsConfig;
 import App.config.WebConfig;
 
-@Import(WebConfig.class)
+@Import(CorsConfig.class)
 @SpringBootApplication
 @ComponentScan(basePackages = "App.Gonggam.controller")
 public class GonggamApplication {
