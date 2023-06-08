@@ -1,19 +1,10 @@
 package App.Gonggam.controller;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,9 +33,9 @@ public class AccountBookController {
     MemberService mService = new MemberService();
 
     @PostMapping(path = "/addBook", produces = "application/json", consumes = "application/json")
-    public String AddBook(
-            @RequestBody String inputjson) {
+    public ResponseEntity<String> AddBook(@RequestBody String inputjson) {
         AccountBook new_book = new AccountBook();
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
@@ -55,14 +46,20 @@ public class AccountBookController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         if (new_book.getAccountBookMainManager() == null) {
-            return "토큰실패";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail found Manager token\", \"status\": \"204\"}");
         }
+
         boolean check = service.addBook(new_book);
+
         if (check == true) {
-            return "정상처리 완료";
+            return ResponseEntity.ok()
+                    .body("{\"message\": \"success\", \"status\": \"200\"}");
         } else {
-            return "실패";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail check code\", \"status\": \"500\"}");
         }
     }
 
@@ -89,7 +86,8 @@ public class AccountBookController {
         } catch (JsonProcessingException e) {
             System.out.println("서버 오류");
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail check code\", \"status\": \"500\"}");
         }
     }
 
@@ -117,7 +115,8 @@ public class AccountBookController {
         } catch (JsonProcessingException e) {
             System.out.println("서버 오류");
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail check code\", \"status\": \"500\"}");
         }
     }
 
@@ -165,7 +164,7 @@ public class AccountBookController {
     // }
 
     @PostMapping(path = "/addpost", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String AddPost(@RequestParam(value = "file", required = false) MultipartFile[] file,
+    public ResponseEntity<String> AddPost(@RequestParam(value = "file", required = false) MultipartFile[] file,
             @RequestParam("Budget") Long Used_Budget,
             @RequestParam(value = "Text", required = false) String text,
             @RequestParam("Title") String title,
@@ -196,7 +195,8 @@ public class AccountBookController {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return "error";
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"fail check code\", \"status\": \"500\"}");
             }
             ArrayList<String> filePaths = new ArrayList<>();
 
@@ -218,14 +218,17 @@ public class AccountBookController {
 
             boolean check = service.AddPost(new_post, table);
             if (check == true) {
-                return "정상처리 완료";
+                return ResponseEntity.ok()
+                        .body("{\"message\": \"success\", \"status\": \"200\"}");
             } else {
-                return "실패";
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"server error2\", \"status\": \"500\"}");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "실패";
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("{\"message\": \"server error3\", \"status\": \"500\"}");
     }
 
     @PostMapping(path = "/addmember", produces = "application/json", consumes = "application/json")

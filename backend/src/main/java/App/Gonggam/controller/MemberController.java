@@ -118,7 +118,7 @@ public class MemberController {
                             cookie.setMaxAge(3600);
                             headers.add(HttpHeaders.SET_COOKIE,
                                     cookie.getName() + "=" + cookie.getValue()
-                                            + "; path=/; secure; httpOnly; SameSite=Lax");
+                                            + "; path=/; secure; httpOnly; SameSite=None");
 
                             return ResponseEntity.ok().headers(headers)
                                     .body("{\"message\": \"success\", \"status\": \"200\"}");
@@ -166,6 +166,34 @@ public class MemberController {
                 // Member 객체를 찾지 못한 경우에 대한 처리
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("{\"message\": \"not found Member\", \"status\": \"204\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"error\", \"status\": \"500\"}");
+        }
+    }
+
+    @PostMapping(path = "/logout", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> Logout(@RequestBody String inputjson,
+            @CookieValue("memberId") String Token) {
+
+        try {
+            if (Token != null) {
+                System.out.println(Token);
+                Boolean result = memberservice.LogoutMember(Token);
+
+                if (result == true) {// JSON 형식의 Member 객체를 응답으로 전송
+                    return ResponseEntity.ok()
+                            .body("{\"message\": \"success\", \"status\": \"200\"}");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("{\"message\": \"error0\", \"status\": \"500\"}");
+                }
+            } else {
+                // Member 객체를 찾지 못한 경우에 대한 처리
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("{\"message\": \"No Token\", \"status\": \"204\"}");
             }
         } catch (Exception e) {
             e.printStackTrace();
