@@ -17,12 +17,12 @@ NormalTypeButton.defaultPorps = {
 
 const basicButton = css`
   display: block;
-  width: 190px;
-  height: 48px;
-  margin: 0 auto 20px;
-  padding: 14px;
+  width: 142.5px;
+  height: 36px;
+  margin: 0 auto 15px;
+  padding: 10.5px;
   border: 1px #1C1E1F solid;
   border-radius: 10px;
 
-  font-size: 16px;
+  font-size: 12px;
 `;

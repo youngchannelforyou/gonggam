@@ -22,24 +22,25 @@ export default LoginPage;
 
 const container = css`
   position: absolute;
-  top: 50%;
+  top: 100px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
 `;
 
 
 const titleWrapper = css`
+  width: 405px;
   text-align: center;
 `;
 
 const mainTitle = css`
-  font-size: 48px;
+  font-size: 36px;
   color: white;
-  margin-bottom: 29px;
+  margin-bottom: 21.75px;
 `;
 
 const subTitle = css`
-  font-size: 25px;
+  font-size: 18.75px;
   color: #7a7a7a;
-  margin-bottom: 102px;
+  margin-bottom: 76.5px;
 `;

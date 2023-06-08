@@ -30,6 +30,6 @@ const title = css`
 const listSlider = css`
     display: flex;
     flex-wrap: wrap;
-    gap: 30px;
-    margin-top: 50px;
+    gap: 22.5px;
+    margin-top: 37.5px;
 `;

@@ -16,8 +16,8 @@ export default JoinPage;
 
 const container = css`
   position: absolute;
-  top: 50%;
+  top: 100px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
 `;
 

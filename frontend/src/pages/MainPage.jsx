@@ -11,7 +11,25 @@ function MainPage(props) {
 
     const userName = '홍길동';
 
-    console.log(isPopup);
+    async function getMemberInfo() {
+        await fetch('http://localhost:8080/Member/getmemberinfo', {
+            method: 'POST',
+            body: JSON.stringify({
+                "book": value
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // 쿠키 전송을 위해 credentials 옵션을 include로 설정
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
+            });
+    }
+
+    getMemberInfo();
 
     function onChange(e) {
         if (e.target.name === 'search')
@@ -37,7 +55,7 @@ function MainPage(props) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-            }
+            },
         })
             .then((responseData) => responseData.json())
             .then((data) => {
@@ -87,7 +105,7 @@ const container = css`
 const header = css`
     display: flex;
     float: right;
-    font-size: 20px;
+    font-size: 15px;
 `;
 
 const userNameTag = css`
@@ -95,19 +113,19 @@ const userNameTag = css`
 `;
 
 const logoutButton = css`
-    margin-left: 22px;
-    margin-right: 42px;
+    margin-left: 16.5px;
+    margin-right: 31.5px;
     color: #A5A6A7;
 `;
 
 const main = css`
-    width: 698px;
+    width: 523.5px;
     margin: 0 auto;
 `;
 
 const titleLogoWrapper = css`
-    width: 200px;
-    margin: 145px auto 0;
+    width: 150px;
+    margin: 108.75px auto 0;
 
     clear: both;
 
@@ -118,26 +136,26 @@ const titleLogoWrapper = css`
 
 const searchInputWrapper = css`
     position: relative;
-    margin-top: 20px;
+    margin-top: 15px;
 `;
 
 const searchInput = css`
     width: 100%;
-    height: 58px;
+    height: 43.5px;
     border-radius: 50px;
-    padding: 19px;
-    padding-right: 62px;
-    font-size: 16px;
-    line-height: 20px;
+    padding: 14.25px;
+    padding-right: 46.5px;
+    font-size: 12px;
+    line-height: 15px;
 `;
 
 
 const submitButton = css`
     position: absolute;
-    top: 14px;
-    right: 19px;
-    width: 30px;
-    height: 30px;
+    top: 10.5px;
+    right: 14.25px;
+    width: 22.5px;
+    height: 22.5px;
     scale: 1;
     img {
         width: 100%;
@@ -147,14 +165,14 @@ const submitButton = css`
 
     img:hover {
         scale: 1.5;
-    transform: rotate(3600deg);
+        transform: rotate(3600deg);
     }
 `;
 
 const makeNewCalcButtonWrapper = css`
-    width: 144px;
-    height: 48px;
-    margin: 36px auto 0;
+    width: 108px;
+    height: 36px;
+    margin: 27px auto 0;
 `;
 
 const makeNewCalcButton = css`
@@ -164,7 +182,7 @@ const makeNewCalcButton = css`
     border-radius: 50px;
     background-color: #1E1E20;
 
-    font-size: 15px;
+    font-size: 11.25px;
     color: #A5A6A7;
 
     &:hover {
@@ -177,8 +195,8 @@ const makeNewCalcButton = css`
 const accountBookList = css`
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 37.5px;
 
-    width: 810px;
-    margin: 0 auto 100px;
+    width: 607.5px;
+    margin: 0 auto 75px;
 `;

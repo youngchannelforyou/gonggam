@@ -29,7 +29,7 @@ function LoginForm() {
 
     console.log(`id: ${id}`);
     console.log(`pw: ${pw}`);
-    const responseData = await fetch('http://localhost:8080/Member/login', {
+    await fetch('http://localhost:8080/Member/login', {
       method: 'POST',
       body: JSON.stringify({
         Id: id,
@@ -41,21 +41,17 @@ function LoginForm() {
       },
       credentials: 'include', // 쿠키 전송을 위해 credentials 옵션을 include로 설정
     })
-    try {
-      await responseData.json()
-        .then((data) => {
-          console.log(data);
-          if (data.status === "404") {
-            console.log('frontend_404');
-          } else if (data.status === "403") {
-            console.log('frontend_403');
-          } else {
-            movePage('/main');
-          }
-        })
-    } catch (e) {
-      console.log(e);
-    }
+      .then((responseData) => responseData.json())
+      .then((data) => {
+        console.log(data);
+        if (data.status === "404") {
+          console.log('frontend_404');
+        } else if (data.status === "403") {
+          console.log('frontend_403');
+        } else {
+          movePage('/main');
+        }
+      })
   }
 
   async function requestJoin() {
@@ -87,18 +83,18 @@ export default LoginForm;
 
 
 const container = css`
-  width: 414px;
-  height: 500px;
+  width: 310.5px;
+  height: 375px;
  
   margin: 0 auto;
   background-color: black;
   border-radius: 20px;
-  padding: 30px 32px;
+  padding: 22.5px 24px;
 `;
 
 const mainTitle = css`
-  height: 55px;
-  font-size: 15px;
+  height: 41.25px;
+  font-size: 11.25px;
 
   img {
     height: 100%;
@@ -106,12 +102,12 @@ const mainTitle = css`
 `;
 
 const inputWrapper = css`
-    margin-top: 30px;
-    font-size: 14px;
+    margin-top: 22.5px;
+    font-size: 10.5px;
 `;
 
 const buttonWrapper = css`
-  margin-top: 27.6px;
+  margin-top: 20.7px;
 `;
 
 const loginButton = css`
