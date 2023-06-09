@@ -1,11 +1,15 @@
 package App.Gonggam.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Date;
 
+import org.springframework.data.util.StreamUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -25,6 +32,8 @@ import App.Gonggam.service.AccountBookService;
 import App.Gonggam.service.MemberService;
 import App.Gonggam.model.Post;
 import App.Gonggam.model.AccountBook;
+import App.Gonggam.model.Community;
+import App.Gonggam.model.Notice;
 
 @RestController
 @RequestMapping("/AccountBook")
@@ -33,16 +42,51 @@ public class AccountBookController {
     MemberService mService = new MemberService();
 
     @PostMapping(path = "/addBook", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> AddBook(@RequestBody String inputjson) {
+    public ResponseEntity<String> AddBook(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam("Name") String Name,
+            @RequestParam("Public") Boolean Public,
+            @CookieValue("memberId") String memberId) {
         AccountBook new_book = new AccountBook();
+        String imgpath;
+
+        if (file == null) {
+            imgpath = "./dataset/img/AccountBookImg/AccountBook.png";
+
+        } else {
+            try {
+                // 이미지 폴더 경로 설정
+                String uploadDir = "./dataset/img/AccountBookImg";
+
+                Path absolutePath = Paths.get(uploadDir).toAbsolutePath();
+
+                File directory = new File(absolutePath.toString());
+                if (!directory.exists()) {
+                    directory.mkdirs(); // 폴더가 없으면 생성
+                }
+
+                Date currentTime = new Date();
+                imgpath = absolutePath + "/" + currentTime + Name;
+                File dest = new File(imgpath);
+
+                // 파일 저장
+                file.transferTo(dest);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"fail save image\", \"status\": \"500\"}");
+            }
+        }
+        ///////////////////////////////////////////////
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(inputjson);
-            new_book.setAccountBookName(jsonNode.get("Name").asText());
-            new_book.setAccountBookPublic(jsonNode.get("Public").asBoolean());
-            new_book.setAccountBookMainManager(mService.FindMemberUseToken(jsonNode.get("Manager").asText())); // Manager토큰
-            new_book.setAccountBook_Budget(jsonNode.get("Budget").asLong());
+            new_book.setAccountBookName(Name);
+            new_book.setAccountBookPublic(Public);
+            new_book.setAccountBookMainManager(mService.FindMemberUseToken(memberId)); // Manager토큰
+            new_book.setAccountBook_Budget(0);
+            new_book.setMembercount(1);
+            new_book.setAccountBookLogo(imgpath);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,14 +107,54 @@ public class AccountBookController {
         }
     }
 
+    @GetMapping("/gonggam/{url}")
+    public ResponseEntity<String> handleGetRequest(@PathVariable("url") String url,
+            @CookieValue("memberId") String memberId) {
+
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail get cookie\", \"status\": \"204\"}");
+        }
+
+        String[] pathSegments = url.split("/");
+        int accountbook = Integer.parseInt(pathSegments[0]); // ex> "1"
+        String requestType = pathSegments[1]; // ex> "home"
+        AccountBook book = service.getBook(accountbook);
+
+        if (book == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error\", \"status\": \"500\"}");
+        }
+
+        if (requestType.equals("home")) {
+            List<Notice> notice = service.getNotice(requestType, 1, 3);
+            List<Community> communities = service.getCommunity(requestType, 1, 7);
+        } else if (requestType.equals("budget")) {
+
+        } else if (requestType.equals("asset")) {
+
+        } else if (requestType.equals("accountbook")) {
+
+        } else if (requestType.equals("notice")) {
+
+        } else if (requestType.equals("community")) {
+
+        } else if (requestType.equals("settings")) {
+
+        } else {
+
+        }
+        return ResponseEntity.ok("Success");
+    }
+
     @PostMapping(path = "/getBook", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> GetBook(
             @RequestBody String inputjson) {
-        String book = "";
+        int book = 1;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
-            book = jsonNode.get("book").asText();
+            book = jsonNode.get("book").asInt();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,18 +178,17 @@ public class AccountBookController {
     @PostMapping(path = "/findBook", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> FindBook(
             @RequestBody String inputjson) {
-        String book = "";
+        int book = 0;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
-            book = jsonNode.get("book").asText();
+            book = jsonNode.get("book").asInt();
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(book);
 
-        ArrayList<String> booklist = new ArrayList<String>();
-        booklist = service.FindBook(book);
+        List<Map<String, String>> booklist = service.FindBook(book);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -168,7 +251,7 @@ public class AccountBookController {
             @RequestParam("Budget") Long Used_Budget,
             @RequestParam(value = "Text", required = false) String text,
             @RequestParam("Title") String title,
-            @RequestParam("Date") String date,
+            @RequestParam("Date") java.sql.Date date,
             @RequestParam("Type") String type,
             @RequestParam("Table") String table,
             @RequestParam(value = "Tag", required = false) String tag) {
@@ -239,7 +322,7 @@ public class AccountBookController {
             JsonNode jsonNode = objectMapper.readTree(inputjson);
             String Manager = jsonNode.get("Manager").asText();
             String Member = jsonNode.get("Member").asText();
-            String TableName = jsonNode.get("TableName").asText();
+            int TableName = jsonNode.get("TableName").asInt();
 
             String result = service.addMember(Manager, Member, TableName);
             try {

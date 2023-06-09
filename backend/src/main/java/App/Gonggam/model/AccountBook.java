@@ -17,13 +17,23 @@ import App.Gonggam.service.MemberService;
 @Table(name = "AccountBook")
 public class AccountBook {
     MemberService memberservice = new MemberService();
-
+    private String AccountBookLogo; // @@ 가계부 로고
     private String AccountBookName; // @@ 가계부 이름
     private boolean AccountBookPublic; // true=> public false = private
     private String AccountBookMainManager; // @@ 실제 매니져
     private ArrayList<String> AccountBookSubManager; // 서브 매니져
     private ArrayList<String> AccountBook_Member; // 멤버
     private long AccountBook_Budget; // 현재 예산
+    private long Membercount; // 현재 예산
+    private int URL; // @@ 가계부 URL
+
+    public int getURL() {
+        return URL;
+    }
+
+    public void setURL(int uRL) {
+        URL = uRL;
+    }
 
     @JsonCreator
     public AccountBook(
@@ -89,5 +99,33 @@ public class AccountBook {
 
     public void setAccountBook_Member(ArrayList<String> member_accountBook) {
         AccountBook_Member = member_accountBook;
+    }
+
+    public long getMembercount() {
+        return Membercount;
+    }
+
+    public void setMembercount(long membercount) {
+        Membercount = membercount;
+    }
+
+    public MemberService getMemberservice() {
+        return memberservice;
+    }
+
+    public void setMemberservice(MemberService memberservice) {
+        this.memberservice = memberservice;
+    }
+
+    public String getAccountBookLogo() {
+        return AccountBookLogo;
+    }
+
+    public void setAccountBookLogo(String accountBookLogo) {
+        AccountBookLogo = accountBookLogo;
+    }
+
+    public void setAccountBookPublic(boolean accountBookPublic) {
+        AccountBookPublic = accountBookPublic;
     }
 }

@@ -65,7 +65,11 @@ public class SqlConnection {
             String createEventSql = "CREATE EVENT IF NOT EXISTS delete_rows_event "
                     + "ON SCHEDULE EVERY 1 MINUTE "
                     + "DO "
-                    + "DELETE FROM Team5_SignUp WHERE Created_At < NOW() - INTERVAL 24 HOUR AND Updated_At IS NULL";
+                    + "DELETE FROM Team5_SignUp "
+                    + "WHERE "
+                    + "(Created_At < NOW() - INTERVAL 3 MINUTE AND Updated_At IS NULL AND Verified_At IS NULL) "
+                    + "OR (Updated_At IS NOT NULL AND Updated_At < NOW() - INTERVAL 3 MINUTE AND Verified_At IS NULL) "
+                    + "OR (Verified_At IS NOT NULL AND Verified_At < NOW() - INTERVAL 3 HOUR)";
             try (PreparedStatement createEventStmt = conn.prepareStatement(createEventSql)) {
                 createEventStmt.executeUpdate();
             }
@@ -77,9 +81,11 @@ public class SqlConnection {
                     + "Manager TEXT NOT NULL, "
                     + "SubManager TEXT, "
                     + "Budget BIGINT, "
+                    + "Membercount BIGINT, "
                     + "Member TEXT, "
                     + "IconImage TEXT, "
-                    + "PRIMARY KEY (Name))";
+                    + "URL INT AUTO_INCREMENT, "
+                    + "PRIMARY KEY (URL))";
             try (PreparedStatement createTableStmt = conn.prepareStatement(createAccountBookTableSql)) {
                 createTableStmt.executeUpdate();
                 if (createTableStmt.getUpdateCount() == 0) {
