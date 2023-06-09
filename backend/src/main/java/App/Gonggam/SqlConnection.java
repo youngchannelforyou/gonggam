@@ -77,6 +77,7 @@ public class SqlConnection {
                     + "Manager TEXT NOT NULL, "
                     + "SubManager TEXT, "
                     + "Budget BIGINT, "
+                    + "Membercount BIGINT, "
                     + "Member TEXT, "
                     + "IconImage TEXT, "
                     + "PRIMARY KEY (Name))";

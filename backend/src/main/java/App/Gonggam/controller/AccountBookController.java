@@ -1,11 +1,14 @@
 package App.Gonggam.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
+import org.springframework.data.util.StreamUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -33,16 +37,51 @@ public class AccountBookController {
     MemberService mService = new MemberService();
 
     @PostMapping(path = "/addBook", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> AddBook(@RequestBody String inputjson) {
+    public ResponseEntity<String> AddBook(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam("Name") String Name,
+            @RequestParam("Public") Boolean Public,
+            @CookieValue("memberId") String memberId) {
         AccountBook new_book = new AccountBook();
+        String imgpath;
+
+        if (file == null) {
+            imgpath = "./dataset/img/AccountBookImg/AccountBook.png";
+
+        } else {
+            try {
+                // 이미지 폴더 경로 설정
+                String uploadDir = "./dataset/img/AccountBookImg";
+
+                Path absolutePath = Paths.get(uploadDir).toAbsolutePath();
+
+                File directory = new File(absolutePath.toString());
+                if (!directory.exists()) {
+                    directory.mkdirs(); // 폴더가 없으면 생성
+                }
+
+                Date currentTime = new Date();
+                imgpath = absolutePath + "/" + currentTime + Name;
+                File dest = new File(imgpath);
+
+                // 파일 저장
+                file.transferTo(dest);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"fail save image\", \"status\": \"500\"}");
+            }
+        }
+        ///////////////////////////////////////////////
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(inputjson);
-            new_book.setAccountBookName(jsonNode.get("Name").asText());
-            new_book.setAccountBookPublic(jsonNode.get("Public").asBoolean());
-            new_book.setAccountBookMainManager(mService.FindMemberUseToken(jsonNode.get("Manager").asText())); // Manager토큰
-            new_book.setAccountBook_Budget(jsonNode.get("Budget").asLong());
+            new_book.setAccountBookName(Name);
+            new_book.setAccountBookPublic(Public);
+            new_book.setAccountBookMainManager(mService.FindMemberUseToken(memberId)); // Manager토큰
+            new_book.setAccountBook_Budget(0);
+            new_book.setMembercount(1);
+            new_book.setAccountBookLogo(imgpath);
         } catch (Exception e) {
             e.printStackTrace();
         }
