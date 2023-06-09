@@ -2,8 +2,7 @@ import React from 'react';
 import { css } from '@emotion/css';
 
 import Navigation from '../../components/AcountBook/Navigation';
-import imgLogo from '../../assets/imgLogo.png'
-import textLogo from '../../assets/textLogo.png'
+
 import AccountBookNameList from './AccountBookNameList';
 
 function SideBar(props) {
@@ -15,10 +14,7 @@ function SideBar(props) {
 
     return (
         <aside className={container}>
-            <div className={mainTitle}>
-                <img src={imgLogo} alt='draw' />
-                <img src={textLogo} alt='img' />
-            </div>
+
             <div className={userInfoWrapper}>
                 <p className={userNameWrapper}>{userName}님</p>
                 <p className={userGradeWrapper}>{userGrade} 등급</p>
@@ -50,23 +46,12 @@ export default SideBar;
 
 const container = css`
   height: 100%;
-  
-  margin: 25px 30px;
+  flex-grow: 1;
   border-radius: 20px;
-  
   background-color: transparent ;
 
 `;
 
-const mainTitle = css`
-  height: 41.25px;
-  font-size: 11.25px;
-
-  margin-bottom: 18px;
-  img {
-    height: 100%;
-  }
-`;
 
 const userInfoWrapper = css`
     width: 262px;

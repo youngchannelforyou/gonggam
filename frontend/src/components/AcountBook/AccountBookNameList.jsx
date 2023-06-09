@@ -8,7 +8,7 @@ function AccountBookNameList({ title, list }) {
                 <div className={titleWrapper}>{title}</div>
             </div>
             <div className={accountBookListWrapper}>
-                {list.map((element) => <a className={accountBookElement} href='#'>{element}</a>)}
+                {list.map((element) => <a className={accountBookElement} href='title'>{element}</a>)}
             </div>
         </div>
     );
