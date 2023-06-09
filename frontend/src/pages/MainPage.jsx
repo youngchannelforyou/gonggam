@@ -33,9 +33,7 @@ function MainPage(props) {
     async function getMemberInfo() {
         await fetch('http://localhost:8080/Member/getmemberinfo', {
             method: 'POST',
-            body: JSON.stringify({
-                "book": value
-            }),
+            body: JSON.stringify({}),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',

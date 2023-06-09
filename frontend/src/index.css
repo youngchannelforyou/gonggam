@@ -116,6 +116,11 @@ body {
   background-color: #121416;
 }
 
+body #root {
+  width: 100%;
+  height: 100%;
+}
+
 * {
   color: inherit;
 }
