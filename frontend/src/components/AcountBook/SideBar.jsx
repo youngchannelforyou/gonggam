@@ -4,11 +4,15 @@ import { css } from '@emotion/css';
 import Navigation from '../../components/AcountBook/Navigation';
 import imgLogo from '../../assets/imgLogo.png'
 import textLogo from '../../assets/textLogo.png'
+import AccountBookNameList from './AccountBookNameList';
 
 function SideBar(props) {
 
     const userName = '홍길동';
     const userGrade = '학회원';
+
+    const joinedAccountList = ['한경대-컴퓨터공학과', '한경대-돋을볕', '한경대-총학생회', '여행계'];
+
     return (
         <aside className={container}>
             <div className={mainTitle}>
@@ -29,8 +33,13 @@ function SideBar(props) {
                         <Navigation />
                     </div>
                 </div>
-                <div>
-
+                <div className={accountBookNameListWrapper}>
+                    <div className={marginBottom48}>
+                        <AccountBookNameList title='참여중인 가계부' list={joinedAccountList} />
+                    </div>
+                    <div>
+                        <AccountBookNameList title='관리중인 가계부' list={joinedAccountList} />
+                    </div>
                 </div>
             </div>
         </aside>
@@ -123,4 +132,13 @@ const accountBookUserNumber = css`
 
     font-size: 14px;
     color: #9C9C9C;
+`;
+
+const accountBookNameListWrapper = css`
+    margin-top: 72px;
+    margin-left: 10px;
+`;
+
+const marginBottom48 = css`
+    margin-bottom: 48px;
 `;
