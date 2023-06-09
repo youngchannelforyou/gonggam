@@ -25,6 +25,15 @@ public class AccountBook {
     private ArrayList<String> AccountBook_Member; // 멤버
     private long AccountBook_Budget; // 현재 예산
     private long Membercount; // 현재 예산
+    private int URL; // @@ 가계부 URL
+
+    public int getURL() {
+        return URL;
+    }
+
+    public void setURL(int uRL) {
+        URL = uRL;
+    }
 
     @JsonCreator
     public AccountBook(

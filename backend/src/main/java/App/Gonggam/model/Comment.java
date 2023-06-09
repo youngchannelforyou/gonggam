@@ -1,5 +1,7 @@
 package App.Gonggam.model;
 
+import java.security.Timestamp;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -17,8 +19,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Comment {
     private Long CommentId; // 댓글 인식하는 id auto로 생성
     private String CommentMember; // 댓글을 작성한 멤버
+    private String postType;
+
     private int CommentPost; // 해당 댓글의 게시물 post 외래키
-    private String CommentDate; // 댓글 생성 날짜
+    private Timestamp CommentDate; // 댓글 생성 날짜
     private int CommentType; // 댓글이 대댓글인지 확인 최초 댓글 0 아니면 해당 댓글의 ID
     private String CommentText; // 댓글의 내용
 
@@ -27,7 +31,7 @@ public class Comment {
             @JsonProperty("Id") Long comment_id,
             @JsonProperty("Member") String comment_member,
             @JsonProperty("Post") int comment_post,
-            @JsonProperty("Date") String comment_date,
+            @JsonProperty("Date") Timestamp comment_date,
             @JsonProperty("Type") int comment_type,
             @JsonProperty("Text") String comment_text) {
         CommentId = comment_id;
@@ -65,11 +69,11 @@ public class Comment {
         CommentPost = commentPost;
     }
 
-    public String getCommentDate() {
+    public Timestamp getCommentDate() {
         return CommentDate;
     }
 
-    public void setCommentDate(String commentDate) {
+    public void setCommentDate(Timestamp commentDate) {
         CommentDate = commentDate;
     }
 
@@ -87,5 +91,13 @@ public class Comment {
 
     public void setCommentText(String commentText) {
         CommentText = commentText;
+    }
+
+    public String getPostType() {
+        return postType;
+    }
+
+    public void setPostType(String postType) {
+        this.postType = postType;
     }
 }

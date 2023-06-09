@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Date;
 
 import org.springframework.data.util.StreamUtils;
@@ -22,6 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -29,6 +32,8 @@ import App.Gonggam.service.AccountBookService;
 import App.Gonggam.service.MemberService;
 import App.Gonggam.model.Post;
 import App.Gonggam.model.AccountBook;
+import App.Gonggam.model.Community;
+import App.Gonggam.model.Notice;
 
 @RestController
 @RequestMapping("/AccountBook")
@@ -102,14 +107,54 @@ public class AccountBookController {
         }
     }
 
+    @GetMapping("/gonggam/{url}")
+    public ResponseEntity<String> handleGetRequest(@PathVariable("url") String url,
+            @CookieValue("memberId") String memberId) {
+
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail get cookie\", \"status\": \"204\"}");
+        }
+
+        String[] pathSegments = url.split("/");
+        int accountbook = Integer.parseInt(pathSegments[0]); // ex> "1"
+        String requestType = pathSegments[1]; // ex> "home"
+        AccountBook book = service.getBook(accountbook);
+
+        if (book == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error\", \"status\": \"500\"}");
+        }
+
+        if (requestType.equals("home")) {
+            List<Notice> notice = service.getNotice(requestType, 1, 3);
+            List<Community> communities = service.getCommunity(requestType, 1, 7);
+        } else if (requestType.equals("budget")) {
+
+        } else if (requestType.equals("asset")) {
+
+        } else if (requestType.equals("accountbook")) {
+
+        } else if (requestType.equals("notice")) {
+
+        } else if (requestType.equals("community")) {
+
+        } else if (requestType.equals("settings")) {
+
+        } else {
+
+        }
+        return ResponseEntity.ok("Success");
+    }
+
     @PostMapping(path = "/getBook", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> GetBook(
             @RequestBody String inputjson) {
-        String book = "";
+        int book = 1;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
-            book = jsonNode.get("book").asText();
+            book = jsonNode.get("book").asInt();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,18 +178,17 @@ public class AccountBookController {
     @PostMapping(path = "/findBook", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> FindBook(
             @RequestBody String inputjson) {
-        String book = "";
+        int book = 0;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
-            book = jsonNode.get("book").asText();
+            book = jsonNode.get("book").asInt();
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(book);
 
-        ArrayList<String> booklist = new ArrayList<String>();
-        booklist = service.FindBook(book);
+        List<Map<String, String>> booklist = service.FindBook(book);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -207,7 +251,7 @@ public class AccountBookController {
             @RequestParam("Budget") Long Used_Budget,
             @RequestParam(value = "Text", required = false) String text,
             @RequestParam("Title") String title,
-            @RequestParam("Date") String date,
+            @RequestParam("Date") java.sql.Date date,
             @RequestParam("Type") String type,
             @RequestParam("Table") String table,
             @RequestParam(value = "Tag", required = false) String tag) {
@@ -278,7 +322,7 @@ public class AccountBookController {
             JsonNode jsonNode = objectMapper.readTree(inputjson);
             String Manager = jsonNode.get("Manager").asText();
             String Member = jsonNode.get("Member").asText();
-            String TableName = jsonNode.get("TableName").asText();
+            int TableName = jsonNode.get("TableName").asInt();
 
             String result = service.addMember(Manager, Member, TableName);
             try {
