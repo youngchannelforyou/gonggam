@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.sql.Date;
 import java.util.ArrayList;
 
 @Entity
@@ -19,20 +21,21 @@ public class Post {
     private Long PostId; // @@ 사용 내역의 행, 순번을 나타내는 번호입니다.
     private String PostTag; // 사용 내역의 소비된 활동을 나타냄 [ ex) 축제준비, 체육대회 ]
     private boolean PostType; // @@ 사용 내역의 수입 지출을 나타냄 [true = 수입, false = 지출]
-    private String PostDate; // @@ 사용된 날짜를 기입 [ ex)2023/01/01 ]
+    private Date PostDate; // @@ 사용된 날짜를 기입 [ ex)2023/01/01 ]
+    private Date useDate; // @@ 사용된 날짜를 기입 [ ex)2023/01/01 ]
     private String PostTitle; // @@ 사용내역의 제목
     private String PostText; // 내용 내역의 텍스트
     private ArrayList<String> PostImage = new ArrayList<String>(); // 사용내역에 첨부되는 이미지 경로
     // 이미지 경로는 ,로 구분되며 순번에 인식됨 ex) ["path/img1","path/img2","path/img3"]
-    private Long PostUsedBudget; // @@ 사용된 금액
     private Long PostTotalBudget; // @@ 그때 당시 총액
+    private Long PostUsedBudget; // @@ 사용된 금액
 
     @JsonCreator // json 호출시 바로 클래스로 생성해서 만드는 방법
     public Post(
             @JsonProperty("Id") Long post_id,
             @JsonProperty("Tag") String post_tag,
             @JsonProperty("Type") boolean post_type,
-            @JsonProperty("Date") String post_date,
+            @JsonProperty("Date") Date post_date,
             @JsonProperty("Title") String post_title,
             @JsonProperty("Text") String post_text,
             @JsonProperty("Image") ArrayList<String> post_image,
@@ -74,11 +77,11 @@ public class Post {
         PostType = postType;
     }
 
-    public String getPostDate() {
+    public Date getPostDate() {
         return PostDate;
     }
 
-    public void setPostDate(String postDate) {
+    public void setPostDate(Date postDate) {
         PostDate = postDate;
     }
 
@@ -121,4 +124,13 @@ public class Post {
     public void setPostTotalBudget(Long postTotalBudget) {
         PostTotalBudget = postTotalBudget;
     }
+
+    public Date getUseDate() {
+        return useDate;
+    }
+
+    public void setUseDate(Date useDate) {
+        this.useDate = useDate;
+    }
+
 }
