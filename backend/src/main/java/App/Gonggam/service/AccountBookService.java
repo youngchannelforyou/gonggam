@@ -19,11 +19,13 @@ public class AccountBookService {
 
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             // 데이터 추가
-            String insertSql = "INSERT INTO Team5_AccountBook (Name, Public, Manager) VALUES (?, ?, ?)";
+            String insertSql = "INSERT INTO Team5_AccountBook (Name, Public, Manager, IconImage, Membercount) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                 insertStmt.setString(1, newBook.getAccountBookName());
                 insertStmt.setBoolean(2, newBook.getAccountBookPublic());
                 insertStmt.setString(3, newBook.getAccountBookMainManager());
+                insertStmt.setString(4, newBook.getAccountBookLogo());
+                insertStmt.setLong(5, newBook.getMembercount());
                 insertStmt.executeUpdate();
 
                 System.out.println("데이터가 추가되었습니다.");
@@ -236,35 +238,6 @@ public class AccountBookService {
         }
         return book;
     }
-
-    // public List<AccountBook> getAllBooks() {
-    // List<AccountBook> books = new ArrayList<>();
-
-    // try (Connection conn = DriverManager.getConnection(URL, USERNAME,
-    // SQL_PASSWORD)) {
-    // String selectSql = "SELECT * FROM Team5_AccountBook";
-    // try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
-    // ResultSet resultSet = selectStmt.executeQuery();
-
-    // while (resultSet.next()) {
-    // AccountBook book = new AccountBook();
-    // book.setAccountBookName(resultSet.getString("Name"));
-    // book.setAccountBookPublic(resultSet.getString("Public"));
-    // book.setAccountBookMainManager(resultSet.getString("Manager"));
-    // book.setAccountBook_Budget(resultSet.getLong("Budget"));
-    // book.setAccountBook_Member(resultSet.getString("Member"));
-
-    // books.add(book);
-    // }
-
-    // resultSet.close();
-    // }
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-
-    // return books;
-    // }
 
     public ArrayList<String> FindBook(String newBook) {
         ArrayList<String> booklist = new ArrayList<String>();
