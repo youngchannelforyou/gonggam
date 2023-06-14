@@ -48,8 +48,11 @@ function LoginForm() {
           console.log('frontend_404');
         } else if (data.status === "403") {
           console.log('frontend_403');
-        } else {
+        } else if (data.status === '200') {
           movePage('/main');
+        }
+        else {
+          alert('비밀번호가 일치하지 않습니다.');
         }
       })
   }
