@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 function JoinForm() {
     const [inputValue, setInputValue] = useState({});
-    const [emailRequestInputText, setEmailRequestInputText] = useState(null);
+    const [isEmailConfirmButtonCliked, setIsEmailConfirmButtonCliked] = useState(null);
+    const [isEmailConfirmCodeButtonClicked, setIsEmailConfirmCodeButtonClicked] = useState(null);
     const [isUserEmailReceived, serIsUserEmailReceived] = useState(false);
     const movePage = useNavigate();
 
@@ -45,7 +46,7 @@ function JoinForm() {
             alert('이메일 형식이 올바르지 않습니다!');
             return;
         }
-        setEmailRequestInputText('전송 중');
+        setIsEmailConfirmButtonCliked('전송 중');
 
         try {
             await fetch('http://localhost:8080/Member/createcode', {
@@ -63,16 +64,18 @@ function JoinForm() {
                 .then((data) => {
                     console.log(data);
                     if (data.status === "200") {
-                        setEmailRequestInputText('전송 완료');
+                        setIsEmailConfirmButtonCliked('전송 완료');
                         serIsUserEmailReceived(true);
                     }
                 })
         } catch (error) {
-            setEmailRequestInputText(null);
+            setIsEmailConfirmButtonCliked(null);
         }
     }
 
     async function checkcEmailCode() {
+
+        setIsEmailConfirmCodeButtonClicked('확인 중입니다.');
         await fetch('http://localhost:8080/Member/checkcode', {
             method: 'POST',
             body: JSON.stringify({
@@ -90,6 +93,7 @@ function JoinForm() {
                 if (data.code === 200) {
                     console.log('succes');
                 }
+                setIsEmailConfirmCodeButtonClicked('인증됨');
             })
     }
 
@@ -123,22 +127,27 @@ function JoinForm() {
                     회원가입
                 </div>
                 <div className={inputWrapper}>
-                    <div className={emailInputWrapper}>
-                        <NormalTypeInput labelText='이메일' value={inputValue.email} onChangeFuc={onChange} type='email' >
-                            <button className={authMailSendButton(emailRequestInputText)} type='button' onClick={sendAuthMail}>
-                                {emailRequestInputText ?? '인증번호 받기'}
-                            </button>
-                        </NormalTypeInput >
-                        {isUserEmailReceived &&
-                            <NormalTypeInput labelText='이메일 코드 확인' value={inputValue.emailCode} onChangeFuc={onChange}>
-                                <button className={authMailSendButton(emailRequestInputText)} type='button' onClick={checkcEmailCode}>
-                                    인증번호 확인
+                    <div className={emailInputsWrapper}>
+                        <div className={emailInputWrapper}>
+                            <NormalTypeInput labelText='이메일' value={inputValue.email} onChangeFuc={onChange} type='email' >
+                                <button className={authMailSendButton(isEmailConfirmButtonCliked)} type='button' onClick={sendAuthMail}>
+                                    {isEmailConfirmButtonCliked ?? '인증번호 받기'}
                                 </button>
-                            </ NormalTypeInput>}
+                            </NormalTypeInput >
+                        </div>
+                        {isUserEmailReceived &&
+                            <div className={emailInputWrapper}>
+                                <NormalTypeInput labelText='이메일 코드 확인' value={inputValue.emailCode} onChangeFuc={onChange}>
+                                    <button className={authMailSendButton(isEmailConfirmCodeButtonClicked)} type='button' onClick={checkcEmailCode}>
+                                        {isEmailConfirmCodeButtonClicked ?? '인증번호 확인'}
+                                    </button>
+                                </ NormalTypeInput>
+                            </div>
+                        }
                     </div>
                     <div className={othersInputWrapper}>
-                        <NormalTypeInput labelText='비밀번호' value={inputValue.password} onChangeFuc={onChange} />
-                        <NormalTypeInput labelText='비밀번호 확인' value={inputValue.pwCheck} onChangeFuc={onChange} />
+                        <NormalTypeInput labelText='비밀번호' value={inputValue.password} type='password' onChangeFuc={onChange} />
+                        <NormalTypeInput labelText='비밀번호 확인' value={inputValue.pwCheck} type='password' onChangeFuc={onChange} />
                         <NormalTypeInput labelText='닉네임' value={inputValue.nickName} onChangeFuc={onChange} />
                     </div>
                 </div>
@@ -156,7 +165,7 @@ export default JoinForm;
 
 const container = css`
     width: 310.5px;
-    height: 525px;
+    min-height: 525px;
     
     margin: 0 auto;
     background-color: black;
@@ -181,15 +190,18 @@ const inputWrapper = css`
     margin-bottom: 42,75px;
 `;
 
+const emailInputsWrapper = css`
+    margin-bottom: 42.75px;
+`;
+
 const emailInputWrapper = css`
     display: flex;
     align-items: center;
-    margin-bottom: 42.75px;
 `;
 
 
 
-const authMailSendButton = (emailRequestInputText) => css`
+const authMailSendButton = (isEmailConfirmButtonCliked) => css`
     width: 112.5px;
     font-size: 10.5px;
     font-weight: bold;
@@ -199,7 +211,7 @@ const authMailSendButton = (emailRequestInputText) => css`
     border-radius: 5px;
     transition: 0.3s;
 
-    ${emailRequestInputText !== null && 'background-color: black;'}
+    ${isEmailConfirmButtonCliked !== null && 'background-color: black;'}
 `;
 
 const othersInputWrapper = css`

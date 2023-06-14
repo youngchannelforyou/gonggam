@@ -67,7 +67,7 @@ function LoginForm() {
         </div>
         <div className={inputWrapper}>
           <NormalTypeInput labelText='아이디' value={id} onChangeFuc={onChange} />
-          <NormalTypeInput labelText='비밀번호' value={pw} onChangeFuc={onChange} />
+          <NormalTypeInput labelText='비밀번호' type='password' value={pw} onChangeFuc={onChange} />
         </div>
         <div className={buttonWrapper}>
           <NormalTypeButton title='로그인' onClickFuc={requestLogin} styles={loginButton} />
