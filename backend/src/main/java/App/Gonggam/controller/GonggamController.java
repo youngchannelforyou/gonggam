@@ -201,7 +201,7 @@ public class GonggamController {
 
             if (communities == null) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("{\"message\": \"NO notice\", \"status\": \"500\"}");
+                        .body("{\"message\": \"NO community\", \"status\": \"500\"}");
             }
 
             Map<String, Object> accountbook = new HashMap<>();
@@ -229,12 +229,13 @@ public class GonggamController {
             // JSON 변환을 위한 ObjectMapper 생성
             String memberJson = objectMapper.writeValueAsString(member);
             String bookJson = objectMapper.writeValueAsString(accountbook);
-            String noticeJson = objectMapper.writeValueAsString(communities);
+            String communitiesJson = objectMapper.writeValueAsString(communities);
 
             // JSON을 응답 본문에 포함하여 반환
             return ResponseEntity.ok()
                     .header("Content-Type", "application/json")
-                    .body("{\"book\": " + bookJson + ", \"user\": " + memberJson + ", \"notice\": " + noticeJson + "}");
+                    .body("{\"book\": " + bookJson + ", \"user\": " + memberJson + ", \"community\": " + communitiesJson
+                            + "}");
 
         } catch (IOException e) {
             e.printStackTrace();
