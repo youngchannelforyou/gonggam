@@ -15,6 +15,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import App.Gonggam.model.AccountBook;
 import App.Gonggam.model.Comment;
 import App.Gonggam.model.Community;
@@ -512,11 +515,12 @@ public class AccountBookService {
         return NoticeList;
     }
 
-    public Map<String, Long> BoardGetIncomeExpenseByTag(String name, int dateRangeType, String fromDate) {
+    public Map<String, Object> BoardGetIncomeExpenseByTag(String name, int dateRangeType, String fromDate) {
         String postTableName = "Team5_" + name + "_Post";
 
-        Map<String, Long> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         Map<String, Long> expenseByTag = new HashMap<>();
+        Map<String, Long> incomeByTag = new HashMap<>();
         long totalExpense = 0;
         long totalIncome = 0;
 
@@ -556,10 +560,11 @@ public class AccountBookService {
                         long amount = resultSet.getLong("Used_Budget");
 
                         if (isExpense) {
+                            totalIncome += amount;
+                            incomeByTag.put(tag, expenseByTag.getOrDefault(tag, 0L) + amount);
+                        } else {
                             totalExpense += amount;
                             expenseByTag.put(tag, expenseByTag.getOrDefault(tag, 0L) + amount);
-                        } else {
-                            totalIncome += amount;
                         }
                     }
                 }
@@ -570,11 +575,29 @@ public class AccountBookService {
             // Exception handling
         }
 
-        result.put("지출", totalExpense);
-        result.put("수입", totalIncome);
-        result.putAll(expenseByTag);
+        result.put("Expense", totalExpense);
+        result.put("Income", totalIncome);
+
+        // expenseByTag 맵을 Map<String, Object> 타입의 맵으로 변환
+        Map<String, Object> convertedExpenseByTag = new HashMap<>();
+        for (Map.Entry<String, Long> entry : expenseByTag.entrySet()) {
+            String tag = entry.getKey();
+            Long expense = entry.getValue();
+            convertedExpenseByTag.put(tag, expense);
+        }
+
+        // 변환된 맵을 JSON 문자열로 변환하여 결과에 추가
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String expenseByTagJson = objectMapper.writeValueAsString(convertedExpenseByTag);
+            result.put("Tag", expenseByTagJson);
+        } catch (JsonProcessingException e) {
+            // JSON 변환 예외 처리
+            // 예외 발생 시 적절한 처리를 수행하거나 예외를 던지거나 반환할 값 설정
+        }
 
         return result;
+
     }
 
     public List<Long> BoardGetRainBudget(String name, int dateRangeType, String fromDate) {

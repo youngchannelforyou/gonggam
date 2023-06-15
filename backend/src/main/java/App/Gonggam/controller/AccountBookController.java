@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Date;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysql.cj.protocol.SocksProxySocketFactory;
 
 import org.springframework.web.bind.annotation.CookieValue;
@@ -390,13 +392,27 @@ public class AccountBookController {
 
         System.out.println(fromDate);
 
-        List<Long> notice = service.BoardGetRainBudget(AccountBook, term, fromDate);
+        List<Long> costlist = service.BoardGetRainBudget(AccountBook, term, fromDate);
 
-        System.out.println(notice);
+        // 최대값과 최소값 추출
+        Long minCost = costlist.stream()
+                .filter(cost -> cost > 0)
+                .min(Long::compareTo)
+                .orElse(0L);
+
+        Long maxCost = Collections.max(costlist);
+
+        System.out.println(costlist);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String json = objectMapper.writeValueAsString(notice);
+            ObjectNode jsonNode = objectMapper.createObjectNode();
+            jsonNode.put("costList", objectMapper.writeValueAsString(costlist));
+            jsonNode.put("minCost", minCost);
+            jsonNode.put("maxCost", maxCost);
+
+            String json = objectMapper.writeValueAsString(jsonNode);
+
             return ResponseEntity.ok(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -426,7 +442,7 @@ public class AccountBookController {
 
         System.out.println(fromDate);
 
-        Map<String, Long> notice = service.BoardGetIncomeExpenseByTag(AccountBook, term, fromDate);
+        Map<String, Object> notice = service.BoardGetIncomeExpenseByTag(AccountBook, term, fromDate);
 
         System.out.println(notice);
 
