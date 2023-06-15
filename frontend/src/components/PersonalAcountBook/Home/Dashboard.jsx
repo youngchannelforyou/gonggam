@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 import DashboardGraph from './DashboardGraph';
 import WidthBar from './WidthBar';
-import Loading from '../../Loading/Loading';
 
 /*
     clickedScope: 1(일), 2(월), 3(달)
@@ -71,7 +70,7 @@ function Dashboard({ accountNumber }) {
                     <div className={budgetText}>예산 잔액</div>
                     <div className={balanceWrapper}>
                         <p className={dollorIcon} >₩</p>
-                        <p className={amountText}>{new Intl.NumberFormat().format(1111)}</p>
+                        <p className={amountText}>{new Intl.NumberFormat().format(tableInfo?.Budget)}</p>
                     </div>
                 </div>
                 <div>

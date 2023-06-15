@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
+import NumberDisplay from '../Etc/NumberDisplay'
 
 function DashboardGraph({ tableInfo }) {
     const [values, setValues] = useState([
@@ -8,13 +9,36 @@ function DashboardGraph({ tableInfo }) {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ]);
 
+    const [yAxisDegree, setYAxisDegree] = useState({
+        maxNum: 800,
+        minNum: 400,
+        range: 100,
+    });
+
     useEffect(() => {
         if (!tableInfo)
             return;
-        console.log('hello');
-        console.log(tableInfo.costList);
-        // setValues(tableInfo.costList);
+        setValues(tableInfo.costList);
+        calcYAxisDegree();
     }, [tableInfo]);
+
+    function calcYAxisDegree() {
+        const maxNum = tableInfo.maxCost * 1.1
+        const minNum = tableInfo.minCost * 0.9
+        const range = (maxNum - minNum) / 5;
+
+        setYAxisDegree({
+            maxNum: maxNum,
+            minNum: minNum,
+            range: range,
+        })
+    }
+
+    function makePercentToValue(value) {
+        return (
+            ((value / (yAxisDegree.range * 5)) - (yAxisDegree.minNum / (yAxisDegree.range * 5))) * 100
+        );
+    }
 
     return (
         <div className={container}>
@@ -23,7 +47,7 @@ function DashboardGraph({ tableInfo }) {
                     return (
                         <div key={idx} className={barWrapper}>
                             <div className={barFrame}>
-                                <div className={fillBar(value)}></div>
+                                <div className={fillBar(makePercentToValue(value))}></div>
                             </div>
                             {idx % 3 === 0 &&
                                 <div className={indexOfBar}>
@@ -35,11 +59,11 @@ function DashboardGraph({ tableInfo }) {
                 })}
             </div>
             <div className={unitsWrapper}>
-                <div>800k</div>
-                <div>700k</div>
-                <div>600k</div>
-                <div>500k</div>
-                <div>400k</div>
+                <div><NumberDisplay number={parseInt(yAxisDegree.maxNum)} /></div>
+                <div><NumberDisplay number={parseInt(yAxisDegree.maxNum - yAxisDegree.range)} /></div>
+                <div><NumberDisplay number={parseInt(yAxisDegree.maxNum - yAxisDegree.range * 2)} /></div>
+                <div><NumberDisplay number={parseInt(yAxisDegree.maxNum - yAxisDegree.range * 3)} /></div>
+                <div><NumberDisplay number={parseInt(yAxisDegree.minNum)} /></div>
             </div>
         </div >
     );

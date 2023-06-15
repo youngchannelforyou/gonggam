@@ -32,17 +32,6 @@ function Home() {
 
     console.log(getDatas);
 
-    const communityList = [
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' }
-    ];
-
-
     async function homeGetRequest() {
         await fetch(`http://localhost:8080/gonggam/${accountNumber}/home`, {
             method: 'GET',
@@ -121,46 +110,6 @@ const writingBox = css`
     border: 1px solid #252729;
     border-radius: 20px;
     margin-bottom: 19px;
-`;
-
-const titleWrapper = css`
-    display: flex;
-    color: #fff;
-
-`;
-
-const writingListWrapper = css`
-    width: 100%;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    border-collapse: collapse;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 400;
-`;
-
-const writingItemWrapper = css`
-    width: 100%;
-
-    td {
-        height: 16px;
-        line-height: 16px;
-        padding-bottom: 12px;
-        text-overflow : ellipsis;
-    }
-`;
-
-const writingItemTitle = css`
-    text-align: left;
-`;
-
-const writingItemAuth = css`
-    text-align: right;
-`;
-const writingItemDate = css`
-    width: 71px;
-    padding-left: 46px;
-    text-align: right;
 `;
 
 const communityArea = css`

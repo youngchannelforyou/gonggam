@@ -7,6 +7,7 @@ import BudgeBox from '../../components/PersonalAcountBook/Budget/BudgetBox';
 
 function Budget() {
     const spendTagList = ['축제준비', 'MT준비', '신입생환영회', '성인의날행사', '임원진회식', '기념일행사'];
+
     return (
         <AccountBookWrapper>
             <div>

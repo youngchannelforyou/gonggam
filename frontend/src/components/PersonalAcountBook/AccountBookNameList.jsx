@@ -2,8 +2,7 @@ import React from 'react';
 import { css } from '@emotion/css';
 
 function AccountBookNameList({ title, list }) {
-    console.log('list');
-    console.log(list);
+
     return (
         <div>
             <div>
