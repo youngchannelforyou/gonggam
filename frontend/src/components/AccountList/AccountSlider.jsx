@@ -4,6 +4,9 @@ import AccountElement from './AccountElement';
 
 function AccountSlider(props) {
     const imgUrl = '../../assets/sampleImg.jpg';
+
+
+
     return (
         <div className={container}>
             <div className={listSlider}>

@@ -25,14 +25,12 @@ function WidthBar({ title, totalAmount, amount, type }) {
         const arr = [];
         const percent = amount / (totalAmount);
         const barPercent = Math.round(percent * 17);
-        console.log(barPercent);
         for (let i = 0; i < barPercent; i++) {
             arr.push(1);
         }
         for (let i = barPercent; i < 17; i++) {
             arr.push(0);
         }
-        console.log(arr);
 
         return arr;
     };

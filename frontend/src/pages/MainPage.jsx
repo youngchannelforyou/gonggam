@@ -36,7 +36,6 @@ function MainPage() {
             .then((responseData) => responseData.json())
             .then((data) => {
                 setTimeout(() => { setMemberInfo(data); }, 3000);
-                console.log(data);
             });
     }
 
@@ -51,8 +50,20 @@ function MainPage() {
         }
     };
 
-    function logout() {
-
+    async function logout() {
+        await fetch('http://localhost:8080/Member/logout', {
+            method: 'GET',
+            // body: JSON.stringify({}),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
+            });
     }
 
     async function requestSearch(e) {

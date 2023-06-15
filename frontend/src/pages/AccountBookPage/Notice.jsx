@@ -4,6 +4,7 @@ import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
 import Board from '../../components/PersonalAcountBook/Board/Board';
 import { useParams } from 'react-router-dom';
 import Loading from '../../components/Loading/Loading';
+import Comments from '../../components/Comment/Comments';
 
 function Notice() {
     const [accountNumber, setAccountNumber] = useState(null);
@@ -53,6 +54,7 @@ function Notice() {
         <Loading isLoading={isLoading}>
             <AccountBookWrapper accountNumber={accountNumber} >
                 <Board title='공지사항' postList={postData} accountNumber={accountNumber} />
+                <Comments />
             </AccountBookWrapper>
         </Loading>
     );

@@ -7,10 +7,12 @@ import RecentLogList from '../../components/PersonalAcountBook/Home/RecentLogLis
 import Calendar from '../../components/PersonalAcountBook/AccountBook/Calendar';
 import { useParams } from 'react-router-dom';
 import Loading from '../../components/Loading/Loading';
+import CalendarPopUp from '../../components/PersonalAcountBook/AccountBook/CalendarPopUp';
 
 function AccountBook() {
     const [accountNumber, setAccountNumber] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isPopup, setIsPopup] = useState(false);
 
     const nowUrlParam = useParams();
 
@@ -28,6 +30,7 @@ function AccountBook() {
 
     return (
         <Loading isLoading={isLoading} >
+            {isPopup ? <CalendarPopUp setIsPopup={setIsPopup} /> : <></>}
             <AccountBookWrapper accountNumber={accountNumber}>
                 <div className={mainTopBox}>
                     <Dashboard accountNumber={accountNumber} />
@@ -35,7 +38,7 @@ function AccountBook() {
 
                 <div className={mainMiddleBox}>
                     <div className={calcBox}>
-                        <Calendar accountNumber={accountNumber} />
+                        <Calendar accountNumber={accountNumber} setIsPopup={setIsPopup} isPopup={isPopup} />
                     </div>
                     <div className={mainBottomBox}>
                         <div className={cx(listCommon, revenueBox)}>

@@ -1,9 +1,21 @@
 import { css } from '@emotion/css';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function SummaryBoard({ iconImg, title, datas }) {
-    if (!datas)
-        return;
+    const [accountNumber, setAccountNumber] = useState(null);
+    const nowUrlParam = useParams();
+    const titlePath = title === '커뮤니티' ? 'communitypeed' : 'noticepeed';
+    const movePage = useNavigate();
+
+    useEffect(() => {
+        if (!nowUrlParam)
+            return;
+        setAccountNumber(nowUrlParam.accountName.replace('account', ''));
+    }, [nowUrlParam]);
+
+    console.log(datas);
+
     return (
         <>
             <div className={titleWrapper}>
@@ -19,13 +31,13 @@ function SummaryBoard({ iconImg, title, datas }) {
                             return (
                                 <tr key={tmpKey} className={writingItemWrapper}>
                                     <td className={writingItemTitle}>
-                                        <a href={item.url}>{item.Title}</a>
+                                        <button onClick={() => movePage(`/account${accountNumber}/${titlePath}/${item.Num}`)}>{item.Title}</button>
                                     </td>
                                     <td className={writingItemAuth}>
-                                        <a href={item.url}>{item.Member}</a>
+                                        <button onClick={() => movePage(`/account${accountNumber}/${titlePath}/${item.Num}`)}>{item.Member}</button>
                                     </td>
                                     <td className={writingItemDate}>
-                                        <a href={item.url}>{convertedDate}</a>
+                                        <button onClick={() => movePage(`/account${accountNumber}/${titlePath}/${item.Num}`)}>{convertedDate}</button>
                                     </td>
                                 </tr>
                             )

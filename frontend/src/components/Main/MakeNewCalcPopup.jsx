@@ -5,9 +5,12 @@ import NormalTypeButton from '../Form/NormalTypeButton';
 
 
 function MakeNewCalcPopup({ setIsPopup, userName }) {
-    const [newCalcValue, setValue] = useState({
-        'name': '', 'public': ''
-    });
+    const [newCalcValue, setValue] = useState({});
+    const [receiptImg, setReceiptImg] = useState(null);
+
+    const receiptImaChange = (e) => {
+        setReceiptImg(e.target.files[0]);
+    };
 
     async function makeNewCalc() {
         await fetch('http://localhost:8080/AccountBook/addBook', {
@@ -28,6 +31,39 @@ function MakeNewCalcPopup({ setIsPopup, userName }) {
                 console.log(data);
             });
     }
+
+    const sendReceipt = async (receiptImg) => {
+        const formData = new FormData();
+        formData.append("file", receiptImg);
+        // formData.append("file", receiptImg);
+        // formData.append("Text", newCalcValue.describe);
+        // formData.append("Title", newCalcValue.title);
+        // formData.append("Date", newCalcValue.date);
+        // formData.append("Type", newCalcValue.range);
+        // formData.append("Tag", newCalcValue.tag);
+        // formData.append("Budget", newCalcValue.amount);
+        // formData.append("Table", "8");
+
+        console.log(formData);
+
+        await fetch("http://localhost:8080/AccountBook/addpost", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+            }
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (receiptImg) {
+            await sendReceipt(receiptImg);
+            alert('전송되었습니다.');
+            setIsPopup(false);
+        }
+    };
 
     function onChange(e) {
         const {
@@ -54,6 +90,12 @@ function MakeNewCalcPopup({ setIsPopup, userName }) {
                     <button className={closeButton} onClick={() => setIsPopup(false)}>X</button>
                 </div>
                 <div>
+                    <div className={inputForm}>
+                        <label className={inputLabel}>가계부 프로필 사진</label>
+                        <div className={imgInputWapper}>
+                            <input className={receiptImgInput} accept=".jpg, .png, .jpeg" type="file" onChange={receiptImaChange} />
+                        </div>
+                    </div>
                     <NormalTypeInput labelText="가계부 이름" onChangeFuc={onChange} value={newCalcValue.name} />
                     <div className={inputForm}>
                         <label className={inputLabel}>공개 유무</label>
@@ -64,7 +106,7 @@ function MakeNewCalcPopup({ setIsPopup, userName }) {
                     {/* <NormalTypeInput labelText="관리자" onChangeFuc={() => { }} value={''} /> */}
                 </div>
                 <div className={buttonWrapper}>
-                    <NormalTypeButton title='만들기' onClickFuc={makeNewCalc} styles={confirmButton} />
+                    <NormalTypeButton title='만들기' type='submit' onClickFuc={handleSubmit} styles={confirmButton} />
                 </div>
             </div>
         </div>
@@ -111,6 +153,25 @@ const mainTitle = css`
 
 const closeButton = css`
     font-size: 20px;
+`;
+
+const imgInputWapper = css`
+    display: flex;
+    align-items: center;
+`;
+
+
+const receiptImgInput = css`
+    width: 100%;
+    
+    border: 1px solid black;
+    padding: 10.5px;
+    font-size: 10.5px;
+    color: white;
+    background-color: #242B29;
+    filter: drop-shadow(0 0 15rem white);
+    border-radius: 5px;
+    margin-bottom: 12.75px;
 `;
 
 const buttonWrapper = css`
