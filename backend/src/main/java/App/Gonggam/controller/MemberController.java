@@ -30,8 +30,16 @@ public class MemberController {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
             String Email = jsonNode.get("Email").asText();
-            result = memberservice.sendEmail(Email);
-            SqlResult = memberservice.signsql(Email, result);
+
+            boolean check = memberservice.checkEmail(Email);
+
+            if (check == false) {
+                result = memberservice.sendEmail(Email);
+                SqlResult = memberservice.signsql(Email, result);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"Email exist\", \"status\": \"204\"}");
+            }
         } catch (Exception e) {
         }
         if (SqlResult != false) {

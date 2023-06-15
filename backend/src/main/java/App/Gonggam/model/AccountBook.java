@@ -16,7 +16,6 @@ import App.Gonggam.service.MemberService;
 @Entity
 @Table(name = "AccountBook")
 public class AccountBook {
-    MemberService memberservice = new MemberService();
     private String AccountBookLogo; // @@ 가계부 로고
     private String AccountBookName; // @@ 가계부 이름
     private boolean AccountBookPublic; // true=> public false = private
@@ -107,14 +106,6 @@ public class AccountBook {
 
     public void setMembercount(long membercount) {
         Membercount = membercount;
-    }
-
-    public MemberService getMemberservice() {
-        return memberservice;
-    }
-
-    public void setMemberservice(MemberService memberservice) {
-        this.memberservice = memberservice;
     }
 
     public String getAccountBookLogo() {
