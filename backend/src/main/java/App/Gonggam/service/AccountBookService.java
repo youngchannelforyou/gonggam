@@ -551,7 +551,7 @@ public class AccountBookService {
         return notice;
     }
 
-    public List<Map<String, Object>> BoardGetIncomeExpenseByTag(String name, int dateRangeType, String fromDate) {
+    public Map<String, Object> BoardGetIncomeExpenseByTag(String name, int dateRangeType, String fromDate) {
         String postTableName = "Team5_" + name + "_Post";
 
         Map<String, Object> result = new HashMap<>();
@@ -622,6 +622,7 @@ public class AccountBookService {
 
             // 태그와 지출 금액을 맵으로 생성하여 리스트에 추가
             Map<String, Object> tagEntry = new HashMap<>();
+            tagEntry.put("percentage", calculatePercentage(expense, totalExpense));
             tagEntry.put("tag", tag);
             tagEntry.put("expense", expense);
             expenseByTagList.add(tagEntry);
@@ -644,32 +645,23 @@ public class AccountBookService {
             etcExpense += (long) expenseByTagList.get(i).get("expense");
         }
 
-        // 전체 금액 계산
-        long totalExpense1 = etcExpense;
-        for (Map<String, Object> entry : topExpenseByTagList) {
-            totalExpense1 += (long) entry.get("expense");
-        }
-
-        // 퍼센티지 값 계산하여 업데이트
-        DecimalFormat df = new DecimalFormat("0.00");
-        for (Map<String, Object> entry : topExpenseByTagList) {
-            long expense = (long) entry.get("expense");
-            double percentage = (expense / (double) totalExpense1) * 100;
-            entry.put("percentage", df.format(percentage));
-        }
-
         // 기타 항목 추가
         Map<String, Object> etcEntry = new HashMap<>();
+        etcEntry.put("percentage", calculatePercentage(etcExpense, totalExpense));
         etcEntry.put("tag", "etc");
         etcEntry.put("expense", etcExpense);
-        double etcPercentage = (etcExpense / (double) totalExpense1) * 100;
-        etcEntry.put("percentage", df.format(etcPercentage));
         topExpenseByTagList.add(etcEntry);
 
         // 결과 반환
-        return topExpenseByTagList;
-        // 결과 반환
+        result.put("Tag", topExpenseByTagList);
+        return result;
+    }
 
+    // 퍼센티지 계산 메서드
+    private String calculatePercentage(long value, long total) {
+        double percentage = (value / (double) total) * 100;
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format(percentage);
     }
 
     public List<Long> BoardGetRainBudget(String name, int dateRangeType, String fromDate) {
