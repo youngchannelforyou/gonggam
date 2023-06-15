@@ -43,10 +43,11 @@ function WidthBar({ title, totalAmount, amount, type }) {
                 <div className={amountWrapper(colorSet[type])}>{!type ? '+' : '-'}{new Intl.NumberFormat().format(amount)}</div>
             </div>
             <div className={widthBarWrapper}>
-                {selectedArr.map((isSelected) => {
+                {selectedArr.map((isSelected, index) => {
+                    const tmpKey = index + 1;
                     if (isSelected)
-                        return (<div className={widthBarItem(selectedItemColorSet[type])}></div>)
-                    return (<div className={widthBarItem(frameColorSet[type])}></div>)
+                        return (<div className={widthBarItem(selectedItemColorSet[type])} key={tmpKey}></div>)
+                    return (<div className={widthBarItem(frameColorSet[type])} key={tmpKey}></div>)
                 })}
             </div>
         </div>

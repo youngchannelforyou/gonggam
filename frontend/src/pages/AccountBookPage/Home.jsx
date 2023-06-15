@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { css, cx } from '@emotion/css';
 
 import Dashboard from '../../components/PersonalAcountBook/Home/Dashboard';
@@ -9,10 +9,20 @@ import noticeIcon from '../../assets/noticeIcon.svg'
 import communityIcon from '../../assets/communityIcon.svg'
 import addImg from '../../assets/addImg.png';
 import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
+import { useParams } from 'react-router-dom';
 
 
 function Home() {
-    const amount = '5381000058';
+    const [accountNumber, setAccountNumber] = useState(null);
+    const nowUrlParam = useParams();
+
+    console.log(nowUrlParam);
+    console.log(accountNumber);
+    useEffect(() => {
+        setAccountNumber(nowUrlParam.accountName.replace('account', ''));
+
+    }, [nowUrlParam])
+
     const noticeList = [
         { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' },
         { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' },
@@ -29,10 +39,29 @@ function Home() {
         { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' }
     ]
 
+    async function homeGetRequest() {
+        await fetch(`http://localhost:8080/gonggam/${accountNumber}/home`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.table(data);
+            })
+    }
+
+    useEffect(() => {
+        homeGetRequest();
+    }, []);
+
     return (
         <AccountBookWrapper>
             <div className={mainTopBox}>
-                <Dashboard amount={amount} />
+                <Dashboard accountNumber={accountNumber} />
             </div>
             <div className={mainBottomBox}>
                 <div className={leftContent}>
@@ -42,23 +71,26 @@ function Home() {
                             <p>공지사항</p>
                         </div>
                         <table className={writingListWrapper}>
-                            {
-                                noticeList.map((item) => {
-                                    return (
-                                        <tr className={writingItemWrapper}>
-                                            <td className={writingItemTitle}>
-                                                <a href={item.url}>{item.title}</a>
-                                            </td>
-                                            <td className={writingItemAuth}>
-                                                <a href={item.url}>{item.auth}</a>
-                                            </td>
-                                            <td className={writingItemDate}>
-                                                <a href={item.url}>{item.date}</a>
-                                            </td>
-                                        </tr>
-                                    )
-                                })
-                            }
+                            <tbody>
+                                {
+                                    noticeList.map((item, index) => {
+                                        const tmpKey = index + 1;
+                                        return (
+                                            <tr key={tmpKey} className={writingItemWrapper}>
+                                                <td className={writingItemTitle}>
+                                                    <a href={item.url}>{item.title}</a>
+                                                </td>
+                                                <td className={writingItemAuth}>
+                                                    <a href={item.url}>{item.auth}</a>
+                                                </td>
+                                                <td className={writingItemDate}>
+                                                    <a href={item.url}>{item.date}</a>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
                         </table>
                     </div>
                     <div className={cx(communityArea, writingBox)}>
@@ -67,23 +99,26 @@ function Home() {
                             <p>커뮤니티</p>
                         </div>
                         <table className={writingListWrapper}>
-                            {
-                                communityList.map((item) => {
-                                    return (
-                                        <tr className={writingItemWrapper}>
-                                            <td className={writingItemTitle}>
-                                                <a href='#'>{item.title}</a>
-                                            </td>
-                                            <td className={writingItemAuth}>
-                                                <a href='#'>{item.auth}</a>
-                                            </td>
-                                            <td className={writingItemDate}>
-                                                <a href='#'>{item.date}</a>
-                                            </td>
-                                        </tr>
-                                    )
-                                })
-                            }
+                            <tbody>
+                                {
+                                    communityList.map((item, index) => {
+                                        const tmpKey = index + 1;
+                                        return (
+                                            <tr key={tmpKey} className={writingItemWrapper}>
+                                                <td className={writingItemTitle}>
+                                                    <a href='#'>{item.title}</a>
+                                                </td>
+                                                <td className={writingItemAuth}>
+                                                    <a href='#'>{item.auth}</a>
+                                                </td>
+                                                <td className={writingItemDate}>
+                                                    <a href='#'>{item.date}</a>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -186,4 +221,5 @@ const addBox = css`
 `;
 
 const recentBox = css`
+
 `

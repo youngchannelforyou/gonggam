@@ -8,7 +8,10 @@ function AccountBookNameList({ title, list }) {
                 <div className={titleWrapper}>{title}</div>
             </div>
             <div className={accountBookListWrapper}>
-                {list.map((element) => <a className={accountBookElement} href='title'>{element}</a>)}
+                {list.map((element, index) => {
+                    const tmpKey = index + 1;
+                    return <a className={accountBookElement} href='title' key={tmpKey}>{element}</a>
+                })}
             </div>
         </div>
     );

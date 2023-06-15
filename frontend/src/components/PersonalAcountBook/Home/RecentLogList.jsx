@@ -17,8 +17,9 @@ function RecentLogList({ width }) {
             <div className={recentBoxTitle}>최근 변동 내역</div>
             <div className={recentItemWrapper}>
                 {
-                    spendList.map((item) => {
-                        return <RecentLogListItem item={item} />
+                    spendList.map((item, index) => {
+                        const tmpKey = index + 1;
+                        return <RecentLogListItem key={tmpKey} item={item} />
                     })
                 }
             </div>

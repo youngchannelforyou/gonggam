@@ -12,9 +12,7 @@ const Calendar = () => {
     useEffect(() => {
         if (currentMonth === null)
             return;
-
         setTimeout(() => setIsLoading(false), 1000);
-
     }, [currentMonth]);
 
     function MakeCalcHeader() {
@@ -78,42 +76,35 @@ const Calendar = () => {
 
     return (
         <div className={container}>
-            {!isLoading ?
-                (
-                    <>
-                        <div className={calcTitleWrapper}>
-                            <div className={calcTitleLeft}>
-                                <button className={calcTitleItems} onClick={() => { setCurrentMonth(subMonths(currentMonth, 1)) }}> &lt; </button>
-                                <div className={calcTitleItems}>
-                                    {format(currentMonth, 'M')}월
-                                    {/* {format(currentMonth, 'yyyy')} */}
-                                </div>
-                                <button className={calcTitleItems} onClick={() => { setCurrentMonth(addMonths(currentMonth, 1)) }}> &gt; </button>
-                            </div>
-                            <div className={calcTitleRight}>
-                                <button className={calcRightSideButton}>
-                                    <p>T</p>
-                                </button>
-                                <button className={cx(calcRightSideButton, addButton)}>
-                                    <p>
-                                        +
-                                    </p>
-                                </button>
-                            </div>
+            <Loading isLoading={isLoading}>
+                <div className={calcTitleWrapper}>
+                    <div className={calcTitleLeft}>
+                        <button className={calcTitleItems} onClick={() => { setCurrentMonth(subMonths(currentMonth, 1)) }}> &lt; </button>
+                        <div className={calcTitleItems}>
+                            {format(currentMonth, 'M')}월
+                            {/* {format(currentMonth, 'yyyy')} */}
                         </div>
-                        <div className={clacTableWrapper}>
-                            <MakeCalcHeader />
-                            <div className={calcTableBody}>
-                                <MakeCalcBody currentMonth={currentMonth} selectedDate={selectedDate} onDateClick={setSelectedDate} />
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <div className={positionRelative}>
-                        <Loading />
+                        <button className={calcTitleItems} onClick={() => { setCurrentMonth(addMonths(currentMonth, 1)) }}> &gt; </button>
                     </div>
-                )}
-        </div>
+                    <div className={calcTitleRight}>
+                        <button className={calcRightSideButton}>
+                            <p>T</p>
+                        </button>
+                        <button className={cx(calcRightSideButton, addButton)}>
+                            <p>
+                                +
+                            </p>
+                        </button>
+                    </div>
+                </div>
+                <div className={clacTableWrapper}>
+                    <MakeCalcHeader />
+                    <div className={calcTableBody}>
+                        <MakeCalcBody currentMonth={currentMonth} selectedDate={selectedDate} onDateClick={setSelectedDate} />
+                    </div>
+                </div>
+            </Loading>
+        </div >
     );
 }
 
@@ -266,10 +257,4 @@ const amountWrapper = css`
 
 const dollarIcon = css`
     width: 11px;
-`;
-
-const positionRelative = css`
-    width: 100%;
-    height: 100%;
-    position: relative;
 `;

@@ -2,11 +2,10 @@ import { css, keyframes } from '@emotion/css';
 import React, { useEffect, useState } from 'react';
 import imgLogo from '../../assets/imgLogo.png';
 
-function Loading(props) {
+function Loading({ isLoading, children }) {
     const [loadingDots, setLoadingDots] = useState('');
-
+    console.log(children);
     useEffect(() => {
-
         const interval = setInterval(() => {
             setLoadingDots(loadingDots => {
                 if (loadingDots === '...') {
@@ -21,25 +20,43 @@ function Loading(props) {
     }, []);
 
     return (
-        <div className={loadingWrapper}>
-            <div className={loadingImg}>
-                <img src={imgLogo} alt='loading' />
-            </div>
-            <div className={loadingText}>
-                <h1>로딩중{loadingDots}</h1>
-            </div>
-        </div>
+        <>
+            {!isLoading ?
+                (
+                    <>
+                        {children}
+                    </>
+                ) : (
+                    <div className={positionRelative}>
+                        <div className={loadingWrapper}>
+                            <div className={loadingImg}>
+                                <img src={imgLogo} alt='loading' />
+                            </div>
+                            <div className={loadingText}>
+                                <h1>로딩중{loadingDots}</h1>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </>
     );
 }
 
 export default Loading;
+
+const positionRelative = css`
+    width: 100%;
+    height: 100%;
+    position: relative;
+`;
 
 const loadingWrapper = css`
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    
+
     width: 300px;
     margin: auto;
 
