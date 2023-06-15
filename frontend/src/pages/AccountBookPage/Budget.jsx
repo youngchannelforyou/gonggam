@@ -1,33 +1,19 @@
 import React from 'react';
+import { css } from '@emotion/css';
 
 import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
-import Dashboard from '../../components/AcountBook/Home/Dashboard';
-import { css, cx } from '@emotion/css';
-import RecentLogList from '../../components/AcountBook/Home/RecentLogList';
-import Calendar from '../../components/AcountBook/Budget/Calendar';
+import BudgeBox from '../../components/PersonalAcountBook/Budget/BudgetBox';
+
 
 function Budget() {
-    const amount = '5381000058';
-
+    const spendTagList = ['축제준비', 'MT준비', '신입생환영회', '성인의날행사', '임원진회식', '기념일행사'];
     return (
         <AccountBookWrapper>
-            <div className={mainTopBox}>
-                <Dashboard amount={amount} />
+            <div>
+                <BudgeBox spendTagList={spendTagList} title='지출 항목' type={0} />
             </div>
-
-            <div className={mainMiddleBox}>
-                <div className={calcBox}>
-                    <Calendar />
-                </div>
-                <div className={mainBottomBox}>
-                    <div className={cx(listCommon, revenueBox)}>
-                        <RecentLogList />
-                    </div>
-                    <div>
-                        <RecentLogList />
-                    </div>
-
-                </div>
+            <div className={spendListWrapper}>
+                <BudgeBox spendTagList={spendTagList} title='수입 항목' type={1} />
             </div>
         </AccountBookWrapper>
     );
@@ -35,36 +21,6 @@ function Budget() {
 
 export default Budget;
 
-
-const mainTopBox = css`
-    width: 1071px;
-    height: 404px;
+const spendListWrapper = css`
+    margin-top: 30px;
 `;
-
-const mainMiddleBox = css`
-    display: flex;
-    gap: 17px;
-
-    width: 100%;
-    margin-top: 29px;
-`;
-
-const mainBottomBox = css`
-    width: 100%;
-    height: 441px;
-`;
-
-const calcBox = css`
-    width: 787x;
-    min-height: 642px;
-    border: 1px solid #252729;
-    border-radius: 20px;
-`;
-
-const listCommon = css`
-    
-`;
-
-const revenueBox = css`
-    margin-bottom: 22px;
-`; 

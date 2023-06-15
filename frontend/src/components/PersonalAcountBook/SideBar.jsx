@@ -1,7 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/css';
 
-import Navigation from '../../components/AcountBook/Navigation';
+import Navigation from './Navigation';
 import AccountBookNameList from './AccountBookNameList';
 
 function SideBar(props) {
@@ -89,7 +89,7 @@ const accountBooskWrapper = css`
 
 const accountBookWrapper = css`
     width: 230px;
-    min-height: 315px;
+    min-height: 200px;
     background-color: #232526;
     border-radius: 10px;
     padding: 19px 11px;

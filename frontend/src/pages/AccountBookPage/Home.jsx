@@ -1,8 +1,8 @@
 import React from 'react';
 import { css, cx } from '@emotion/css';
 
-import Dashboard from '../../components/AcountBook/Home/Dashboard';
-import RecentLogList from '../../components/AcountBook/Home/RecentLogList';
+import Dashboard from '../../components/PersonalAcountBook/Home/Dashboard';
+import RecentLogList from '../../components/PersonalAcountBook/Home/RecentLogList';
 
 
 import noticeIcon from '../../assets/noticeIcon.svg'

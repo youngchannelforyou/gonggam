@@ -75,7 +75,7 @@ function Dashboard({ amount }) {
                 <div className={divLine} />
                 <div className={widthBarWrapper}>
                     <div className={revenueBar}>
-                        <WidthBar title='수익액' totalAmount='50000000' amount='100235320' type={0} />
+                        <WidthBar title='수입액' totalAmount='50000000' amount='100235320' type={0} />
                     </div>
                     <div>
                         <WidthBar title='지출액' totalAmount='50000000' amount='200235320' type={1} />

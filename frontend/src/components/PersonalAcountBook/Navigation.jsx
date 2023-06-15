@@ -19,9 +19,9 @@ function Navigation() {
     return (
         <div className={container}>
             <button onClick={() => navigatePage('home')} className={buttonStyle('home', nowUrl)}>홈</button>
-            <button onClick={() => navigatePage('budget')} className={buttonStyle('budget', nowUrl)}>예산안</button>
-            <button onClick={() => navigatePage('asset')} className={buttonStyle('asset', nowUrl)}>자산</button>
             <button onClick={() => navigatePage('accountbook')} className={buttonStyle('accountbook', nowUrl)}>가계부</button>
+            <button onClick={() => navigatePage('budget')} className={buttonStyle('budget', nowUrl)}>수입 / 지출 항목</button>
+            {/* <button onClick={() => navigatePage('asset')} className={buttonStyle('asset', nowUrl)}>자산</button> */}
             <button onClick={() => navigatePage('notice')} className={buttonStyle('notice', nowUrl)}>공지사항</button>
             <button onClick={() => navigatePage('community')} className={buttonStyle('community', nowUrl)}>커뮤니티</button>
             <button onClick={() => navigatePage('settings')} className={buttonStyle('settings', nowUrl)}>설정</button>
