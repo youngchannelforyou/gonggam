@@ -2,6 +2,7 @@ package App.Gonggam.controller;
 
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -182,7 +183,7 @@ public class MemberController {
         }
     }
 
-    @PostMapping(path = "/logout", produces = "application/json", consumes = "application/json")
+    @GetMapping(path = "/logout", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> Logout(@RequestBody String inputjson,
             @CookieValue("memberId") String Token) {
 

@@ -466,4 +466,74 @@ public class GonggamController {
                     .body("{\"message\": \"server error\", \"status\": \"500\"}");
         }
     }
+
+    @GetMapping("/{Accountbook}/postpeed/{date}")
+    public ResponseEntity<String> CalenderPostGetRequest(@PathVariable("Accountbook") String Accountbook,
+            @PathVariable("date") String date,
+            @CookieValue("memberId") String memberId) {
+
+        String Id = mService.FindMemberUseToken(memberId);
+        Member checkmember = mService.FindMemberUseId(Id);
+
+        if (checkmember == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail get cookie\", \"status\": \"204\"}");
+        }
+
+        AccountBook book = service.getBook(Accountbook);
+
+        if (book == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error\", \"status\": \"500\"}");
+        }
+        try {
+            // JSON 변환을 위한 ObjectMapper 생성
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            List<Map<String, Object>> communities = service.getCalenderPost(Accountbook, date); // 찬영
+
+            if (communities == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"NO community\", \"status\": \"500\"}");
+            }
+
+            Map<String, Object> accountbook = new HashMap<>();
+            accountbook.put("name", book.getAccountBookName());
+            accountbook.put("count", book.getMembercount());
+
+            ArrayList<String> PaccountBook = new ArrayList<>();
+            ArrayList<String> MaccountBook = new ArrayList<>();
+
+            for (String tempbook : checkmember.getMemberPAccountBook()) {
+                String newBook = service.IdToBookName(tempbook);
+                PaccountBook.add(newBook);
+            }
+
+            for (String tempbook : checkmember.getMemberMAccountBook()) {
+                String newBook = service.IdToBookName(tempbook);
+                MaccountBook.add(newBook);
+            }
+
+            Map<String, Object> member = new HashMap<>();
+            member.put("name", checkmember.getMemberNickName());
+            member.put("PAccountBook", PaccountBook);
+            member.put("MAccountBook", MaccountBook);
+
+            // JSON 변환을 위한 ObjectMapper 생성
+            String memberJson = objectMapper.writeValueAsString(member);
+            String bookJson = objectMapper.writeValueAsString(accountbook);
+            String communitiesJson = objectMapper.writeValueAsString(communities);
+
+            // JSON을 응답 본문에 포함하여 반환
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/json")
+                    .body("{\"book\": " + bookJson + ", \"user\": " + memberJson + ", \"notice\": " + communitiesJson
+                            + "}");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error\", \"status\": \"500\"}");
+        }
+    }
 }
