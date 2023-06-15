@@ -1,24 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 
 import Navigation from './Navigation';
 import AccountBookNameList from './AccountBookNameList';
 
-function SideBar({ bookTitle, memberCount, userInfo }) {
+function SideBar({ accountNumber }) {
+    const [datas, setDatas] = useState(null);
     const userGrade = '반갑습니다';
+
+    useEffect(() => {
+        if (!accountNumber)
+            return;
+        homeGetRequest();
+    }, [accountNumber]);
+
+    async function homeGetRequest() {
+        await fetch(`http://localhost:8080/gonggam/${accountNumber}/homeside`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                setDatas(data);
+            })
+    };
 
     return (
         <aside className={container}>
-
             <div className={userInfoWrapper}>
-                <p className={userNameWrapper}>{userInfo.name}님</p>
+                <p className={userNameWrapper}>{datas?.user.name}님</p>
                 <p className={userGradeWrapper}>{userGrade}</p>
             </div>
             <div className={accountBooskWrapper}>
                 <div className={accountBookWrapper}>
                     <div className={accountBookInfoWrapper}>
-                        <div className={accountBookNameWrapper}>{bookTitle}</div>
-                        <div className={accountBookUserNumber}>{memberCount}명이 참가 중</div>
+                        <div className={accountBookNameWrapper}>{datas?.book.name}</div>
+                        <div className={accountBookUserNumber}>{datas?.book.count}명이 참가 중</div>
                     </div>
                     <div>
                         <Navigation />
@@ -26,10 +47,10 @@ function SideBar({ bookTitle, memberCount, userInfo }) {
                 </div>
                 <div className={accountBookNameListWrapper}>
                     <div className={marginBottom48}>
-                        <AccountBookNameList title='참여중인 가계부' list={userInfo.PAccountBook} />
+                        <AccountBookNameList title='참여중인 가계부' list={datas?.user.PAccountBook} />
                     </div>
                     <div>
-                        <AccountBookNameList title='관리중인 가계부' list={userInfo.MAccountBook} />
+                        <AccountBookNameList title='관리중인 가계부' list={datas?.user.MAccountBook} />
                     </div>
                 </div>
             </div>
@@ -41,12 +62,10 @@ export default SideBar;
 
 const container = css`
   height: 100%;
-  flex-grow: 1;
   border-radius: 20px;
   background-color: transparent ;
 
 `;
-
 
 const userInfoWrapper = css`
     width: 262px;
@@ -59,6 +78,7 @@ const userInfoWrapper = css`
 
     color: white;
 `;
+
 const userNameWrapper = css`
     float:left;
     font-size: 15px;
@@ -99,6 +119,7 @@ const accountBookInfoWrapper = css`
 `;
 
 const accountBookNameWrapper = css`
+    height: 18px;
     font-size: 18px;
     font-weight: bold;
     color:white;
@@ -106,6 +127,7 @@ const accountBookNameWrapper = css`
 
 const accountBookUserNumber = css`
     width: 208px;
+    height: 29px;
     padding-bottom: 14px;
     margin-top: 7px;
     border-bottom: 1px solid #404040;

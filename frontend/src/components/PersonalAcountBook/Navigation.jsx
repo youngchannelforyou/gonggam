@@ -24,7 +24,7 @@ function Navigation() {
             {/* <button onClick={() => navigatePage('asset')} className={buttonStyle('asset', nowUrl)}>자산</button> */}
             <button onClick={() => navigatePage('notice')} className={buttonStyle('notice', nowUrl)}>공지사항</button>
             <button onClick={() => navigatePage('community')} className={buttonStyle('community', nowUrl)}>커뮤니티</button>
-            <button onClick={() => navigatePage('settings')} className={buttonStyle('settings', nowUrl)}>설정</button>
+            {/* <button onClick={() => navigatePage('settings')} className={buttonStyle('settings', nowUrl)}>설정</button> */}
         </div >
     );
 }
