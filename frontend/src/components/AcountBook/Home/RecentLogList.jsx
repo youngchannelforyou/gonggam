@@ -50,6 +50,7 @@ const recentBoxTitle = css`
     color: #D6D6D6;
     font-size: 13px;
     line-height: 14px;
+    z-index: 100;
 `;
 const recentItemWrapper = css`
     display: flex;
