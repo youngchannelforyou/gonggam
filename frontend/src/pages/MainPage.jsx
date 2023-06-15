@@ -4,30 +4,15 @@ import imgLogo from '../assets/imgLogo.png';
 import textLogo from '../assets/textLogo.png';
 import AccountSlider from '../components/AccountList/AccountSlider.jsx'
 import MakeNewCalcPopup from '../components/Main/MakeNewCalcPopup';
+import Loading from '../components/Loading/Loading';
 
 function MainPage(props) {
     const [value, setValue] = useState('');
     const [isPopup, setIsPopup] = useState(false);
     const [memberInfo, setMemberInfo] = useState(null);
-    const [loadingDots, setLoadingDots] = useState('');
 
     useEffect(() => {
         getMemberInfo();
-    }, [])
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setLoadingDots(loadingDots => {
-                if (loadingDots === '...') {
-                    return '';
-                }
-                return loadingDots + '.';
-            });
-        }, 500);
-
-        return () => {
-            clearInterval(interval);
-        };
     }, []);
 
     async function getMemberInfo() {
@@ -110,14 +95,7 @@ function MainPage(props) {
                     </div>
                 </>
                 :
-                <div className={loadingWrapper}>
-                    <div className={loadingImg}>
-                        <img src={imgLogo} alt='loading' />
-                    </div>
-                    <div className={loadingText}>
-                        <h1>로딩중{loadingDots}</h1>
-                    </div>
-                </div>
+                <Loading />
             }
         </div>
     );
@@ -128,6 +106,7 @@ export default MainPage;
 const container = css`
     position: relative;
     width: 100%;
+    height: 100%;
     padding-top: 26px;
 `;
 

@@ -3,7 +3,7 @@ import { css } from '@emotion/css';
 
 import RecentLogListItem from './RecentLogListItem';
 
-function RecentLogList(props) {
+function RecentLogList({ width }) {
     const spendList = [
         { date: '2023.05.02', title: '간식사업', type: 0, money: '100,235,320₩', contents: '간식 사업을 위한 식자재 예산을 사용하였습니다. 싸이버거 200개, 뭐뭐사용 100개 맙소사 그렇게 엄청난 사실이?' },
         { date: '2023.05.02', title: '간식사업', type: 1, money: '100,235,320₩', contents: '간식 사업을 위한 식자재 예산을 사용하였습니다. 싸이버거 200개, 뭐뭐사용 100개 맙소사 그렇게 엄청난 사실이?' },
@@ -13,7 +13,7 @@ function RecentLogList(props) {
     ];
 
     return (
-        <div className={container}>
+        <div className={container(width)}>
             <div className={recentBoxTitle}>최근 변동 내역</div>
             <div className={recentItemWrapper}>
                 {
@@ -28,8 +28,8 @@ function RecentLogList(props) {
 
 export default RecentLogList;
 
-const container = css`
-    width: 100%;
+const container = (width) => css`
+    width: ${width ?? '100%'};
     height: 306px;
     position: relative;
 
