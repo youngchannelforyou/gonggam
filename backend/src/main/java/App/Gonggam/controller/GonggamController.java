@@ -112,14 +112,27 @@ public class GonggamController {
             // JSON 변환을 위한 ObjectMapper 생성
             ObjectMapper objectMapper = new ObjectMapper();
             // book, notice, communities를 JSON 문자열로 변환
-            List<Map<String, Object>> posts = service.homeGetPost(Accountbook, 0, 10);
+            List<Map<String, Object>> posts = service.homeGetPost(Accountbook, 0, 5);
 
-            String postsJson = objectMapper.writeValueAsString(posts);
+            List<Map<String, Object>> truePosts = new ArrayList<>();
+            List<Map<String, Object>> falsePosts = new ArrayList<>();
+
+            for (Map<String, Object> post : posts) {
+                boolean type = (boolean) post.get("Type");
+                if (type) {
+                    truePosts.add(post);
+                } else {
+                    falsePosts.add(post);
+                }
+            }
+
+            String postsJson = objectMapper.writeValueAsString(truePosts);
+            String postsJson1 = objectMapper.writeValueAsString(falsePosts);
 
             // JSON을 응답 본문에 포함하여 반환
             return ResponseEntity.ok()
                     .header("Content-Type", "application/json")
-                    .body("{\"posts\": " + postsJson + "}");
+                    .body("{\"income_posts\": " + postsJson + ", \"expense_posts\": " + postsJson1 + "}");
 
         } catch (IOException e) {
             e.printStackTrace();

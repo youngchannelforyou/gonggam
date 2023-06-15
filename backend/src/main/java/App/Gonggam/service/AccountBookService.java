@@ -497,39 +497,58 @@ public class AccountBookService {
     }
 
     public List<Map<String, Object>> homeGetPost(String name, int startIndex, int count) {
-        String Community_tableName = "Team5_" + name + "_Post";
+        String communityTableName = "Team5_" + name + "_Post";
 
-        List<Map<String, Object>> NoticeList = new ArrayList<>();
+        List<Map<String, Object>> noticeList = new ArrayList<>();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
-            String selectSql = "SELECT * FROM " + Community_tableName + " ORDER BY useDate DESC LIMIT ?, ?";
-            try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
-                selectStmt.setInt(1, startIndex);
-                selectStmt.setInt(2, count);
-                try (ResultSet resultSet = selectStmt.executeQuery()) {
-                    while (resultSet.next()) {
-                        Map<String, Object> Notice = new HashMap<>();
-                        Notice.put("Num", resultSet.getLong("Num"));
-                        Notice.put("Type", resultSet.getBoolean("Type"));
-                        Notice.put("Used_Budget", resultSet.getLong("Used_Budget"));
-                        Notice.put("Date", dateFormat.format(new Date(resultSet.getTimestamp("useDate").getTime())));
-                        String title = resultSet.getString("Title");
-                        if (title.length() > 30) {
-                            title = title.substring(0, 30);
-                        }
-                        Notice.put("Title", title);
-                        Notice.put("Text", resultSet.getString("Text"));
+            // True인 항목 조회
+            String selectTrueSql = "SELECT * FROM " + communityTableName
+                    + " WHERE Type = true ORDER BY useDate DESC LIMIT ?";
+            try (PreparedStatement selectTrueStmt = connection.prepareStatement(selectTrueSql)) {
+                selectTrueStmt.setInt(1, count);
+                try (ResultSet trueResultSet = selectTrueStmt.executeQuery()) {
+                    while (trueResultSet.next()) {
+                        Map<String, Object> notice = createNoticeMap(trueResultSet, dateFormat);
+                        noticeList.add(notice);
+                    }
+                }
+            }
 
-                        NoticeList.add(Notice);
+            // False인 항목 조회
+            String selectFalseSql = "SELECT * FROM " + communityTableName
+                    + " WHERE Type = false ORDER BY useDate DESC LIMIT ?";
+            try (PreparedStatement selectFalseStmt = connection.prepareStatement(selectFalseSql)) {
+                selectFalseStmt.setInt(1, count);
+                try (ResultSet falseResultSet = selectFalseStmt.executeQuery()) {
+                    while (falseResultSet.next()) {
+                        Map<String, Object> notice = createNoticeMap(falseResultSet, dateFormat);
+                        noticeList.add(notice);
                     }
                 }
             }
         } catch (SQLException e) {
             // Exception handling
         }
-        return NoticeList;
+
+        return noticeList;
+    }
+
+    private Map<String, Object> createNoticeMap(ResultSet resultSet, SimpleDateFormat dateFormat) throws SQLException {
+        Map<String, Object> notice = new HashMap<>();
+        notice.put("Num", resultSet.getLong("Num"));
+        notice.put("Type", resultSet.getBoolean("Type"));
+        notice.put("Used_Budget", resultSet.getLong("Used_Budget"));
+        notice.put("Date", dateFormat.format(new Date(resultSet.getTimestamp("useDate").getTime())));
+        String title = resultSet.getString("Title");
+        if (title.length() > 30) {
+            title = title.substring(0, 30);
+        }
+        notice.put("Title", title);
+        notice.put("Text", resultSet.getString("Text"));
+        return notice;
     }
 
     public List<Map<String, Object>> BoardGetIncomeExpenseByTag(String name, int dateRangeType, String fromDate) {

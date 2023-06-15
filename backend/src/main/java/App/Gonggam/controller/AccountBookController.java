@@ -456,7 +456,6 @@ public class AccountBookController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
         }
-
     }
 
     @PostMapping(path = "/getcalenderbord", produces = "application/json", consumes = "application/json")
