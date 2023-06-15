@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 import DashboardGraph from './DashboardGraph';
 import WidthBar from './WidthBar';
+import Loading from '../../Loading/Loading';
 
 /*
     clickedScope: 1(일), 2(월), 3(달)
 */
-
 function Dashboard({ accountNumber }) {
-    const [isLoading, setIsLoading] = useState(true);
-    const [clickedScope, setClickedScope] = useState(null);
+    const [clickedScope, setClickedScope] = useState(1);
+    const [tableInfo, setTableInfo] = useState(null);
     const [expenseBarItemsInfo, setExpenseBarItemsWidth] = useState([
         { title: '축제준비', percent: 0 },
         { title: '축제준비', percent: 0 },
@@ -18,6 +18,7 @@ function Dashboard({ accountNumber }) {
         { title: '축제준비', percent: 0 },
         { title: '축제준비', percent: 0 },
     ]);
+
     const colorSet = ['#3D83F6', '#91D8FC', '#84D0CB', '#AE6BF2', '#5F5FDE', '#EA4C64'];
 
     useEffect(() => {
@@ -29,14 +30,17 @@ function Dashboard({ accountNumber }) {
             { title: '축제준비', percent: 3 },
             { title: '축제준비', percent: 2 },
         ]);
-
-        homePostRequset();
     }, []);
 
     useEffect(() => {
-        if (accountNumber !== null)
-            setIsLoading(true);
-    }, [accountNumber])
+        if (accountNumber == null)
+            return;
+        homePostRequset();
+    }, [accountNumber]);
+
+    useEffect(() => {
+        homePostRequset();
+    }, [clickedScope])
 
 
 
@@ -44,7 +48,7 @@ function Dashboard({ accountNumber }) {
         await fetch('http://localhost:8080/AccountBook/getcostlist', {
             method: 'POST',
             body: JSON.stringify({
-                'Term': 1,
+                'Term': clickedScope,
                 'AccountBook': accountNumber
             }),
             headers: {
@@ -56,8 +60,9 @@ function Dashboard({ accountNumber }) {
             .then((responseData) => responseData.json())
             .then((data) => {
                 console.log(data);
+                setTableInfo(data);
             })
-    }
+    };
 
     return (
         <div className={container}>
@@ -77,7 +82,7 @@ function Dashboard({ accountNumber }) {
                         {/* <button className={scopeButton('year', clickedScope)} onClick={() => setClickedScope('year')}>1년</button> */}
                     </div>
                     <div>
-                        <DashboardGraph />
+                        <DashboardGraph tableInfo={tableInfo} />
                     </div>
                 </div>
             </div>

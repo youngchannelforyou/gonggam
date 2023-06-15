@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 
-function DashboardGraph(props) {
+function DashboardGraph({ tableInfo }) {
     const [values, setValues] = useState([
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -9,8 +9,12 @@ function DashboardGraph(props) {
     ]);
 
     useEffect(() => {
-        setValues([80, 75, 70, 68, 66, 60, 50, 30, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-    }, [])
+        if (!tableInfo)
+            return;
+        console.log('hello');
+        console.log(tableInfo.costList);
+        // setValues(tableInfo.costList);
+    }, [tableInfo]);
 
     return (
         <div className={container}>

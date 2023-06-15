@@ -16,7 +16,6 @@ function MainPage() {
     }, []);
 
     useEffect(() => {
-        // console.log(memberInfo);
         if (!memberInfo)
             return;
         if (!memberInfo.memberNickName)

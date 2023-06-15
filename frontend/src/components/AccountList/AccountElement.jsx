@@ -10,7 +10,7 @@ function AccountElement({ title, imgUrl, memberCount }) {
     const movePage = useNavigate();
 
     function moveAccountPage() {
-        movePage('/account/home');
+        movePage('/account8/home');
     }
 
     return (

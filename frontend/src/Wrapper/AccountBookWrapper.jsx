@@ -3,18 +3,18 @@ import { css } from '@emotion/css';
 import Header from '../components/PersonalAcountBook/Header';
 import SideBar from '../components/PersonalAcountBook/SideBar';
 
-function AccountBookWrapper(props) {
-    return (
+function AccountBookWrapper({ bookTitle, memberCount, children, userInfo }) {
 
+    return (
         <div className={container}>
             <div className={alignCenter}>
                 <Header />
                 <div className={sectionWrapper}>
                     <div>
-                        <SideBar />
+                        <SideBar bookTitle={bookTitle} memberCount={memberCount} userInfo={userInfo} />
                     </div>
                     <main className={mainContentsWrapper}>
-                        {props.children}
+                        {children}
                     </main>
                 </div>
             </div>

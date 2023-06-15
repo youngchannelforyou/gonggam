@@ -4,12 +4,12 @@ import { css } from '@emotion/css';
 import imgLogo from '../../assets/imgLogo.png'
 import textLogo from '../../assets/textLogo.png'
 function Header() {
-    return (
-        <div className={mainTitle}>
-            <img src={imgLogo} alt='draw' />
-            <img src={textLogo} alt='img' />
-        </div>
-    );
+  return (
+    <div className={mainTitle}>
+      <img src={imgLogo} alt='draw' />
+      <img src={textLogo} alt='img' />
+    </div>
+  );
 }
 
 export default Header;
