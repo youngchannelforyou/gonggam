@@ -75,7 +75,7 @@ function MainPage() {
     return (
         <div className={container}>
             <Loading isLoading={isLoading}>
-                {isPopup ? <MakeNewCalcPopup setIsPopup={setIsPopup} /> : <></>}
+                {isPopup ? <MakeNewCalcPopup setIsPopup={setIsPopup} userName={memberInfo.memberId} /> : <></>}
                 <div className={header}>
                     <p className={userNameTag}>
                         {memberInfo?.memberNickName}님</p>

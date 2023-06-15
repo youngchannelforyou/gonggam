@@ -36,12 +36,12 @@ function Dashboard({ accountNumber }) {
         if (!accountNumber)
             return;
         homePostRequset();
-        getIncomeExpense();
+        // getIncomeExpense();
     }, [accountNumber]);
 
     useEffect(() => {
         homePostRequset();
-        getIncomeExpense();
+        // getIncomeExpense();
     }, [clickedScope])
 
     async function getIncomeExpense() {
@@ -59,13 +59,12 @@ function Dashboard({ accountNumber }) {
         })
             .then((responseData) => responseData.json())
             .then((data) => {
-                console.log(data);
+                // console.log(data);
                 setIncomeExpense(data);
                 let totalAmount = 0;
                 data.Tag.map((item) => {
                     return totalAmount += item.expense;
                 });
-                console.log(totalAmount);
                 data.Tag.map((item) => {
                     return item.percent = Math.round((item.expense / totalAmount) * 100);
                 });
@@ -91,7 +90,7 @@ function Dashboard({ accountNumber }) {
                 setTableInfo(data);
             })
     };
-    console.log(expenseBarItemsInfo);
+
     function makeTotalAmount(incomeExpense) {
         return incomeExpense?.Income + incomeExpense?.Expense;
     };
@@ -155,10 +154,10 @@ function Dashboard({ accountNumber }) {
                 <div className={divLine} />
                 <div className={widthBarWrapper}>
                     <div className={revenueBar}>
-                        <WidthBar title='수입액' totalAmount={makeTotalAmount(incomeExpense)} amount={incomeExpense?.Income} type={0} />
+                        <WidthBar title='수입액' totalAmount={incomeExpense ? makeTotalAmount(incomeExpense) : '100000'} amount={incomeExpense ? incomeExpense?.Income : '1000'} type={0} />
                     </div>
                     <div>
-                        <WidthBar title='지출액' totalAmount={makeTotalAmount(incomeExpense)} amount={incomeExpense?.Expense} type={1} />
+                        <WidthBar title='지출액' totalAmount={incomeExpense ? makeTotalAmount(incomeExpense) : '100000'} amount={incomeExpense ? incomeExpense?.Expens : '1000'} type={1} />
                     </div>
                 </div>
             </div>

@@ -1,19 +1,90 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, subMonths, addMonths } from 'date-fns';
 import { css, cx } from '@emotion/css';
 import Loading from '../../Loading/Loading';
 
-const Calendar = () => {
+function Calendar({ accountNumber }) {
     const [isLoading, setIsLoading] = useState(true);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
-
+    const [calcDay, setCalcDay] = useState(null);
+    const [calcData, setCalcData] = useState(null)
 
     useEffect(() => {
         if (currentMonth === null)
             return;
-        setTimeout(() => setIsLoading(false), 1000);
+
+        initCalc(currentMonth);
     }, [currentMonth]);
+
+    useEffect(() => {
+        if (!calcDay)
+            return;
+
+        getCalcBoard(format(calcDay.startDate, 'yyyy-MM-dd'), format(calcDay.endDate, 'yyyy-MM-dd'));
+    }, [calcDay]);
+
+    const RenderCalc = useMemo(() => {
+        // selectedDate
+        if (!calcData)
+            return <></>;
+
+        const rows = [];
+        let days = [];
+        let day = calcDay.startDate;
+        let formattedDate = '';
+
+        while (day <= calcDay.endDate) {
+            for (let i = 0; i < 7; i++) {
+                formattedDate = format(day, 'd');
+                const cloneDay = day;
+                const today = format(cloneDay, 'yyyy-MM-dd');
+                const todayValue = calcData[today];
+
+                days.push(
+                    <div className={cx(dateCommon, format(currentMonth, 'M') !== format(day, 'M') ? notThisMonth : thisMonth)} key={day} onClick={() => setSelectedDate(cloneDay)}>
+                        <div className={paddingLeft}>
+                            {Number(formattedDate) < 10 ? `0${formattedDate}` : `${formattedDate}`}
+                        </div>
+                        <div className={amountTextBox}>
+                            {todayValue &&
+                                <>
+                                    <div className={cx(displayFlex, css`color: #318D60;`)}>
+                                        <span className={amountWrapper}>+{new Intl.NumberFormat().format(todayValue.Income)}</span>
+                                        <span className={dollarIcon}>₩</span>
+                                    </div>
+                                    <div className={cx(displayFlex, css`color: #AD2F2F;`)}>
+                                        <span className={amountWrapper}>-{new Intl.NumberFormat().format(todayValue.Expense)}</span>
+                                        <span className={dollarIcon}>₩</span>
+                                    </div>
+                                </>
+                            }
+                        </div>
+                    </div>
+                );
+                day = addDays(day, 1);
+            }
+            rows.push(
+                <div className={calcBodyRow} key={day}>
+                    {days}
+                </div>,
+            );
+            days = [];
+        }
+        return rows;
+    }, [calcData]);
+
+    function initCalc(currentMonth) {
+        const monthStart = startOfMonth(currentMonth);
+        const monthEnd = endOfMonth(monthStart);
+
+        setCalcDay({
+            'monthStart': startOfMonth(currentMonth),
+            'monthEnd': endOfMonth(monthStart),
+            'startDate': startOfWeek(monthStart),
+            'endDate': endOfWeek(monthEnd),
+        });
+    }
 
     function MakeCalcHeader() {
         return (
@@ -29,49 +100,26 @@ const Calendar = () => {
         );
     }
 
-    const MakeCalcBody = ({ currentMonth, selectedDate, onDateClick }) => {
-        const monthStart = startOfMonth(currentMonth);
-        const monthEnd = endOfMonth(monthStart);
-        const startDate = startOfWeek(monthStart);
-        const endDate = endOfWeek(monthEnd);
-
-        const rows = [];
-        let days = [];
-        let day = startDate;
-        let formattedDate = '';
-
-        while (day <= endDate) {
-            for (let i = 0; i < 7; i++) {
-                formattedDate = format(day, 'd');
-                console.log(formattedDate);
-                const cloneDay = day;
-                days.push(
-                    <div className={cx(dateCommon, format(currentMonth, 'M') !== format(day, 'M') ? notThisMonth : thisMonth)} key={day} onClick={() => onDateClick(cloneDay)}>
-                        <div className={paddingLeft}>
-                            {Number(formattedDate) < 10 ? `0${formattedDate}` : `${formattedDate}`}
-                        </div>
-                        <div className={amountTextBox}>
-                            <div className={cx(displayFlex, css`color: #318D60;`)}>
-                                <span className={amountWrapper}>+0</span>
-                                <span className={dollarIcon}>₩</span>
-                            </div>
-                            <div className={cx(displayFlex, css`color: #AD2F2F;`)}>
-                                <span className={amountWrapper}>-100,235,320</span>
-                                <span className={dollarIcon}>₩</span>
-                            </div>
-                        </div>
-                    </div>
-                );
-                day = addDays(day, 1);
-            }
-            rows.push(
-                <div className={calcBodyRow} key={day}>
-                    {days}
-                </div>,
-            );
-            days = [];
-        }
-        return rows;
+    async function getCalcBoard(start, end) {
+        await fetch('http://localhost:8080/AccountBook/getcalenderbord', {
+            method: 'POST',
+            body: JSON.stringify({
+                "AccountBook": { accountNumber },
+                "start": start,
+                "end": end
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
+                setCalcData(data);
+                setIsLoading(false);
+            })
     };
 
     return (
@@ -100,7 +148,7 @@ const Calendar = () => {
                 <div className={clacTableWrapper}>
                     <MakeCalcHeader />
                     <div className={calcTableBody}>
-                        <MakeCalcBody currentMonth={currentMonth} selectedDate={selectedDate} onDateClick={setSelectedDate} />
+                        {RenderCalc}
                     </div>
                 </div>
             </Loading>

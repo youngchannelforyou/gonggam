@@ -35,7 +35,7 @@ function AccountBook() {
 
                 <div className={mainMiddleBox}>
                     <div className={calcBox}>
-                        <Calendar />
+                        <Calendar accountNumber={accountNumber} />
                     </div>
                     <div className={mainBottomBox}>
                         <div className={cx(listCommon, revenueBox)}>

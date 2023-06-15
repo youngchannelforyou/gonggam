@@ -11,8 +11,6 @@ function Navigation() {
 
 
     function navigatePage(url) {
-        console.log(url);
-        console.log(nowUrl);
         movePage(`/${accountName}/${url}`);
     }
 
