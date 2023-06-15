@@ -1,16 +1,15 @@
 import React from 'react';
+import { css } from '@emotion/css';
 
-import SideBar from '../../components/AcountBook/SideBar';
+import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
 
 function AccountBook() {
 
     return (
-        <div>
-            <SideBar />
-            <main></main>
-        </div>
+        <AccountBookWrapper>
+            <div></div>
+        </AccountBookWrapper>
     );
 };
 
 export default AccountBook;
-
