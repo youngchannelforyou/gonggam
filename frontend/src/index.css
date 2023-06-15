@@ -123,6 +123,7 @@ body #root {
 
 * {
   color: inherit;
+  text-overflow: ellipsis;
 }
 
 ol,
@@ -133,6 +134,10 @@ ul {
 blockquote,
 q {
   quotes: none;
+}
+
+a {
+  text-decoration: none;
 }
 
 button {

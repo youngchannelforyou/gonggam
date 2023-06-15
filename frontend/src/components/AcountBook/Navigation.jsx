@@ -38,7 +38,6 @@ const container = css`
     
     width: 100%;
     background-color: #232526;
-    
 `;
 
 const buttonStyle = (url, nowUrl) => css`

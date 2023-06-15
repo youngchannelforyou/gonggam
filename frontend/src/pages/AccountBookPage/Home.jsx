@@ -1,35 +1,109 @@
 import React from 'react';
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 
 import SideBar from '../../components/AcountBook/SideBar';
 import Header from '../../components/AcountBook/Header';
-import addImg from '../../assets/addImg.png';
 import Dashboard from '../../components/AcountBook/Home/Dashboard';
+import RecentLogList from '../../components/AcountBook/Home/RecentLogList';
+
+
+import noticeIcon from '../../assets/noticeIcon.svg'
+import communityIcon from '../../assets/communityIcon.svg'
+import addImg from '../../assets/addImg.png';
+
 
 function Home() {
+    const amount = '5381000058';
+    const noticeList = [
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' }
+    ];
+
+    const communityList = [
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
+        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' }
+    ]
 
     return (
         <div className={container}>
-            <Header />
-            <div className={sectionWrapper}>
-                <div>
-                    <SideBar />
+            <div className={alignCenter}>
+                <Header />
+                <div className={sectionWrapper}>
+                    <div>
+                        <SideBar />
+                    </div>
+                    <main className={mainContentsWrapper}>
+                        <div className={mainTopBox}>
+                            <Dashboard amount={amount} />
+                        </div>
+                        <div className={mainBottomBox}>
+                            <div className={leftContent}>
+                                <div className={cx(notieArea, writingBox)}>
+                                    <div className={titleWrapper}>
+                                        <img src={noticeIcon} alt='noticeIcon' />
+                                        <p>공지사항</p>
+                                    </div>
+                                    <table className={writingListWrapper}>
+                                        {
+                                            noticeList.map((item) => {
+                                                return (
+                                                    <tr className={writingItemWrapper}>
+                                                        <td className={writingItemTitle}>
+                                                            <a href={item.url}>{item.title}</a>
+                                                        </td>
+                                                        <td className={writingItemAuth}>
+                                                            <a href={item.url}>{item.auth}</a>
+                                                        </td>
+                                                        <td className={writingItemDate}>
+                                                            <a href={item.url}>{item.date}</a>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </table>
+                                </div>
+                                <div className={cx(communityArea, writingBox)}>
+                                    <div className={titleWrapper}>
+                                        <img src={communityIcon} alt='communityIcon' />
+                                        <p>커뮤니티</p>
+                                    </div>
+                                    <table className={writingListWrapper}>
+                                        {
+                                            communityList.map((item) => {
+                                                return (
+                                                    <tr className={writingItemWrapper}>
+                                                        <td className={writingItemTitle}>
+                                                            <a href='#'>{item.title}</a>
+                                                        </td>
+                                                        <td className={writingItemAuth}>
+                                                            <a href='#'>{item.auth}</a>
+                                                        </td>
+                                                        <td className={writingItemDate}>
+                                                            <a href='#'>{item.date}</a>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                            <div className={rightContent}>
+                                <div className={addBox}><img src={addImg} alt='add' /></div>
+                                <div className={recentBox}>
+                                    <RecentLogList />
+                                </div>
+                            </div>
+                        </div>
+                    </main>
                 </div>
-                <main className={mainContentsWrapper}>
-                    <div className={mainTopBox}>
-                        <Dashboard amount='5,381,000,058' />
-                    </div>
-                    <div className={mainBottomBox}>
-                        <div className={leftContent}>
-                            <div className={noticeBox}></div>
-                            <div className={communityBox}></div>
-                        </div>
-                        <div className={rightContent}>
-                            <div className={addBox}><img src={addImg} alt='add' /></div>
-                            <div className={recentLogList}></div>
-                        </div>
-                    </div>
-                </main>
             </div>
         </div>
     );
@@ -39,11 +113,15 @@ export default Home;
 
 const container = css`
     width: 100%;
-    min-width: 1393px;
+    min-width: 1423px;
     min-height: 980px;
     height: 100%;
-    margin: 25px 0 25px 30px;
-    padding-right: 30px;
+    padding: 25px 30px;
+`;
+
+const alignCenter = css`
+    width: 1363px;
+    margin: 0 auto;
 `;
 
 const sectionWrapper = css`
@@ -78,21 +156,61 @@ const rightContent = css`
     width: 278px;
 `;
 
-const noticeBox = css`
+const notieArea = css`
     width: 777px;
-    height: 155px;
+    min-height: 160px;
+`;
 
+const writingBox = css`
+    padding: 20px 27px 0 17px;
     border: 1px solid #252729;
     border-radius: 20px;
     margin-bottom: 19px;
 `;
 
-const communityBox = css`
+const titleWrapper = css`
+    display: flex;
+    color: #fff;
+
+`;
+
+const writingListWrapper = css`
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-collapse: collapse;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 400;
+`;
+
+const writingItemWrapper = css`
+    width: 100%;
+
+    td {
+        height: 16px;
+        line-height: 16px;
+        padding-bottom: 12px;
+        text-overflow : ellipsis;
+    }
+`;
+
+const writingItemTitle = css`
+    text-align: left;
+`;
+
+const writingItemAuth = css`
+    text-align: right;
+`;
+const writingItemDate = css`
+    width: 71px;
+    padding-left: 46px;
+    text-align: right;
+`;
+
+const communityArea = css`
     width: 777px;
     height: 267px;
-
-    border: 1px solid #252729;
-    border-radius: 20px;
 `;
 
 const addBox = css`
@@ -101,10 +219,5 @@ const addBox = css`
     margin-bottom: 19px; 
 `;
 
-const recentLogList = css`
-    width: 100%;
-    height: 306px;
-    background-color: #1C1E1F;
-    border: 1px solid #252729;
-    border-radius: 20px;
-`;
+const recentBox = css`
+`
