@@ -6,10 +6,9 @@ import WidthBar from './WidthBar';
 /*
     clickedScope: 1(일), 2(월), 3(달)
 */
-
 function Dashboard({ accountNumber }) {
-    const [isLoading, setIsLoading] = useState(true);
-    const [clickedScope, setClickedScope] = useState(null);
+    const [clickedScope, setClickedScope] = useState(1);
+    const [tableInfo, setTableInfo] = useState(null);
     const [expenseBarItemsInfo, setExpenseBarItemsWidth] = useState([
         { title: '축제준비', percent: 0 },
         { title: '축제준비', percent: 0 },
@@ -18,6 +17,7 @@ function Dashboard({ accountNumber }) {
         { title: '축제준비', percent: 0 },
         { title: '축제준비', percent: 0 },
     ]);
+
     const colorSet = ['#3D83F6', '#91D8FC', '#84D0CB', '#AE6BF2', '#5F5FDE', '#EA4C64'];
 
     useEffect(() => {
@@ -29,22 +29,23 @@ function Dashboard({ accountNumber }) {
             { title: '축제준비', percent: 3 },
             { title: '축제준비', percent: 2 },
         ]);
-
-        homePostRequset();
     }, []);
 
     useEffect(() => {
-        if (accountNumber !== null)
-            setIsLoading(true);
-    }, [accountNumber])
+        if (!accountNumber)
+            return;
+        homePostRequset();
+    }, [accountNumber]);
 
+    useEffect(() => {
+        homePostRequset();
+    }, [clickedScope])
 
-
-    async function homePostRequset() {
-        await fetch('http://localhost:8080/AccountBook/getcostlist', {
+    async function getIncomeExpense() {
+        await fetch('http://localhost:8080/AccountBook/getIncome_Expense', {
             method: 'POST',
             body: JSON.stringify({
-                'Term': 1,
+                'Term': clickedScope,
                 'AccountBook': accountNumber
             }),
             headers: {
@@ -56,8 +57,29 @@ function Dashboard({ accountNumber }) {
             .then((responseData) => responseData.json())
             .then((data) => {
                 console.log(data);
+                // setExpenseBarItemsWidth(data);
             })
     }
+
+    async function homePostRequset() {
+        await fetch('http://localhost:8080/AccountBook/getcostlist', {
+            method: 'POST',
+            body: JSON.stringify({
+                'Term': clickedScope,
+                'AccountBook': `${accountNumber}`,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
+                setTableInfo(data);
+            })
+    };
 
     return (
         <div className={container}>
@@ -66,7 +88,7 @@ function Dashboard({ accountNumber }) {
                     <div className={budgetText}>예산 잔액</div>
                     <div className={balanceWrapper}>
                         <p className={dollorIcon} >₩</p>
-                        <p className={amountText}>{new Intl.NumberFormat().format(1111)}</p>
+                        <p className={amountText}>{new Intl.NumberFormat().format(tableInfo?.Budget)}</p>
                     </div>
                 </div>
                 <div>
@@ -77,7 +99,7 @@ function Dashboard({ accountNumber }) {
                         {/* <button className={scopeButton('year', clickedScope)} onClick={() => setClickedScope('year')}>1년</button> */}
                     </div>
                     <div>
-                        <DashboardGraph />
+                        <DashboardGraph tableInfo={tableInfo} />
                     </div>
                 </div>
             </div>

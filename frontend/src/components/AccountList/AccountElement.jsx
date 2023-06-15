@@ -3,14 +3,14 @@ import { css } from '@emotion/css';
 import sample from '../../assets/sampleImg.jpg'
 import userNumberIcon from '../../assets/userNumberIcon.svg'
 import { useNavigate } from 'react-router-dom';
+
 function AccountElement({ title, imgUrl, memberCount }) {
     const [mouseOverState, setMouseMoverState] = useState(false);
-    const [isButtonClicked, setIsButtonClicked] = useState(false);
 
     const movePage = useNavigate();
 
     function moveAccountPage() {
-        movePage('/account/home');
+        movePage('/account8/home');
     }
 
     return (

@@ -4,7 +4,7 @@ import imgLogo from '../../assets/imgLogo.png';
 
 function Loading({ isLoading, children }) {
     const [loadingDots, setLoadingDots] = useState('');
-    console.log(children);
+
     useEffect(() => {
         const interval = setInterval(() => {
             setLoadingDots(loadingDots => {

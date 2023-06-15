@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { css, keyframes } from '@emotion/css';
+import { css } from '@emotion/css';
 import imgLogo from '../assets/imgLogo.png';
 import textLogo from '../assets/textLogo.png';
 import AccountSlider from '../components/AccountList/AccountSlider.jsx'
@@ -16,7 +16,6 @@ function MainPage() {
     }, []);
 
     useEffect(() => {
-        // console.log(memberInfo);
         if (!memberInfo)
             return;
         if (!memberInfo.memberNickName)
@@ -212,41 +211,4 @@ const accountBookList = css`
 
     width: 607.5px;
     margin: 0 auto 75px;
-`;
-
-const loadingWrapper = css`
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 50%);
-    width: 300px;
-    margin: auto;
-
-    color: white;
-`;
-
-const loadingText = css`
-    width: 100%;
-    margin-top: 50px;
-    text-align: center;
-    font-size: 30px;
-    font-weight: bolder;
-`;
-
-const rotate_image = keyframes`
-    100% {
-        transform: rotate(360deg);
-    }
-`;
-
-const loadingImg = css`
-    top: 10.5px;
-    right: 14.25px;
-    width: 300px;
-    height: 300px;
-    scale: 1;
-    img {
-        width: 100%;
-    }
-    animation: ${rotate_image} 2s linear infinite;
 `;

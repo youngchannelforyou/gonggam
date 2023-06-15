@@ -10,34 +10,27 @@ import communityIcon from '../../assets/communityIcon.svg'
 import addImg from '../../assets/addImg.png';
 import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
 import { useParams } from 'react-router-dom';
+import Loading from '../../components/Loading/Loading';
+import SummaryBoard from '../../components/PersonalAcountBook/Home/SummaryBoard';
 
 
 function Home() {
     const [accountNumber, setAccountNumber] = useState(null);
+    const [getDatas, setGetDatas] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const nowUrlParam = useParams();
 
-    console.log(nowUrlParam);
-    console.log(accountNumber);
     useEffect(() => {
         setAccountNumber(nowUrlParam.accountName.replace('account', ''));
-
     }, [nowUrlParam])
 
-    const noticeList = [
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25', url: 'aaa' }
-    ];
+    useEffect(() => {
+        if (!accountNumber)
+            return;
+        homeGetRequest();
+    }, [accountNumber]);
 
-    const communityList = [
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' },
-        { title: '안녕하세요 이것은 랜덤글입니다.', auth: '홍길동', date: '2023.05.25' }
-    ]
+    console.log(getDatas);
 
     async function homeGetRequest() {
         await fetch(`http://localhost:8080/gonggam/${accountNumber}/home`, {
@@ -50,86 +43,36 @@ function Home() {
         })
             .then((responseData) => responseData.json())
             .then((data) => {
-                console.table(data);
+                console.log(data);
+                setGetDatas(data);
+                setIsLoading(false);
             })
-    }
-
-    useEffect(() => {
-        homeGetRequest();
-    }, []);
+    };
 
     return (
-        <AccountBookWrapper>
-            <div className={mainTopBox}>
-                <Dashboard accountNumber={accountNumber} />
-            </div>
-            <div className={mainBottomBox}>
-                <div className={leftContent}>
-                    <div className={cx(notieArea, writingBox)}>
-                        <div className={titleWrapper}>
-                            <img src={noticeIcon} alt='noticeIcon' />
-                            <p>공지사항</p>
+        <Loading isLoading={isLoading}>
+            <AccountBookWrapper bookTitle={getDatas?.book.name} memberCount={getDatas?.book.count} userInfo={getDatas?.user} >
+                <div className={mainTopBox}>
+                    <Dashboard accountNumber={accountNumber} />
+                </div>
+                <div className={mainBottomBox}>
+                    <div className={leftContent}>
+                        <div className={cx(notieArea, writingBox)}>
+                            <SummaryBoard title='공지사항' iconImg={noticeIcon} datas={getDatas?.notice} />
                         </div>
-                        <table className={writingListWrapper}>
-                            <tbody>
-                                {
-                                    noticeList.map((item, index) => {
-                                        const tmpKey = index + 1;
-                                        return (
-                                            <tr key={tmpKey} className={writingItemWrapper}>
-                                                <td className={writingItemTitle}>
-                                                    <a href={item.url}>{item.title}</a>
-                                                </td>
-                                                <td className={writingItemAuth}>
-                                                    <a href={item.url}>{item.auth}</a>
-                                                </td>
-                                                <td className={writingItemDate}>
-                                                    <a href={item.url}>{item.date}</a>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </table>
+                        <div className={cx(communityArea, writingBox)}>
+                            <SummaryBoard title='커뮤니티' iconImg={communityIcon} datas={getDatas?.communities} />
+                        </div>
                     </div>
-                    <div className={cx(communityArea, writingBox)}>
-                        <div className={titleWrapper}>
-                            <img src={communityIcon} alt='communityIcon' />
-                            <p>커뮤니티</p>
+                    <div className={rightContent}>
+                        <div className={addBox}><img src={addImg} alt='add' /></div>
+                        <div className={recentBox}>
+                            <RecentLogList />
                         </div>
-                        <table className={writingListWrapper}>
-                            <tbody>
-                                {
-                                    communityList.map((item, index) => {
-                                        const tmpKey = index + 1;
-                                        return (
-                                            <tr key={tmpKey} className={writingItemWrapper}>
-                                                <td className={writingItemTitle}>
-                                                    <a href='#'>{item.title}</a>
-                                                </td>
-                                                <td className={writingItemAuth}>
-                                                    <a href='#'>{item.auth}</a>
-                                                </td>
-                                                <td className={writingItemDate}>
-                                                    <a href='#'>{item.date}</a>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </table>
                     </div>
                 </div>
-                <div className={rightContent}>
-                    <div className={addBox}><img src={addImg} alt='add' /></div>
-                    <div className={recentBox}>
-                        <RecentLogList />
-                    </div>
-                </div>
-            </div>
-        </AccountBookWrapper>
+            </AccountBookWrapper>
+        </Loading>
     );
 };
 
@@ -167,46 +110,6 @@ const writingBox = css`
     border: 1px solid #252729;
     border-radius: 20px;
     margin-bottom: 19px;
-`;
-
-const titleWrapper = css`
-    display: flex;
-    color: #fff;
-
-`;
-
-const writingListWrapper = css`
-    width: 100%;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    border-collapse: collapse;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 400;
-`;
-
-const writingItemWrapper = css`
-    width: 100%;
-
-    td {
-        height: 16px;
-        line-height: 16px;
-        padding-bottom: 12px;
-        text-overflow : ellipsis;
-    }
-`;
-
-const writingItemTitle = css`
-    text-align: left;
-`;
-
-const writingItemAuth = css`
-    text-align: right;
-`;
-const writingItemDate = css`
-    width: 71px;
-    padding-left: 46px;
-    text-align: right;
 `;
 
 const communityArea = css`

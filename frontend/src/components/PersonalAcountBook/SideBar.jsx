@@ -4,25 +4,21 @@ import { css } from '@emotion/css';
 import Navigation from './Navigation';
 import AccountBookNameList from './AccountBookNameList';
 
-function SideBar(props) {
-
-    const userName = '홍길동';
+function SideBar({ bookTitle, memberCount, userInfo }) {
     const userGrade = '반갑습니다';
-
-    const joinedAccountList = ['한경대-컴퓨터공학과', '한경대-돋을볕', '한경대-총학생회', '여행계'];
 
     return (
         <aside className={container}>
 
             <div className={userInfoWrapper}>
-                <p className={userNameWrapper}>{userName}님</p>
+                <p className={userNameWrapper}>{userInfo.name}님</p>
                 <p className={userGradeWrapper}>{userGrade}</p>
             </div>
             <div className={accountBooskWrapper}>
                 <div className={accountBookWrapper}>
                     <div className={accountBookInfoWrapper}>
-                        <div className={accountBookNameWrapper}>아무대 - 컴퓨터 공학과</div>
-                        <div className={accountBookUserNumber}>65명이 참가 중</div>
+                        <div className={accountBookNameWrapper}>{bookTitle}</div>
+                        <div className={accountBookUserNumber}>{memberCount}명이 참가 중</div>
                     </div>
                     <div>
                         <Navigation />
@@ -30,10 +26,10 @@ function SideBar(props) {
                 </div>
                 <div className={accountBookNameListWrapper}>
                     <div className={marginBottom48}>
-                        <AccountBookNameList title='참여중인 가계부' list={joinedAccountList} />
+                        <AccountBookNameList title='참여중인 가계부' list={userInfo.PAccountBook} />
                     </div>
                     <div>
-                        <AccountBookNameList title='관리중인 가계부' list={joinedAccountList} />
+                        <AccountBookNameList title='관리중인 가계부' list={userInfo.MAccountBook} />
                     </div>
                 </div>
             </div>

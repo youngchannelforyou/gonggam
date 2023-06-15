@@ -2,13 +2,14 @@ import React from 'react';
 import { css } from '@emotion/css';
 
 function AccountBookNameList({ title, list }) {
+
     return (
         <div>
             <div>
                 <div className={titleWrapper}>{title}</div>
             </div>
             <div className={accountBookListWrapper}>
-                {list.map((element, index) => {
+                {list.length === 0 ? <a className={accountBookElement} href='title'>현재 참여 중인 가계부가 없습니다.</a> : list.map((element, index) => {
                     const tmpKey = index + 1;
                     return <a className={accountBookElement} href='title' key={tmpKey}>{element}</a>
                 })}
