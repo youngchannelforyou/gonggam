@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import App.Gonggam.model.AccountBook;
 import App.Gonggam.model.Comment;
 import App.Gonggam.model.Community;
+import App.Gonggam.model.Member;
 import App.Gonggam.model.Notice;
 import App.Gonggam.model.Post;
 
@@ -578,26 +579,23 @@ public class AccountBookService {
         result.put("Expense", totalExpense);
         result.put("Income", totalIncome);
 
-        // expenseByTag 맵을 Map<String, Object> 타입의 맵으로 변환
-        Map<String, Object> convertedExpenseByTag = new HashMap<>();
+        // expenseByTag 맵을 배열로 변환
+        List<Map<String, Object>> expenseByTagList = new ArrayList<>();
         for (Map.Entry<String, Long> entry : expenseByTag.entrySet()) {
             String tag = entry.getKey();
             Long expense = entry.getValue();
-            convertedExpenseByTag.put(tag, expense);
+
+            // 태그와 지출 금액을 맵으로 생성하여 리스트에 추가
+            Map<String, Object> tagEntry = new HashMap<>();
+            tagEntry.put("tag", tag);
+            tagEntry.put("expense", expense);
+            expenseByTagList.add(tagEntry);
         }
 
-        // 변환된 맵을 JSON 문자열로 변환하여 결과에 추가
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String expenseByTagJson = objectMapper.writeValueAsString(convertedExpenseByTag);
-            result.put("Tag", objectMapper.readValue(expenseByTagJson, Map.class));
-        } catch (JsonProcessingException e) {
-            // JSON 변환 예외 처리
-            // 예외 발생 시 적절한 처리를 수행하거나 예외를 던지거나 반환할 값 설정
-        }
+        // 변환된 리스트를 결과에 추가
+        result.put("Tag", expenseByTagList);
 
         return result;
-
     }
 
     public List<Long> BoardGetRainBudget(String name, int dateRangeType, String fromDate) {
@@ -876,6 +874,72 @@ public class AccountBookService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public Notice getNotice(int num, String table) { // 찬영
+        String tableName = "Team5_" + table + "_Notice";
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            // 데이터 검색
+            String selectSql = "SELECT * FROM " + tableName + " WHERE Num = ?";
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setInt(1, num);
+
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        Notice reNorice = new Notice();
+                        reNorice.setNum(rs.getLong("Num"));
+                        reNorice.setDate((new Date(rs.getTimestamp("Date").getTime())));
+                        reNorice.setTitle(rs.getString("Title"));
+                        reNorice.setText(rs.getString("Text"));
+                        Member member = mService.FindMemberUseId(rs.getString("Member"));
+                        reNorice.setMember(member.getMemberNickName());
+
+                        return reNorice;
+                    } else {
+                        System.out.println("멤버를 찾을 수 없습니다.");
+                    }
+                }
+            }
+        } catch (
+
+        SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Community getCommunity(int num, String table) { // 찬영
+        String tableName = "Team5_" + table + "_Community";
+
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            // 데이터 검색
+            String selectSql = "SELECT * FROM " + tableName + " WHERE Num = ?";
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setInt(1, num);
+
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        Community reNorice = new Community();
+                        reNorice.setNum(rs.getLong("Num"));
+                        reNorice.setDate((new Date(rs.getTimestamp("Date").getTime())));
+                        reNorice.setTitle(rs.getString("Title"));
+                        reNorice.setText(rs.getString("Text"));
+                        Member member = mService.FindMemberUseId(rs.getString("Member"));
+                        reNorice.setMember(member.getMemberNickName());
+
+                        return reNorice;
+                    } else {
+                        System.out.println("멤버를 찾을 수 없습니다.");
+                    }
+                }
+            }
+        } catch (
+
+        SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean AddCommunity(Community newCommunity, String table) {
