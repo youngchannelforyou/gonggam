@@ -1095,6 +1095,42 @@ public class AccountBookService {
         return false;
     }
 
+    public List<Map<String, Object>> getCalenderPost(String name, String day) {
+        String postTableName = "Team5_" + name + "_Post";
+        List<Map<String, Object>> resultList = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            String selectSql = "SELECT * FROM " + postTableName + " WHERE useDate = ?";
+
+            try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
+                selectStmt.setString(1, day);
+
+                try (ResultSet resultSet = selectStmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Map<String, Object> postMap = new HashMap<>();
+                        postMap.put("Num", resultSet.getLong("num"));
+                        postMap.put("Tag", resultSet.getString("tag"));
+                        postMap.put("Type", resultSet.getBoolean("type"));
+                        postMap.put("useDate", resultSet.getDate("useDate"));
+                        postMap.put("Title", resultSet.getString("title"));
+                        postMap.put("Text", resultSet.getString("text"));
+                        postMap.put("Image", resultSet.getString("image"));
+                        postMap.put("Total_Buget", resultSet.getLong("total_budget"));
+                        postMap.put("Used_Buget", resultSet.getLong("used_budget"));
+
+                        resultList.add(postMap);
+                    }
+                }
+            } catch (SQLException e) {
+                // Exception handling
+            }
+        } catch (SQLException e) {
+            // Exception handling
+        }
+
+        return resultList;
+    }
+
     public Map<String, Map<String, Long>> CalenderBord(String name, String startday, String endday) {
         String postTableName = "Team5_" + name + "_Post";
 
