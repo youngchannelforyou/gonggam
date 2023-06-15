@@ -2,13 +2,12 @@ import React from 'react';
 import { css } from '@emotion/css';
 
 import Navigation from '../../components/AcountBook/Navigation';
-
 import AccountBookNameList from './AccountBookNameList';
 
 function SideBar(props) {
 
     const userName = '홍길동';
-    const userGrade = '학회원';
+    const userGrade = '반갑습니다';
 
     const joinedAccountList = ['한경대-컴퓨터공학과', '한경대-돋을볕', '한경대-총학생회', '여행계'];
 
@@ -17,7 +16,7 @@ function SideBar(props) {
 
             <div className={userInfoWrapper}>
                 <p className={userNameWrapper}>{userName}님</p>
-                <p className={userGradeWrapper}>{userGrade} 등급</p>
+                <p className={userGradeWrapper}>{userGrade}</p>
             </div>
             <div className={accountBooskWrapper}>
                 <div className={accountBookWrapper}>

@@ -2,17 +2,25 @@ import React, { useState } from 'react';
 import { css } from '@emotion/css';
 import sample from '../../assets/sampleImg.jpg'
 import userNumberIcon from '../../assets/userNumberIcon.svg'
+import { useNavigate } from 'react-router-dom';
 function AccountElement({ title, imgUrl, memberCount }) {
     const [mouseOverState, setMouseMoverState] = useState(false);
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
+
+    const movePage = useNavigate();
+
+    function moveAccountPage() {
+        movePage('/account/home');
+    }
 
     return (
         <div className={container}>
 
             <div className={accountInfoWrapper}>
-                <div className={accountImgWrapper(mouseOverState)} onMouseEnter={() => setMouseMoverState(true)} onMouseLeave={() => setMouseMoverState(false)}>
+                <button className={accountImgWrapper(mouseOverState)} onClick={() => moveAccountPage()} onMouseEnter={() => setMouseMoverState(true)} onMouseLeave={() => setMouseMoverState(false)}>
                     <img className={accountImg} src={sample} alt='accountImg' />
-                </div>
-                <div className={accountInfo(mouseOverState)} onMouseEnter={() => setMouseMoverState(true)} onMouseLeave={() => setMouseMoverState(false)}>
+                </button>
+                <button className={accountInfo(mouseOverState)} onClick={() => moveAccountPage()} onMouseEnter={() => setMouseMoverState(true)} onMouseLeave={() => setMouseMoverState(false)}>
                     <div className={titleWrapper}>
                         {title}
                     </div>
@@ -20,7 +28,7 @@ function AccountElement({ title, imgUrl, memberCount }) {
                         <img className={userNumberImg} src={userNumberIcon} alt='userNumberIcon' />
                         <span className={memberCountSpan}>{memberCount}</span>
                     </div>
-                </div>
+                </button>
             </div>
         </div >
     );
