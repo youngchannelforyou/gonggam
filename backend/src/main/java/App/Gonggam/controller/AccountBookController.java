@@ -396,11 +396,7 @@ public class AccountBookController {
         List<Long> costlist = service.BoardGetRainBudget(AccountBook, term, fromDate);
 
         // 최대값과 최소값 추출
-        Long minCost = costlist.stream()
-                .filter(cost -> cost > 0)
-                .min(Long::compareTo)
-                .orElse(0L);
-
+        Long minCost = Collections.min(costlist);
         Long maxCost = Collections.max(costlist);
         AccountBook book = service.getBook(AccountBook);
 
