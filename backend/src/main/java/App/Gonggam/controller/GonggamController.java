@@ -88,7 +88,7 @@ public class GonggamController {
             // JSON을 응답 본문에 포함하여 반환
             return ResponseEntity.ok()
                     .header("Content-Type", "application/json")
-                    .body("{\"book\": " + bookJson + ", \"member\": " + memberJson + ", \"notice\": " + noticeJson
+                    .body("{\"book\": " + bookJson + ", \"user\": " + memberJson + ", \"notice\": " + noticeJson
                             + ", \"communities\": "
                             + communitiesJson + ", \"posts\": " + postsJson + "}");
 

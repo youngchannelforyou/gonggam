@@ -590,7 +590,7 @@ public class AccountBookService {
 
             try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
                 // 조회 종료 날짜 설정
-                LocalDate fromDateObj = LocalDate.parse(fromDate);
+                LocalDate fromDateObj = LocalDate.parse(fromDate).minusDays(1);
                 LocalDate toDate = null;
 
                 switch (dateRangeType) {
@@ -623,18 +623,40 @@ public class AccountBookService {
 
                     // 일별 데이터 처리
                     if (dateRangeType == 1) {
-                        for (int i = 0; i < 30; i++) {
+                        for (int i = 0; i < 29; i++) {
                             LocalDate currentDate = fromDateObj.minusDays(i);
-                            totalBudgetList.add(resultMap.getOrDefault(currentDate, 0L));
+                            totalBudgetList.add(resultMap.getOrDefault(currentDate, null));
                         }
+
+                        for (int i = totalBudgetList.size() - 1; i >= 0; i--) {
+                            if (totalBudgetList.get(i) == 0L) {
+                                totalBudgetList.remove(i);
+                            }
+                        }
+
                         Collections.reverse(totalBudgetList);
+                        String selectSql1 = "SELECT * FROM Team5_AccountBook WHERE URL = ?";
+                        try (PreparedStatement selectStmt1 = connection.prepareStatement(selectSql1)) {
+                            selectStmt1.setString(1, name);
+
+                            try (ResultSet rs = selectStmt1.executeQuery()) {
+                                if (rs.next()) {
+                                    Long Budget = rs.getLong("Budget");
+                                    System.out.print(Budget);
+                                    totalBudgetList.add(Budget);
+
+                                }
+                            }
+                        } catch (SQLException e) {
+                            // Exception handling
+                        }
                         for (int i = totalBudgetList.size(); i < 30; i++) {
-                            totalBudgetList.add(0L);
+                            totalBudgetList.add(i, 0L);
                         }
                     }
                     // 주별 데이터 처리
                     else if (dateRangeType == 2) {
-                        for (int i = 0; i < 30; i++) {
+                        for (int i = 0; i < 29; i++) {
                             LocalDate currentWeekEndDate = fromDateObj.minusWeeks(i);
                             LocalDate currentWeekStartDate = currentWeekEndDate.minusDays(6);
 
@@ -648,14 +670,39 @@ public class AccountBookService {
 
                             totalBudgetList.add(lastWeekTotalBudget);
                         }
-                        Collections.reverse(totalBudgetList);
-                        for (int i = totalBudgetList.size(); i < 30; i++) {
-                            totalBudgetList.add(0L);
+
+                        for (int i = totalBudgetList.size() - 1; i >= 0; i--) {
+                            if (totalBudgetList.get(i) == 0L) {
+                                totalBudgetList.remove(i);
+                            }
                         }
+
+                        Collections.reverse(totalBudgetList);
+
+                        String selectSql1 = "SELECT * FROM Team5_AccountBook WHERE URL = ?";
+                        try (PreparedStatement selectStmt1 = connection.prepareStatement(selectSql1)) {
+                            selectStmt1.setString(1, name);
+
+                            try (ResultSet rs = selectStmt1.executeQuery()) {
+                                if (rs.next()) {
+                                    Long Budget = rs.getLong("Budget");
+                                    System.out.print(Budget);
+                                    totalBudgetList.add(Budget);
+
+                                }
+                            }
+                        } catch (SQLException e) {
+                            // Exception handling
+                        }
+
+                        for (int i = totalBudgetList.size(); i < 30; i++) {
+                            totalBudgetList.add(i, 0L);
+                        }
+
                     }
                     // 월별 데이터 처리
                     else if (dateRangeType == 3) {
-                        for (int i = 0; i < 30; i++) {
+                        for (int i = 0; i < 29; i++) {
                             LocalDate currentMonthEndDate = fromDateObj.minusMonths(i).withDayOfMonth(1).plusMonths(1)
                                     .minusDays(1);
                             LocalDate currentMonthStartDate = currentMonthEndDate.withDayOfMonth(1);
@@ -670,9 +717,33 @@ public class AccountBookService {
 
                             totalBudgetList.add(lastMonthTotalBudget);
                         }
+
+                        for (int i = totalBudgetList.size() - 1; i >= 0; i--) {
+                            if (totalBudgetList.get(i) == 0L) {
+                                totalBudgetList.remove(i);
+                            }
+                        }
+
                         Collections.reverse(totalBudgetList);
+
+                        String selectSql1 = "SELECT * FROM Team5_AccountBook WHERE URL = ?";
+                        try (PreparedStatement selectStmt1 = connection.prepareStatement(selectSql1)) {
+                            selectStmt1.setString(1, name);
+
+                            try (ResultSet rs = selectStmt1.executeQuery()) {
+                                if (rs.next()) {
+                                    Long Budget = rs.getLong("Budget");
+                                    System.out.print(Budget);
+                                    totalBudgetList.add(Budget);
+
+                                }
+                            }
+                        } catch (SQLException e) {
+                            // Exception handling
+                        }
+
                         for (int i = totalBudgetList.size(); i < 30; i++) {
-                            totalBudgetList.add(0L);
+                            totalBudgetList.add(i, 0L);
                         }
                     }
 
