@@ -2,72 +2,75 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 
 function Board({ title, postList, accountNumber }) {
-    const [contentsList, setContentsList] = useState([]);
+  const [contentsList, setContentsList] = useState([]);
 
-    useEffect(() => {
-        if (!accountNumber) return;
-        if (!postList) return;
+  useEffect(() => {
+    if (!accountNumber) return;
+    if (!postList) return;
 
-        const fetchData = async () => {
-            const contentsArr = [];
-            for (const item of postList) {
-                const url = `http://localhost:8080/gonggam/${accountNumber}/${title === '커뮤니티' ? 'communitypeed' : 'noticepeed'}/${item.Num}`;
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                    credentials: 'include',
-                });
-                const data = await response.json();
-                const dataTitle = title === '커뮤니티' ? 'community' : 'notice';
-                const tmpObj = data[dataTitle];
-                contentsArr[item.Num] = tmpObj.text;
-            }
-            setContentsList(contentsArr);
-        };
+    const fetchData = async () => {
+      const contentsArr = [];
+      for (const item of postList) {
+        const url = `http://localhost:8080/gonggam/${accountNumber}/${title === '커뮤니티' ? 'communitypeed' : 'noticepeed'}/${item.Num}`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          credentials: 'include',
+        });
+        const data = await response.json();
+        const dataTitle = title === '커뮤니티' ? 'community' : 'notice';
+        const tmpObj = data[dataTitle];
+        contentsArr[item.Num] = tmpObj.text;
+      }
+      setContentsList(contentsArr);
+    };
 
-        fetchData();
-    }, [accountNumber, postList, title]);
+    fetchData();
+  }, [accountNumber, postList, title]);
 
-    return (
-        <div className={container}>
-            <div className={writingHeader}>
-                <div className={writingTitle}>{title}</div>
-                <div className={searchBox}>
-                    <input className={searchInput} placeholder='게시글 찾아보기' />
-                    <button className={searchButton}>검색</button>
-                </div>
-            </div>
-            <div className={devideBar} />
-            <div className={writingListWrapper}>
-                {postList.map((item, idx) => {
-                    const tmpKey = idx + 1;
-                    return (
-                        <div className={contentsWrapper} key={tmpKey}>
-                            <div className={writingItemWrapper}>
-                                <div className={writingItemTitle}>
-                                    <a href={`communitypeed/${item.Num}`}>{item.Title}</a>
-                                </div>
-                                <div className={authAndDate}>
-                                    <div className={writingItemAuth}>
-                                        <a href={`communitypeed/${item.Num}`}>{item.Member}</a>
-                                    </div>
-                                    <div className={writingItemDate}>
-                                        <a href={`communitypeed/${item.Num}`}>{item.Date.replace(/-/g, '.')}</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={writingItemContent}>
-                                <a href={`communitypeed/${item.Num}`}>{contentsList[item.Num] || <>불러오는 중...</>}</a>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+  return (
+    <div className={container}>
+      <div className={writingHeader}>
+        <div className={writingTitle}>{title}</div>
+        <div className={searchBox}>
+          <input className={searchInput} placeholder='게시글 찾아보기' />
+          <button className={searchButton}>검색</button>
         </div>
-    );
+      </div>
+      <div className={devideBar} />
+      <div className={writingListWrapper}>
+        {postList.map((item, idx) => {
+          const tmpKey = idx + 1;
+          return (
+            <div className={contentsWrapper} key={tmpKey}>
+              <div className={writingItemWrapper}>
+                <div className={writingItemTitle}>
+                  <a href={`communitypeed/${item.Num}`}>{item.Title}</a>
+                </div>
+                <div className={authAndDate}>
+                  <div className={writingItemAuth}>
+                    <a href={`communitypeed/${item.Num}`}>{item.Member}</a>
+                  </div>
+                  <div className={writingItemDate}>
+                    <a href={`communitypeed/${item.Num}`}>{item.Date.replace(/-/g, '.')}</a>
+                  </div>
+                </div>
+              </div>
+              <div className={writingItemContent}>
+                <a href={`communitypeed/${item.Num}`}>{contentsList[item.Num] || <>불러오는 중...</>}</a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div>
+
+      </div>
+    </div>
+  );
 }
 
 export default Board;

@@ -1,9 +1,11 @@
 import React from 'react';
 import { cx, css } from '@emotion/css';
 
-function NormalTypeButton({ onClickFuc, title, styles }) {
+function NormalTypeButton({ onClickFuc, title, styles, type }) {
   return (
-    <button className={cx(basicButton, styles)} type='button' onClick={onClickFuc}>{title}</button>
+    <button className={cx(basicButton, styles)} type={type} onClick={onClickFuc}>
+      {title}
+    </button>
   );
 }
 
@@ -12,7 +14,8 @@ export default NormalTypeButton;
 NormalTypeButton.defaultPorps = {
   onClickFuc: () => { },
   title: 'loading...',
-  styles: css``
+  styles: css``,
+  type: 'button'
 }
 
 const basicButton = css`

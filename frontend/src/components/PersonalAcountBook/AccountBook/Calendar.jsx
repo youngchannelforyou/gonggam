@@ -2,13 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, subMonths, addMonths } from 'date-fns';
 import { css, cx } from '@emotion/css';
 import Loading from '../../Loading/Loading';
+import MakeNewCalcPopup from '../../Main/MakeNewCalcPopup';
 
-function Calendar({ accountNumber }) {
+function Calendar({ accountNumber, setIsPopup, isPopup }) {
     const [isLoading, setIsLoading] = useState(true);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [calcDay, setCalcDay] = useState(null);
-    const [calcData, setCalcData] = useState(null)
+    const [calcData, setCalcData] = useState(null);
 
     useEffect(() => {
         if (currentMonth === null)
@@ -20,9 +21,12 @@ function Calendar({ accountNumber }) {
     useEffect(() => {
         if (!calcDay)
             return;
-
         getCalcBoard(format(calcDay.startDate, 'yyyy-MM-dd'), format(calcDay.endDate, 'yyyy-MM-dd'));
     }, [calcDay]);
+
+    useEffect(() => {
+        getOneDayInfo();
+    }, [selectedDate])
 
     const RenderCalc = useMemo(() => {
         // selectedDate
@@ -42,7 +46,7 @@ function Calendar({ accountNumber }) {
                 const todayValue = calcData[today];
 
                 days.push(
-                    <div className={cx(dateCommon, format(currentMonth, 'M') !== format(day, 'M') ? notThisMonth : thisMonth)} key={day} onClick={() => setSelectedDate(cloneDay)}>
+                    <button className={cx(dateCommon, format(currentMonth, 'M') !== format(day, 'M') ? notThisMonth : thisMonth)} key={day} onClick={() => setSelectedDate(cloneDay)}>
                         <div className={paddingLeft}>
                             {Number(formattedDate) < 10 ? `0${formattedDate}` : `${formattedDate}`}
                         </div>
@@ -60,7 +64,7 @@ function Calendar({ accountNumber }) {
                                 </>
                             }
                         </div>
-                    </div>
+                    </button>
                 );
                 day = addDays(day, 1);
             }
@@ -101,7 +105,7 @@ function Calendar({ accountNumber }) {
     }
 
     async function getCalcBoard(start, end) {
-        await fetch('http://localhost:8080/AccountBook/getcalenderbord', {
+        await fetch(`http://localhost:8080/AccountBook/getcalenderbord`, {
             method: 'POST',
             body: JSON.stringify({
                 "AccountBook": { accountNumber },
@@ -116,9 +120,25 @@ function Calendar({ accountNumber }) {
         })
             .then((responseData) => responseData.json())
             .then((data) => {
-                console.log(data);
                 setCalcData(data);
                 setIsLoading(false);
+            })
+    };
+
+    async function getOneDayInfo() {
+        const today = format(selectedDate, 'yyyy-MM-dd');
+
+        await fetch(`http://localhost:8080/gonggam/${accountNumber}/postpeed/${today}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
             })
     };
 
@@ -135,10 +155,10 @@ function Calendar({ accountNumber }) {
                         <button className={calcTitleItems} onClick={() => { setCurrentMonth(addMonths(currentMonth, 1)) }}> &gt; </button>
                     </div>
                     <div className={calcTitleRight}>
-                        <button className={calcRightSideButton}>
+                        {/* <button className={calcRightSideButton}>
                             <p>T</p>
-                        </button>
-                        <button className={cx(calcRightSideButton, addButton)}>
+                        </button> */}
+                        <button className={cx(calcRightSideButton, addButton)} onClick={() => setIsPopup(!isPopup)}>
                             <p>
                                 +
                             </p>

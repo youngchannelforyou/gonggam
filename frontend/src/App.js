@@ -13,6 +13,7 @@ import Community from './pages/AccountBookPage/Community';
 import Settings from './pages/AccountBookPage/Settings';
 import AccountBook from './pages/AccountBookPage/AccountBook';
 import CommunityPeed from './pages/AccountBookPage/CommunityPeed';
+import NoticePeed from './pages/AccountBookPage/NoticePeed';
 
 function App() {
   return (
@@ -30,7 +31,7 @@ function App() {
           <Route path='/:accountName/notice' element={<Notice />} />
           <Route
             path='/:accountName/noticepeed/:number'
-            element={<AccountBook />}
+            element={<NoticePeed />}
           />
           <Route path='/:accountName/community' element={<Community />} />
           <Route

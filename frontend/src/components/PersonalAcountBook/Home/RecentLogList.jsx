@@ -66,14 +66,14 @@ const recentBoxTitle = css`
     position: sticky;
     top: 0;
     width: 100%;
-    height: 30px;
-    padding: 8px 0;
+    height: 40px;
+    padding: 11px 0;
     background-color: #1C1E1F;
 
     color: #D6D6D6;
     font-size: 13px;
     line-height: 14px;
-    z-index: 100;
+    z-index: 1;
 `;
 const recentItemWrapper = css`
     display: flex;
