@@ -61,10 +61,9 @@ function SideBar({ accountNumber }) {
 export default SideBar;
 
 const container = css`
-  height: 100%;
-  border-radius: 20px;
-  background-color: transparent ;
-
+    height: 100%;
+    border-radius: 20px;
+    background-color: transparent ;
 `;
 
 const userInfoWrapper = css`

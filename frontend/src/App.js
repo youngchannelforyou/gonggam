@@ -12,6 +12,7 @@ import Notice from './pages/AccountBookPage/Notice';
 import Community from './pages/AccountBookPage/Community';
 import Settings from './pages/AccountBookPage/Settings';
 import AccountBook from './pages/AccountBookPage/AccountBook';
+import CommunityPeed from './pages/AccountBookPage/CommunityPeed';
 
 function App() {
   return (
@@ -27,7 +28,15 @@ function App() {
           <Route path='/:accountName/asset' element={<Asset />} />
           <Route path='/:accountName/accountbook' element={<AccountBook />} />
           <Route path='/:accountName/notice' element={<Notice />} />
+          <Route
+            path='/:accountName/noticepeed/:number'
+            element={<AccountBook />}
+          />
           <Route path='/:accountName/community' element={<Community />} />
+          <Route
+            path='/:accountName/communitypeed/:number'
+            element={<CommunityPeed />}
+          />
           <Route path='/:accountName/settings' element={<Settings />} />
         </Routes>
       </BrowserRouter>
