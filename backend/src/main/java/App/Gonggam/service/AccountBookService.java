@@ -1,6 +1,7 @@
 package App.Gonggam.service;
 
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -531,7 +532,7 @@ public class AccountBookService {
         return NoticeList;
     }
 
-    public Map<String, Object> BoardGetIncomeExpenseByTag(String name, int dateRangeType, String fromDate) {
+    public List<Map<String, Object>> BoardGetIncomeExpenseByTag(String name, int dateRangeType, String fromDate) {
         String postTableName = "Team5_" + name + "_Post";
 
         Map<String, Object> result = new HashMap<>();
@@ -618,10 +619,38 @@ public class AccountBookService {
         int limit = Math.min(expenseByTagList.size(), 6);
         List<Map<String, Object>> topExpenseByTagList = expenseByTagList.subList(0, limit);
 
-        // 변환된 리스트를 결과에 추가
-        result.put("Tag", topExpenseByTagList);
+        // 기타 항목 계산
+        long etcExpense = 0;
+        for (int i = limit; i < expenseByTagList.size(); i++) {
+            etcExpense += (long) expenseByTagList.get(i).get("expense");
+        }
 
-        return result;
+        // 전체 금액 계산
+        long totalExpense1 = etcExpense;
+        for (Map<String, Object> entry : topExpenseByTagList) {
+            totalExpense1 += (long) entry.get("expense");
+        }
+
+        // 퍼센티지 값 계산하여 업데이트
+        DecimalFormat df = new DecimalFormat("0.00");
+        for (Map<String, Object> entry : topExpenseByTagList) {
+            long expense = (long) entry.get("expense");
+            double percentage = (expense / (double) totalExpense1) * 100;
+            entry.put("percentage", df.format(percentage));
+        }
+
+        // 기타 항목 추가
+        Map<String, Object> etcEntry = new HashMap<>();
+        etcEntry.put("tag", "etc");
+        etcEntry.put("expense", etcExpense);
+        double etcPercentage = (etcExpense / (double) totalExpense1) * 100;
+        etcEntry.put("percentage", df.format(etcPercentage));
+        topExpenseByTagList.add(etcEntry);
+
+        // 결과 반환
+        return topExpenseByTagList;
+        // 결과 반환
+
     }
 
     public List<Long> BoardGetRainBudget(String name, int dateRangeType, String fromDate) {

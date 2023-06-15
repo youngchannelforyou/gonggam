@@ -446,7 +446,7 @@ public class AccountBookController {
         }
         String fromDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        Map<String, Object> notice = service.BoardGetIncomeExpenseByTag(AccountBook, term, fromDate);
+        List<Map<String, Object>> notice = service.BoardGetIncomeExpenseByTag(AccountBook, term, fromDate);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
