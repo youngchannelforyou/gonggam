@@ -965,10 +965,18 @@ public class AccountBookService {
         return false;
     }
 
-    public Map<Date, Map<String, Long>> CalenderBord(String name, String startday, String endday) {
+    public Map<String, Map<String, Long>> CalenderBord(String name, String startday, String endday) {
         String postTableName = "Team5_" + name + "_Post";
 
         Map<Date, Map<String, Long>> result = new HashMap<>();
+
+        // 모든 날짜를 초기화하고 0으로 설정
+        LocalDate startDate = LocalDate.parse(startday);
+        LocalDate endDate = LocalDate.parse(endday);
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            result.put(Date.valueOf(date), new HashMap<>());
+        }
 
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             String selectSql = "SELECT useDate, Type, SUM(Used_Budget) AS TotalAmount FROM " + postTableName +
@@ -986,7 +994,7 @@ public class AccountBookService {
                         long amount = resultSet.getLong("TotalAmount");
 
                         // 해당 날짜에 대한 Map 가져오기
-                        Map<String, Long> dateData = result.getOrDefault(date, new HashMap<>());
+                        Map<String, Long> dateData = result.get(date);
 
                         // 수입 또는 지출에 따라 금액 추가
                         if (isExpense) {
@@ -994,9 +1002,6 @@ public class AccountBookService {
                         } else {
                             dateData.put("Income", amount);
                         }
-
-                        // 결과에 해당 날짜의 데이터 설정
-                        result.put(date, dateData);
                     }
                 }
             } catch (SQLException e) {
@@ -1005,7 +1010,23 @@ public class AccountBookService {
         } catch (SQLException e) {
             // Exception handling
         }
+        for (Map.Entry<Date, Map<String, Long>> entry : result.entrySet()) {
+            Map<String, Long> dateData = entry.getValue();
+            dateData.putIfAbsent("Income", 0L);
+            dateData.putIfAbsent("Expense", 0L);
+        }
 
-        return result;
+        // 날짜를 원하는 형식으로 변환하여 결과 맵 생성
+        Map<String, Map<String, Long>> formattedResult = new HashMap<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (Map.Entry<Date, Map<String, Long>> entry : result.entrySet()) {
+            Date date = entry.getKey();
+            String formattedDate = dateFormat.format(date);
+            formattedResult.put(formattedDate, entry.getValue());
+        }
+
+        return formattedResult;
     }
+
 }
