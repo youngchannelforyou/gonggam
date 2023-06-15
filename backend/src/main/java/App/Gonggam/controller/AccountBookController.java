@@ -116,11 +116,11 @@ public class AccountBookController {
     @PostMapping(path = "/getBook", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> GetBook(
             @RequestBody String inputjson) {
-        int book = 1;
+        String book = "1";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
-            book = jsonNode.get("book").asInt();
+            book = jsonNode.get("book").asText();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -401,8 +401,7 @@ public class AccountBookController {
                 .orElse(0L);
 
         Long maxCost = Collections.max(costlist);
-
-        System.out.println(costlist);
+        AccountBook book = service.getBook(AccountBook);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -410,7 +409,7 @@ public class AccountBookController {
             jsonNode.put("costList", objectMapper.writeValueAsString(costlist));
             jsonNode.put("minCost", minCost);
             jsonNode.put("maxCost", maxCost);
-
+            jsonNode.put("Budget", book.getAccountBook_Budget());
             String json = objectMapper.writeValueAsString(jsonNode);
 
             return ResponseEntity.ok(json);
@@ -440,11 +439,7 @@ public class AccountBookController {
         }
         String fromDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        System.out.println(fromDate);
-
         Map<String, Object> notice = service.BoardGetIncomeExpenseByTag(AccountBook, term, fromDate);
-
-        System.out.println(notice);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {

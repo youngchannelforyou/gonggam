@@ -41,7 +41,7 @@ public class GonggamController {
                     .body("{\"message\": \"fail get cookie\", \"status\": \"204\"}");
         }
 
-        AccountBook book = service.getBook(Integer.parseInt(Accountbook));
+        AccountBook book = service.getBook(Accountbook);
 
         if (book == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -294,12 +294,12 @@ public class AccountBookService {
         return "실패";
     }
 
-    public AccountBook getBook(int name) {
+    public AccountBook getBook(String name) {
         AccountBook book = null;
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             String sql = "SELECT * FROM Team5_AccountBook WHERE URL = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, name);
+                stmt.setString(1, name);
 
                 // Execute the query
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -590,7 +590,7 @@ public class AccountBookService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String expenseByTagJson = objectMapper.writeValueAsString(convertedExpenseByTag);
-            result.put("Tag", expenseByTagJson);
+            result.put("Tag", objectMapper.readValue(expenseByTagJson, Map.class));
         } catch (JsonProcessingException e) {
             // JSON 변환 예외 처리
             // 예외 발생 시 적절한 처리를 수행하거나 예외를 던지거나 반환할 값 설정
@@ -702,22 +702,6 @@ public class AccountBookService {
 
                         Collections.reverse(totalBudgetList);
 
-                        String selectSql1 = "SELECT * FROM Team5_AccountBook WHERE URL = ?";
-                        try (PreparedStatement selectStmt1 = connection.prepareStatement(selectSql1)) {
-                            selectStmt1.setString(1, name);
-
-                            try (ResultSet rs = selectStmt1.executeQuery()) {
-                                if (rs.next()) {
-                                    Long Budget = rs.getLong("Budget");
-                                    System.out.print(Budget);
-                                    totalBudgetList.add(Budget);
-
-                                }
-                            }
-                        } catch (SQLException e) {
-                            // Exception handling
-                        }
-
                         for (int i = totalBudgetList.size(); i < 30; i++) {
                             totalBudgetList.add(i, 0L);
                         }
@@ -748,22 +732,6 @@ public class AccountBookService {
                         }
 
                         Collections.reverse(totalBudgetList);
-
-                        String selectSql1 = "SELECT * FROM Team5_AccountBook WHERE URL = ?";
-                        try (PreparedStatement selectStmt1 = connection.prepareStatement(selectSql1)) {
-                            selectStmt1.setString(1, name);
-
-                            try (ResultSet rs = selectStmt1.executeQuery()) {
-                                if (rs.next()) {
-                                    Long Budget = rs.getLong("Budget");
-                                    System.out.print(Budget);
-                                    totalBudgetList.add(Budget);
-
-                                }
-                            }
-                        } catch (SQLException e) {
-                            // Exception handling
-                        }
 
                         for (int i = totalBudgetList.size(); i < 30; i++) {
                             totalBudgetList.add(i, 0L);
@@ -997,4 +965,47 @@ public class AccountBookService {
         return false;
     }
 
+    public Map<Date, Map<String, Long>> CalenderBord(String name, String startday, String endday) {
+        String postTableName = "Team5_" + name + "_Post";
+
+        Map<Date, Map<String, Long>> result = new HashMap<>();
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            String selectSql = "SELECT useDate, Type, SUM(Used_Budget) AS TotalAmount FROM " + postTableName +
+                    " WHERE useDate >= ? AND useDate <= ?" +
+                    " GROUP BY useDate, Type";
+
+            try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
+                selectStmt.setDate(1, java.sql.Date.valueOf(startday));
+                selectStmt.setDate(2, java.sql.Date.valueOf(endday));
+
+                try (ResultSet resultSet = selectStmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Date date = resultSet.getDate("useDate");
+                        boolean isExpense = resultSet.getBoolean("Type");
+                        long amount = resultSet.getLong("TotalAmount");
+
+                        // 해당 날짜에 대한 Map 가져오기
+                        Map<String, Long> dateData = result.getOrDefault(date, new HashMap<>());
+
+                        // 수입 또는 지출에 따라 금액 추가
+                        if (isExpense) {
+                            dateData.put("Expense", amount);
+                        } else {
+                            dateData.put("Income", amount);
+                        }
+
+                        // 결과에 해당 날짜의 데이터 설정
+                        result.put(date, dateData);
+                    }
+                }
+            } catch (SQLException e) {
+                // Exception handling
+            }
+        } catch (SQLException e) {
+            // Exception handling
+        }
+
+        return result;
+    }
 }
