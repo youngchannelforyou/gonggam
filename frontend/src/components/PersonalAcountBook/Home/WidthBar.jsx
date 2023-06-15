@@ -14,24 +14,25 @@ function WidthBar({ title, totalAmount, amount, type }) {
         0, 0, 0, 0, 0,
         0, 0, 0, 0, 0,
         0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0,
         0, 0
     ]);
 
     useEffect(() => {
         setSelectedArr(arrLoop());
-    }, []);
-
+    }, [amount]);
 
     function arrLoop() {
         const arr = [];
-        const percent = amount / totalAmount;
-        for (let i = 0; i < percent; i++) {
+        const percent = amount / (totalAmount);
+        const barPercent = Math.round(percent * 17);
+        console.log(barPercent);
+        for (let i = 0; i < barPercent; i++) {
             arr.push(1);
         }
-        for (let i = percent; i < 17; i++) {
+        for (let i = barPercent; i < 17; i++) {
             arr.push(0);
         }
+        console.log(arr);
 
         return arr;
     };

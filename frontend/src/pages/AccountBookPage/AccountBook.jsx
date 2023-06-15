@@ -1,35 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { css, cx } from '@emotion/css';
 
 import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
 import Dashboard from '../../components/PersonalAcountBook/Home/Dashboard';
 import RecentLogList from '../../components/PersonalAcountBook/Home/RecentLogList';
 import Calendar from '../../components/PersonalAcountBook/AccountBook/Calendar';
+import { useParams } from 'react-router-dom';
+import Loading from '../../components/Loading/Loading';
 
 function AccountBook() {
-    const amount = '5381000058';
+    const [accountNumber, setAccountNumber] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const nowUrlParam = useParams();
+
+    useEffect(() => {
+        if (!nowUrlParam)
+            return;
+        setAccountNumber(nowUrlParam.accountName.replace('account', ''));
+    }, [nowUrlParam]);
+
+    useEffect(() => {
+        if (!accountNumber)
+            return;
+        setIsLoading(false);
+    }, [accountNumber]);
 
     return (
-        <AccountBookWrapper>
-            <div className={mainTopBox}>
-                <Dashboard amount={amount} />
-            </div>
-
-            <div className={mainMiddleBox}>
-                <div className={calcBox}>
-                    <Calendar />
+        <Loading isLoading={isLoading} >
+            <AccountBookWrapper accountNumber={accountNumber}>
+                <div className={mainTopBox}>
+                    <Dashboard accountNumber={accountNumber} />
                 </div>
-                <div className={mainBottomBox}>
-                    <div className={cx(listCommon, revenueBox)}>
-                        <RecentLogList />
-                    </div>
-                    <div>
-                        <RecentLogList />
-                    </div>
 
+                <div className={mainMiddleBox}>
+                    <div className={calcBox}>
+                        <Calendar />
+                    </div>
+                    <div className={mainBottomBox}>
+                        <div className={cx(listCommon, revenueBox)}>
+                            <RecentLogList title='수입' accountNumber={accountNumber} />
+                        </div>
+                        <div>
+                            <RecentLogList title='지출' accountNumber={accountNumber} />
+                        </div>
+
+                    </div>
                 </div>
-            </div>
-        </AccountBookWrapper>
+            </AccountBookWrapper>
+        </Loading>
     );
 };
 

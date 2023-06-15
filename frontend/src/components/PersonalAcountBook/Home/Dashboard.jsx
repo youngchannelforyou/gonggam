@@ -9,25 +9,26 @@ import WidthBar from './WidthBar';
 function Dashboard({ accountNumber }) {
     const [clickedScope, setClickedScope] = useState(1);
     const [tableInfo, setTableInfo] = useState(null);
+    const [incomeExpense, setIncomeExpense] = useState(null);
     const [expenseBarItemsInfo, setExpenseBarItemsWidth] = useState([
-        { title: '축제준비', percent: 0 },
-        { title: '축제준비', percent: 0 },
-        { title: '축제준비', percent: 0 },
-        { title: '축제준비', percent: 0 },
-        { title: '축제준비', percent: 0 },
-        { title: '축제준비', percent: 0 },
+        { tag: '축제준비', percent: 0 },
+        { tag: '축제준비', percent: 0 },
+        { tag: '축제준비', percent: 0 },
+        { tag: '축제준비', percent: 0 },
+        { tag: '축제준비', percent: 0 },
+        { tag: '축제준비', percent: 0 },
     ]);
 
-    const colorSet = ['#3D83F6', '#91D8FC', '#84D0CB', '#AE6BF2', '#5F5FDE', '#EA4C64'];
+    const colorSet = ['#3D83F6', '#91D8FC', '#84D0CB', '#AE6BF2', '#5F5FDE', '#EA4C64', '#efefef'];
 
     useEffect(() => {
         setExpenseBarItemsWidth([
-            { title: '축제준비', percent: 40 },
-            { title: '축제준비', percent: 25 },
-            { title: '축제준비', percent: 20 },
-            { title: '축제준비', percent: 10 },
-            { title: '축제준비', percent: 3 },
-            { title: '축제준비', percent: 2 },
+            { tag: '축제준비', percent: 40 },
+            { tag: '축제준비', percent: 25 },
+            { tag: '축제준비', percent: 20 },
+            { tag: '축제준비', percent: 10 },
+            { tag: '축제준비', percent: 3 },
+            { tag: '축제준비', percent: 2 },
         ]);
     }, []);
 
@@ -35,10 +36,12 @@ function Dashboard({ accountNumber }) {
         if (!accountNumber)
             return;
         homePostRequset();
+        getIncomeExpense();
     }, [accountNumber]);
 
     useEffect(() => {
         homePostRequset();
+        getIncomeExpense();
     }, [clickedScope])
 
     async function getIncomeExpense() {
@@ -57,7 +60,16 @@ function Dashboard({ accountNumber }) {
             .then((responseData) => responseData.json())
             .then((data) => {
                 console.log(data);
-                // setExpenseBarItemsWidth(data);
+                setIncomeExpense(data);
+                let totalAmount = 0;
+                data.Tag.map((item) => {
+                    return totalAmount += item.expense;
+                });
+                console.log(totalAmount);
+                data.Tag.map((item) => {
+                    return item.percent = Math.round((item.expense / totalAmount) * 100);
+                });
+                setExpenseBarItemsWidth([...data.Tag]);
             })
     }
 
@@ -76,9 +88,12 @@ function Dashboard({ accountNumber }) {
         })
             .then((responseData) => responseData.json())
             .then((data) => {
-                console.log(data);
                 setTableInfo(data);
             })
+    };
+    console.log(expenseBarItemsInfo);
+    function makeTotalAmount(incomeExpense) {
+        return incomeExpense?.Income + incomeExpense?.Expense;
     };
 
     return (
@@ -109,7 +124,13 @@ function Dashboard({ accountNumber }) {
                     <div className={expenseBarWrapper}>
                         {
                             expenseBarItemsInfo.map((itemInfo, idx) => {
+                                if (idx > 6)
+                                    return <></>;
+
                                 const tmpKey = idx + 1;
+
+                                if (idx === 6)
+                                    return <div className={expenseBarItem(idx, colorSet[idx], itemInfo.percent)} key={tmpKey} />;
                                 return <div className={expenseBarItem(idx, colorSet[idx], itemInfo.percent)} key={tmpKey} />
                             })
                         }
@@ -117,11 +138,13 @@ function Dashboard({ accountNumber }) {
                     <div className={expenseListWrapper}>
                         {
                             expenseBarItemsInfo.map((itemInfo, idx) => {
+                                if (idx > 6)
+                                    return <></>;
                                 const tmpKey = idx + 1;
                                 return <div className={expenseListItemInfo} key={tmpKey}>
                                     <div className={colorPoint(colorSet[idx])}></div>
                                     <div className={expenseInfoWrapper}>
-                                        <div className={expenseListTitle}>{itemInfo.title}</div>
+                                        <div className={expenseListTitle}>{itemInfo.tag}</div>
                                         <div className={expenseListPercent}>{itemInfo.percent}%</div>
                                     </div>
                                 </div>
@@ -132,10 +155,10 @@ function Dashboard({ accountNumber }) {
                 <div className={divLine} />
                 <div className={widthBarWrapper}>
                     <div className={revenueBar}>
-                        <WidthBar title='수입액' totalAmount='50000000' amount='100235320' type={0} />
+                        <WidthBar title='수입액' totalAmount={makeTotalAmount(incomeExpense)} amount={incomeExpense?.Income} type={0} />
                     </div>
                     <div>
-                        <WidthBar title='지출액' totalAmount='50000000' amount='200235320' type={1} />
+                        <WidthBar title='지출액' totalAmount={makeTotalAmount(incomeExpense)} amount={incomeExpense?.Expense} type={1} />
                     </div>
                 </div>
             </div>
@@ -246,6 +269,7 @@ const expenseBarItem = (idx, color, percent) => css`
 
 const expenseListWrapper = css`
     display: flex;
+    height: 88px;
     justify-content: space-between;
     margin-bottom: 36px;
     flex-wrap: wrap;

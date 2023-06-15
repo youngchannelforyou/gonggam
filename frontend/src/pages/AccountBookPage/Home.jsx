@@ -16,24 +16,25 @@ import SummaryBoard from '../../components/PersonalAcountBook/Home/SummaryBoard'
 
 function Home() {
     const [accountNumber, setAccountNumber] = useState(null);
-    const [getDatas, setGetDatas] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [peedDatas, setPeedDatas] = useState(null);
     const nowUrlParam = useParams();
 
     useEffect(() => {
+        if (!nowUrlParam)
+            return;
         setAccountNumber(nowUrlParam.accountName.replace('account', ''));
-    }, [nowUrlParam])
+    }, [nowUrlParam]);
 
     useEffect(() => {
         if (!accountNumber)
             return;
-        homeGetRequest();
+        getHomePeed();
+
     }, [accountNumber]);
 
-    console.log(getDatas);
-
-    async function homeGetRequest() {
-        await fetch(`http://localhost:8080/gonggam/${accountNumber}/home`, {
+    async function getHomePeed() {
+        await fetch(`http://localhost:8080/gonggam/${accountNumber}/homepeed`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,31 +44,30 @@ function Home() {
         })
             .then((responseData) => responseData.json())
             .then((data) => {
-                console.log(data);
-                setGetDatas(data);
+                setPeedDatas(data);
                 setIsLoading(false);
             })
     };
 
     return (
         <Loading isLoading={isLoading}>
-            <AccountBookWrapper bookTitle={getDatas?.book.name} memberCount={getDatas?.book.count} userInfo={getDatas?.user} >
+            <AccountBookWrapper accountNumber={accountNumber} >
                 <div className={mainTopBox}>
                     <Dashboard accountNumber={accountNumber} />
                 </div>
                 <div className={mainBottomBox}>
                     <div className={leftContent}>
                         <div className={cx(notieArea, writingBox)}>
-                            <SummaryBoard title='공지사항' iconImg={noticeIcon} datas={getDatas?.notice} />
+                            <SummaryBoard title='공지사항' iconImg={noticeIcon} datas={peedDatas?.notice} />
                         </div>
                         <div className={cx(communityArea, writingBox)}>
-                            <SummaryBoard title='커뮤니티' iconImg={communityIcon} datas={getDatas?.communities} />
+                            <SummaryBoard title='커뮤니티' iconImg={communityIcon} datas={peedDatas?.communities} />
                         </div>
                     </div>
                     <div className={rightContent}>
                         <div className={addBox}><img src={addImg} alt='add' /></div>
                         <div className={recentBox}>
-                            <RecentLogList />
+                            <RecentLogList title='최근 변동 내역 ' accountNumber={accountNumber} />
                         </div>
                     </div>
                 </div>

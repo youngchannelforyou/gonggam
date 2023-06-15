@@ -2,7 +2,8 @@ import React from 'react';
 import { css } from '@emotion/css';
 
 function AccountBookNameList({ title, list }) {
-
+    if (!list)
+        return;
     return (
         <div>
             <div>
