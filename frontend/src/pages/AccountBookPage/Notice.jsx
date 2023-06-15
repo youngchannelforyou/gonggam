@@ -1,14 +1,13 @@
 import React from 'react';
-
-import SideBar from '../../components/AcountBook/SideBar';
+import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
 
 function Notice() {
 
     return (
-        <div>
-            <SideBar />
-            <main></main>
-        </div>
+
+        <AccountBookWrapper>
+            <div></div>
+        </AccountBookWrapper>
     );
 };
 

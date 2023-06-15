@@ -1,8 +1,6 @@
 import React from 'react';
 import { css, cx } from '@emotion/css';
 
-import SideBar from '../../components/AcountBook/SideBar';
-import Header from '../../components/AcountBook/Header';
 import Dashboard from '../../components/AcountBook/Home/Dashboard';
 import RecentLogList from '../../components/AcountBook/Home/RecentLogList';
 
@@ -10,6 +8,7 @@ import RecentLogList from '../../components/AcountBook/Home/RecentLogList';
 import noticeIcon from '../../assets/noticeIcon.svg'
 import communityIcon from '../../assets/communityIcon.svg'
 import addImg from '../../assets/addImg.png';
+import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
 
 
 function Home() {
@@ -31,109 +30,79 @@ function Home() {
     ]
 
     return (
-        <div className={container}>
-            <div className={alignCenter}>
-                <Header />
-                <div className={sectionWrapper}>
-                    <div>
-                        <SideBar />
+        <AccountBookWrapper>
+            <div className={mainTopBox}>
+                <Dashboard amount={amount} />
+            </div>
+            <div className={mainBottomBox}>
+                <div className={leftContent}>
+                    <div className={cx(notieArea, writingBox)}>
+                        <div className={titleWrapper}>
+                            <img src={noticeIcon} alt='noticeIcon' />
+                            <p>공지사항</p>
+                        </div>
+                        <table className={writingListWrapper}>
+                            {
+                                noticeList.map((item) => {
+                                    return (
+                                        <tr className={writingItemWrapper}>
+                                            <td className={writingItemTitle}>
+                                                <a href={item.url}>{item.title}</a>
+                                            </td>
+                                            <td className={writingItemAuth}>
+                                                <a href={item.url}>{item.auth}</a>
+                                            </td>
+                                            <td className={writingItemDate}>
+                                                <a href={item.url}>{item.date}</a>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
+                        </table>
                     </div>
-                    <main className={mainContentsWrapper}>
-                        <div className={mainTopBox}>
-                            <Dashboard amount={amount} />
+                    <div className={cx(communityArea, writingBox)}>
+                        <div className={titleWrapper}>
+                            <img src={communityIcon} alt='communityIcon' />
+                            <p>커뮤니티</p>
                         </div>
-                        <div className={mainBottomBox}>
-                            <div className={leftContent}>
-                                <div className={cx(notieArea, writingBox)}>
-                                    <div className={titleWrapper}>
-                                        <img src={noticeIcon} alt='noticeIcon' />
-                                        <p>공지사항</p>
-                                    </div>
-                                    <table className={writingListWrapper}>
-                                        {
-                                            noticeList.map((item) => {
-                                                return (
-                                                    <tr className={writingItemWrapper}>
-                                                        <td className={writingItemTitle}>
-                                                            <a href={item.url}>{item.title}</a>
-                                                        </td>
-                                                        <td className={writingItemAuth}>
-                                                            <a href={item.url}>{item.auth}</a>
-                                                        </td>
-                                                        <td className={writingItemDate}>
-                                                            <a href={item.url}>{item.date}</a>
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
-                                    </table>
-                                </div>
-                                <div className={cx(communityArea, writingBox)}>
-                                    <div className={titleWrapper}>
-                                        <img src={communityIcon} alt='communityIcon' />
-                                        <p>커뮤니티</p>
-                                    </div>
-                                    <table className={writingListWrapper}>
-                                        {
-                                            communityList.map((item) => {
-                                                return (
-                                                    <tr className={writingItemWrapper}>
-                                                        <td className={writingItemTitle}>
-                                                            <a href='#'>{item.title}</a>
-                                                        </td>
-                                                        <td className={writingItemAuth}>
-                                                            <a href='#'>{item.auth}</a>
-                                                        </td>
-                                                        <td className={writingItemDate}>
-                                                            <a href='#'>{item.date}</a>
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
-                                    </table>
-                                </div>
-                            </div>
-                            <div className={rightContent}>
-                                <div className={addBox}><img src={addImg} alt='add' /></div>
-                                <div className={recentBox}>
-                                    <RecentLogList />
-                                </div>
-                            </div>
-                        </div>
-                    </main>
+                        <table className={writingListWrapper}>
+                            {
+                                communityList.map((item) => {
+                                    return (
+                                        <tr className={writingItemWrapper}>
+                                            <td className={writingItemTitle}>
+                                                <a href='#'>{item.title}</a>
+                                            </td>
+                                            <td className={writingItemAuth}>
+                                                <a href='#'>{item.auth}</a>
+                                            </td>
+                                            <td className={writingItemDate}>
+                                                <a href='#'>{item.date}</a>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
+                        </table>
+                    </div>
+                </div>
+                <div className={rightContent}>
+                    <div className={addBox}><img src={addImg} alt='add' /></div>
+                    <div className={recentBox}>
+                        <RecentLogList />
+                    </div>
                 </div>
             </div>
-        </div>
+        </AccountBookWrapper>
     );
 };
 
 export default Home;
 
-const container = css`
-    width: 100%;
-    min-width: 1423px;
-    min-height: 980px;
-    height: 100%;
-    padding: 25px 30px;
-`;
 
-const alignCenter = css`
-    width: 1363px;
-    margin: 0 auto;
-`;
 
-const sectionWrapper = css`
-    display: flex;
-    width: 100%;
-    flex-shrink: 0;
-`;
 
-const mainContentsWrapper = css`
-    flex-grow: 1;
-    margin-left: 30px;
-`;
 
 const mainTopBox = css`
     width: 1071px;
