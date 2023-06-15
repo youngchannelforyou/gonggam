@@ -3,8 +3,13 @@ import { css } from '@emotion/css';
 import DashboardGraph from './DashboardGraph';
 import WidthBar from './WidthBar';
 
-function Dashboard({ amount }) {
-    const [clickedScope, setClickedScope] = useState('');
+/*
+    clickedScope: 1(일), 2(월), 3(달)
+*/
+
+function Dashboard({ accountNumber }) {
+    const [isLoading, setIsLoading] = useState(true);
+    const [clickedScope, setClickedScope] = useState(null);
     const [expenseBarItemsInfo, setExpenseBarItemsWidth] = useState([
         { title: '축제준비', percent: 0 },
         { title: '축제준비', percent: 0 },
@@ -23,8 +28,36 @@ function Dashboard({ amount }) {
             { title: '축제준비', percent: 10 },
             { title: '축제준비', percent: 3 },
             { title: '축제준비', percent: 2 },
-        ])
-    }, [])
+        ]);
+
+        homePostRequset();
+    }, []);
+
+    useEffect(() => {
+        if (accountNumber !== null)
+            setIsLoading(true);
+    }, [accountNumber])
+
+
+
+    async function homePostRequset() {
+        await fetch('http://localhost:8080/AccountBook/getcostlist', {
+            method: 'POST',
+            body: JSON.stringify({
+                'Term': 1,
+                'AccountBook': accountNumber
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
+            })
+    }
 
     return (
         <div className={container}>
@@ -33,15 +66,15 @@ function Dashboard({ amount }) {
                     <div className={budgetText}>예산 잔액</div>
                     <div className={balanceWrapper}>
                         <p className={dollorIcon} >₩</p>
-                        <p className={amountText}>{new Intl.NumberFormat().format(amount)}</p>
+                        <p className={amountText}>{new Intl.NumberFormat().format(1111)}</p>
                     </div>
                 </div>
                 <div>
                     <div className={scopeButtonWrapper}>
-                        <button className={scopeButton('day', clickedScope)} onClick={() => setClickedScope('day')}>1일</button>
-                        <button className={scopeButton('week', clickedScope)} onClick={() => setClickedScope('week')}>1주</button>
-                        <button className={scopeButton('month', clickedScope)} onClick={() => setClickedScope('month')}>1달</button>
-                        <button className={scopeButton('year', clickedScope)} onClick={() => setClickedScope('year')}>1년</button>
+                        <button className={scopeButton(1, clickedScope)} onClick={() => setClickedScope(1)}>1일</button>
+                        <button className={scopeButton(2, clickedScope)} onClick={() => setClickedScope(2)}>1주</button>
+                        <button className={scopeButton(3, clickedScope)} onClick={() => setClickedScope(3)}>1달</button>
+                        {/* <button className={scopeButton('year', clickedScope)} onClick={() => setClickedScope('year')}>1년</button> */}
                     </div>
                     <div>
                         <DashboardGraph />
@@ -53,22 +86,24 @@ function Dashboard({ amount }) {
                     <div className={expenseText}>지출항목</div>
                     <div className={expenseBarWrapper}>
                         {
-                            expenseBarItemsInfo.map((itemInfo, idx) =>
-                                <div className={expenseBarItem(idx, colorSet[idx], itemInfo.percent)} />
-                            )
+                            expenseBarItemsInfo.map((itemInfo, idx) => {
+                                const tmpKey = idx + 1;
+                                return <div className={expenseBarItem(idx, colorSet[idx], itemInfo.percent)} key={tmpKey} />
+                            })
                         }
                     </div>
                     <div className={expenseListWrapper}>
                         {
-                            expenseBarItemsInfo.map((itemInfo, idx) =>
-                                <div className={expenseListItemInfo}>
+                            expenseBarItemsInfo.map((itemInfo, idx) => {
+                                const tmpKey = idx + 1;
+                                return <div className={expenseListItemInfo} key={tmpKey}>
                                     <div className={colorPoint(colorSet[idx])}></div>
                                     <div className={expenseInfoWrapper}>
                                         <div className={expenseListTitle}>{itemInfo.title}</div>
                                         <div className={expenseListPercent}>{itemInfo.percent}%</div>
                                     </div>
                                 </div>
-                            )
+                            })
                         }
                     </div>
                 </div>

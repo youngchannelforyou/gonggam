@@ -22,11 +22,12 @@ function BudgeBox({ spendTagList, title, amount, type }) {
                 <button className={addButton}>+</button>
             </div>
             <div className={tagBox}>
-                {spendTagList.map((tag) => {
+                {spendTagList.map((tag, index) => {
+                    const tmpKey = index + 1;
                     const randomNumber = Math.floor(Math.random() * 10);
                     const color = colorSet[randomNumber];
 
-                    return <div className={tagItem(color)}>{tag}</div>
+                    return <div className={tagItem(color)} key={tmpKey}>{tag}</div>
                 }
                 )}
             </div>
@@ -40,7 +41,7 @@ export default BudgeBox;
 const tagContainer = css`
     width: 100%;
     height: fit-content;
-    padding: 18px 22px 22px;
+    padding: 10px 22px 22px;
     background-color: #1C1E1F;
     border-radius: 20px;
 `;
@@ -53,7 +54,7 @@ const titleBox = css`
 
 const titleWrapper = css`
     line-height: 32px;
-    font-size: 18px;
+    font-size: 17px;
     color: #9c9c9c;
 `;
 
@@ -70,7 +71,7 @@ const tagBox = css`
     display: flex;
     gap: 12px;
 
-    margin-top: 22px;
+    margin-top: 18px;
 `
 
 const tagItem = (color) => css`

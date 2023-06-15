@@ -6,14 +6,23 @@ import AccountSlider from '../components/AccountList/AccountSlider.jsx'
 import MakeNewCalcPopup from '../components/Main/MakeNewCalcPopup';
 import Loading from '../components/Loading/Loading';
 
-function MainPage(props) {
+function MainPage() {
     const [value, setValue] = useState('');
     const [isPopup, setIsPopup] = useState(false);
     const [memberInfo, setMemberInfo] = useState(null);
-
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         getMemberInfo();
     }, []);
+
+    useEffect(() => {
+        // console.log(memberInfo);
+        if (!memberInfo)
+            return;
+        if (!memberInfo.memberNickName)
+            return;
+        setIsLoading(false);
+    }, [memberInfo]);
 
     async function getMemberInfo() {
         await fetch('http://localhost:8080/Member/getmemberinfo', {
@@ -66,37 +75,33 @@ function MainPage(props) {
 
     return (
         <div className={container}>
-            {memberInfo?.memberNickName ?
-                <>
-                    {isPopup ? <MakeNewCalcPopup setIsPopup={setIsPopup} /> : <></>}
-                    <div className={header}>
-                        <p className={userNameTag}>
-                            {memberInfo.memberNickName}님</p>
-                        <button className={logoutButton} onClick={logout}>로그아웃</button>
+            <Loading isLoading={isLoading}>
+                {isPopup ? <MakeNewCalcPopup setIsPopup={setIsPopup} /> : <></>}
+                <div className={header}>
+                    <p className={userNameTag}>
+                        {memberInfo?.memberNickName}님</p>
+                    <button className={logoutButton} onClick={logout}>로그아웃</button>
+                </div>
+                <div className={main}>
+                    <div className={titleLogoWrapper}>
+                        <img src={textLogo} alt='text_ogo' />
                     </div>
-                    <div className={main}>
-                        <div className={titleLogoWrapper}>
-                            <img src={textLogo} alt='text_ogo' />
-                        </div>
-                        <div className={searchInputWrapper}>
-                            <input className={searchInput} name='search' type='search' value={value} onChange={onChange} onKeyPress={handleOnKeyPress} />
-                            <button className={submitButton} name='submit' type='submit' onClick={requestSearch}>
-                                <img src={imgLogo} alt='search' />
-                            </button>
-                        </div>
+                    <div className={searchInputWrapper}>
+                        <input className={searchInput} name='search' type='search' value={value} onChange={onChange} onKeyPress={handleOnKeyPress} />
+                        <button className={submitButton} name='submit' type='submit' onClick={requestSearch}>
+                            <img src={imgLogo} alt='search' />
+                        </button>
+                    </div>
 
-                        <div className={makeNewCalcButtonWrapper}>
-                            <button className={makeNewCalcButton} type='button' onClick={() => setIsPopup(!isPopup)}>새 가계부 만들기</button>
-                        </div>
+                    <div className={makeNewCalcButtonWrapper}>
+                        <button className={makeNewCalcButton} type='button' onClick={() => setIsPopup(!isPopup)}>새 가계부 만들기</button>
                     </div>
-                    <div className={accountBookList}>
-                        <AccountSlider />
-                        <AccountSlider />
-                    </div>
-                </>
-                :
-                <Loading />
-            }
+                </div>
+                <div className={accountBookList}>
+                    <AccountSlider />
+                    <AccountSlider />
+                </div>
+            </Loading>
         </div>
     );
 }
