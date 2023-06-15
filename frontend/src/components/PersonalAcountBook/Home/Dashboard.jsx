@@ -32,7 +32,7 @@ function Dashboard({ accountNumber }) {
     }, []);
 
     useEffect(() => {
-        if (accountNumber == null)
+        if (!accountNumber)
             return;
         homePostRequset();
     }, [accountNumber]);
@@ -41,14 +41,32 @@ function Dashboard({ accountNumber }) {
         homePostRequset();
     }, [clickedScope])
 
-
+    async function getIncomeExpense() {
+        await fetch('http://localhost:8080/AccountBook/getIncome_Expense', {
+            method: 'POST',
+            body: JSON.stringify({
+                'Term': clickedScope,
+                'AccountBook': accountNumber
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // get cookie
+        })
+            .then((responseData) => responseData.json())
+            .then((data) => {
+                console.log(data);
+                // setExpenseBarItemsWidth(data);
+            })
+    }
 
     async function homePostRequset() {
         await fetch('http://localhost:8080/AccountBook/getcostlist', {
             method: 'POST',
             body: JSON.stringify({
                 'Term': clickedScope,
-                'AccountBook': accountNumber
+                'AccountBook': `${accountNumber}`,
             }),
             headers: {
                 'Content-Type': 'application/json',

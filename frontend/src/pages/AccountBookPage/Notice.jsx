@@ -1,6 +1,5 @@
 import React from 'react';
 import AccountBookWrapper from '../../Wrapper/AccountBookWrapper';
-import { css } from '@emotion/css';
 import Board from '../../components/PersonalAcountBook/Board/Board';
 
 function Notice() {
