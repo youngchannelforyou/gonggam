@@ -1,11 +1,12 @@
 package App.Gonggam.model;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class Notice {
     private long num;
     private String member;
-    private Date date;
+    private String date;
     private String title;
     private String text;
 
@@ -25,12 +26,14 @@ public class Notice {
         this.member = member;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
     public void setDate(Date date2) {
-        this.date = date2;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        this.date = dateFormat.format(date2);
     }
 
     public String getTitle() {

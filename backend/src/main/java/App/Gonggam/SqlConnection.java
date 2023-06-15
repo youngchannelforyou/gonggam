@@ -76,6 +76,7 @@ public class SqlConnection {
 
             // AccountBook 테이블 생성
             String createAccountBookTableSql = "CREATE TABLE IF NOT EXISTS Team5_AccountBook ("
+                    + "URL INT AUTO_INCREMENT, "
                     + "Name VARCHAR(320) NOT NULL, "
                     + "Public VARCHAR(100) NOT NULL, "
                     + "Manager TEXT NOT NULL, "
@@ -84,7 +85,6 @@ public class SqlConnection {
                     + "Membercount BIGINT, "
                     + "Member TEXT, "
                     + "IconImage TEXT, "
-                    + "URL INT AUTO_INCREMENT, "
                     + "PRIMARY KEY (URL))";
             try (PreparedStatement createTableStmt = conn.prepareStatement(createAccountBookTableSql)) {
                 createTableStmt.executeUpdate();

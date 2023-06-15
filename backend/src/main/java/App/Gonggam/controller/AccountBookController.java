@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Date;
 
-import org.springframework.data.util.StreamUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.protocol.SocksProxySocketFactory;
 
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import App.Gonggam.service.AccountBookService;
 import App.Gonggam.service.MemberService;
+import javassist.bytecode.stackmap.BasicBlock.Catch;
 import App.Gonggam.model.Post;
 import App.Gonggam.model.AccountBook;
 import App.Gonggam.model.Community;
@@ -41,7 +45,7 @@ public class AccountBookController {
     AccountBookService service = new AccountBookService();
     MemberService mService = new MemberService();
 
-    @PostMapping(path = "/addBook", produces = "application/json", consumes = "application/json")
+    @PostMapping(path = "/addBook", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> AddBook(
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam("Name") String Name,
@@ -105,46 +109,6 @@ public class AccountBookController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"message\": \"fail check code\", \"status\": \"500\"}");
         }
-    }
-
-    @GetMapping("/gonggam/{url}")
-    public ResponseEntity<String> handleGetRequest(@PathVariable("url") String url,
-            @CookieValue("memberId") String memberId) {
-
-        if (memberId == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"message\": \"fail get cookie\", \"status\": \"204\"}");
-        }
-
-        String[] pathSegments = url.split("/");
-        int accountbook = Integer.parseInt(pathSegments[0]); // ex> "1"
-        String requestType = pathSegments[1]; // ex> "home"
-        AccountBook book = service.getBook(accountbook);
-
-        if (book == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"message\": \"server error\", \"status\": \"500\"}");
-        }
-
-        if (requestType.equals("home")) {
-            List<Notice> notice = service.getNotice(requestType, 1, 3);
-            List<Community> communities = service.getCommunity(requestType, 1, 7);
-        } else if (requestType.equals("budget")) {
-
-        } else if (requestType.equals("asset")) {
-
-        } else if (requestType.equals("accountbook")) {
-
-        } else if (requestType.equals("notice")) {
-
-        } else if (requestType.equals("community")) {
-
-        } else if (requestType.equals("settings")) {
-
-        } else {
-
-        }
-        return ResponseEntity.ok("Success");
     }
 
     @PostMapping(path = "/getBook", produces = "application/json", consumes = "application/json")
@@ -248,19 +212,19 @@ public class AccountBookController {
 
     @PostMapping(path = "/addpost", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> AddPost(@RequestParam(value = "file", required = false) MultipartFile[] file,
+            @RequestParam(value = "Tag", required = false) String tag,
+            @RequestParam("Type") Boolean type,
+            @RequestParam("Date") String date,
             @RequestParam("Budget") Long Used_Budget,
             @RequestParam(value = "Text", required = false) String text,
             @RequestParam("Title") String title,
-            @RequestParam("Date") java.sql.Date date,
-            @RequestParam("Type") String type,
-            @RequestParam("Table") String table,
-            @RequestParam(value = "Tag", required = false) String tag) {
+            @RequestParam("Table") String table) {
         Post new_post = new Post();
         try {
             // 테스트
             new_post.setPostTag(tag);
-            new_post.setPostType(Boolean.parseBoolean(type));
-            new_post.setPostDate(date);
+            new_post.setPostType(type);
+            new_post.setUseDate(date);
             new_post.setPostTitle(title);
             new_post.setPostText(text);
             String uploadDir = "";
@@ -268,7 +232,7 @@ public class AccountBookController {
             // String image = jsonNode.get("Image").as();
             try {
                 // 이미지 폴더 경로 설정
-                uploadDir = "./dataset/img";
+                uploadDir = "./dataset/img/receiptImg";
 
                 absolutePath = Paths.get(uploadDir).toAbsolutePath();
 
@@ -286,7 +250,8 @@ public class AccountBookController {
             if (file != null && file.length > 0) {
                 for (MultipartFile img : file) {
                     String fileName = img.getOriginalFilename();
-                    String filePath = absolutePath + "/" + fileName;
+                    Date currentTime = new Date();
+                    String filePath = absolutePath + "/" + currentTime + fileName;
                     File dest = new File(filePath);
 
                     filePaths.add(filePath);
@@ -337,4 +302,184 @@ public class AccountBookController {
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
     }
+
+    @PostMapping(path = "/addnotice", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> AddNotice(
+            @RequestBody String inputjson,
+            @CookieValue("memberId") String memberId) {
+        Notice new_notice = new Notice();
+        String table = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            new_notice.setTitle(jsonNode.get("Title").asText());
+            new_notice.setText(jsonNode.get("Text").asText());
+            new_notice.setMember(mService.FindMemberUseToken(memberId));
+            table = jsonNode.get("Table").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            boolean check = service.AddNotice(new_notice, table);
+            if (check == true) {
+                return ResponseEntity.ok()
+                        .body("{\"message\": \"success\", \"status\": \"200\"}");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"server error2\", \"status\": \"500\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("{\"message\": \"server error3\", \"status\": \"500\"}");
+    }
+
+    @PostMapping(path = "/addcommunity", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> AddCommunity(
+            @RequestBody String inputjson,
+            @CookieValue("memberId") String memberId) {
+        Community new_community = new Community();
+        String table = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            new_community.setTitle(jsonNode.get("Title").asText());
+            new_community.setText(jsonNode.get("Text").asText());
+            new_community.setMember(mService.FindMemberUseToken(memberId));
+            table = jsonNode.get("Table").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            boolean check = service.AddCommunity(new_community, table);
+            if (check == true) {
+                return ResponseEntity.ok()
+                        .body("{\"message\": \"success\", \"status\": \"200\"}");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"message\": \"server error2\", \"status\": \"500\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("{\"message\": \"server error3\", \"status\": \"500\"}");
+    }
+
+    @PostMapping(path = "/getcostlist", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> getCostList(
+            @RequestBody String inputjson,
+            @CookieValue("memberId") String memberId) {
+
+        int term;
+        String AccountBook;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            term = jsonNode.get("Term").asInt();
+            AccountBook = jsonNode.get("AccountBook").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error3\", \"status\": \"500\"}");
+        }
+        String fromDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        System.out.println(fromDate);
+
+        List<Long> notice = service.BoardGetRainBudget(AccountBook, term, fromDate);
+
+        System.out.println(notice);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(notice);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+        }
+
+    }
+
+    @PostMapping(path = "/getIncome_Expense", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> getIncome_Expense(
+            @RequestBody String inputjson,
+            @CookieValue("memberId") String memberId) {
+
+        int term;
+        String AccountBook;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            term = jsonNode.get("Term").asInt();
+            AccountBook = jsonNode.get("AccountBook").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error3\", \"status\": \"500\"}");
+        }
+        String fromDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        System.out.println(fromDate);
+
+        Map<String, Long> notice = service.BoardGetIncomeExpenseByTag(AccountBook, term, fromDate);
+
+        System.out.println(notice);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(notice);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+        }
+
+    }
+    // @PostMapping(path = "/getcost", produces = "application/json", consumes =
+    // "application/json")
+    // public ResponseEntity<String> getPostcosts(@RequestBody String inputjson,
+    // @CookieValue("memberId") String memberId) {
+    // String accountbook = null;
+    // String date = null;
+    // int type = 0;
+
+    // try {
+    // ObjectMapper objectMapper = new ObjectMapper();
+    // JsonNode jsonNode = objectMapper.readTree(inputjson);
+    // accountbook = jsonNode.get("Accountbook").asText();
+    // date = jsonNode.get("Date").asText();
+    // type = jsonNode.get("Type").asInt();
+
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+
+    // if (memberId == null) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body("{\"message\": \"fail get cookie\", \"status\": \"204\"}");
+    // }
+    // try {
+    // ObjectMapper objectMapper = new ObjectMapper();
+
+    // List<Map<String, Object>> posts = service.getPostcost(accountbook, type,
+    // date);
+
+    // String postsJson = objectMapper.writeValueAsString(posts);
+
+    // // JSON을 응답 본문에 포함하여 반환
+    // return ResponseEntity.ok()
+    // .header("Content-Type", "application/json")
+    // .body("{\"posts\": " + postsJson + "}");
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body("{\"message\": \"server error\", \"status\": \"500\"}");
+    // }
+    // }
+
 }

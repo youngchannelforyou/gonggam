@@ -23,6 +23,25 @@ public class MemberService {
 
     // DB에 멤버 추가
 
+    public boolean checkEmail(String Email) {
+        try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            // 데이터 검색
+            String selectSql = "SELECT * FROM Team5_Member WHERE Id = ?";
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public boolean AddMember(Member newMember) {
 
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
