@@ -7,7 +7,7 @@ function LoginPage(props) {
     <div className={container}>
       <div>
         <div className={titleWrapper}>
-          <p className={mainTitle}>모두가 공감할 수 있는 가계부</p>
+          <p className={mainTitle}>마음을 함께하는 공동 가계부</p>
           <p className={subTitle}>
             공금 관리를 위한 투명한 장부를 만들어보세요
           </p>

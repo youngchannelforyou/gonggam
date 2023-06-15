@@ -23,6 +23,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public FilterRegistrationBean<CorsFilter> corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("https://gonggam.vercel.app/");
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://gonggam.vercel.app");
         config.addAllowedMethod("*");
