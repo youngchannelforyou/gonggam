@@ -207,16 +207,16 @@ public class AccountBookService {
         return false;
     }
 
-    public String addMember(String Manager, String Member, int TableName) {
+    public String addMember(String Manager, String Member, String TableName) {
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
             String selectSql = "SELECT * FROM Team5_AccountBook WHERE URL = ?";
             try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
-                selectStmt.setInt(1, TableName);
+                selectStmt.setString(1, TableName);
 
                 try (ResultSet rs = selectStmt.executeQuery()) {
                     if (rs.next()) {
                         if (rs.getString("Manager").equals(mService.FindMemberUseToken(Manager))) {
-                            String Memberid = mService.FindMemberUseToken(Member);
+                            String Memberid = Member;
                             String existingMember = rs.getString("Member");
                             String updatedMember;
                             if (existingMember != null) {
@@ -230,7 +230,7 @@ public class AccountBookService {
                             String updateSql = "UPDATE Team5_AccountBook SET Member = ? WHERE URL = ?";
                             try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                                 updateStmt.setString(1, updatedMember);
-                                updateStmt.setInt(2, TableName);
+                                updateStmt.setString(2, TableName);
                                 updateStmt.executeUpdate();
 
                                 System.out.println("Team5_AccountBook가 업데이트되었습니다.");
@@ -260,6 +260,26 @@ public class AccountBookService {
                                             updateStmt.executeUpdate();
 
                                             System.out.println("Team5_Member가 업데이트되었습니다.");
+                                        }
+
+                                        String updateSql3 = "UPDATE Team5_AccountBook SET Membercount = ? WHERE URL = ?";
+                                        // SELECT 쿼리 실행
+
+                                        try (PreparedStatement updateStmt = conn.prepareStatement(updateSql3)) {
+                                            ResultSet rs3 = selectStmt.executeQuery();
+                                            if (rs3.next()) {
+                                                // 현재 Membercount 값을 가져옴
+                                                int memberCount = rs3.getInt("Membercount");
+
+                                                // Membercount 값을 1 증가시킴
+                                                int newMemberCount = memberCount + 1;
+
+                                                // UPDATE 쿼리 실행하여 Membercount 값을 증가시킨다
+                                                updateStmt.setInt(1, newMemberCount);
+                                                updateStmt.setString(2, TableName);
+                                                updateStmt.executeUpdate();
+                                            }
+
                                         }
 
                                         return "정상";
@@ -421,35 +441,30 @@ public class AccountBookService {
         return communityList;
     }
 
-    public List<Map<String, String>> FindBook(int newBook) {
-        // SQL 쿼리
-        String sql = "SELECT Name FROM Team5_AccountBook WHERE URL LIKE ?";
-
-        List<Map<String, String>> bookList = new ArrayList<>();
+    public List<Map<String, Object>> FindBook(String newBook) {
+        String sql = "SELECT Name, URL FROM Team5_AccountBook WHERE Name LIKE ?";
+        List<Map<String, Object>> bookList = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD);
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            // 쿼리 매개변수 설정
             stmt.setString(1, "%" + newBook + "%");
-
-            // 쿼리 실행
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 String name = rs.getString("Name");
-                String url = rs.getString("URL");
+                int url = rs.getInt("URL");
 
-                Map<String, String> bookMap = new HashMap<>();
+                Map<String, Object> bookMap = new HashMap<>();
                 bookMap.put("Name", name);
                 bookMap.put("URL", url);
 
                 bookList.add(bookMap);
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         System.out.println(bookList);
         return bookList;
     }
@@ -592,8 +607,19 @@ public class AccountBookService {
             expenseByTagList.add(tagEntry);
         }
 
+        // expenseByTagList 정렬
+        Collections.sort(expenseByTagList, (a, b) -> {
+            Long expenseA = (Long) a.get("expense");
+            Long expenseB = (Long) b.get("expense");
+            return expenseB.compareTo(expenseA); // 내림차순 정렬
+        });
+
+        // 상위 6개 항목 선택
+        int limit = Math.min(expenseByTagList.size(), 6);
+        List<Map<String, Object>> topExpenseByTagList = expenseByTagList.subList(0, limit);
+
         // 변환된 리스트를 결과에 추가
-        result.put("Tag", expenseByTagList);
+        result.put("Tag", topExpenseByTagList);
 
         return result;
     }

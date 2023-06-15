@@ -145,17 +145,17 @@ public class AccountBookController {
     @PostMapping(path = "/findBook", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> FindBook(
             @RequestBody String inputjson) {
-        int book = 0;
+        String book = null;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
-            book = jsonNode.get("book").asInt();
+            book = jsonNode.get("book").asText();
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(book);
 
-        List<Map<String, String>> booklist = service.FindBook(book);
+        List<Map<String, Object>> booklist = service.FindBook(book);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -284,19 +284,25 @@ public class AccountBookController {
 
     @PostMapping(path = "/addmember", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> AddMember(
-            @RequestBody String inputjson) {
+            @RequestBody String inputjson,
+            @CookieValue("memberId") String memberId) {
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(inputjson);
-            String Manager = jsonNode.get("Manager").asText();
+            String Manager = memberId;
             String Member = jsonNode.get("Member").asText();
-            int TableName = jsonNode.get("TableName").asInt();
+            String TableName = jsonNode.get("TableName").asText();
 
             String result = service.addMember(Manager, Member, TableName);
             try {
-                String json = objectMapper.writeValueAsString(result);
-                return ResponseEntity.ok(json);
-            } catch (JsonProcessingException e) {
+                if (result == "정상") {
+                    return ResponseEntity.ok()
+                            .body("{\"message\": \"success\", \"status\": \"200\"}");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
             }
