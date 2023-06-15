@@ -101,9 +101,6 @@ function Home() {
 export default Home;
 
 
-
-
-
 const mainTopBox = css`
     width: 1071px;
     height: 404px;
