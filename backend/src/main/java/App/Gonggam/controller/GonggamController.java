@@ -112,7 +112,7 @@ public class GonggamController {
             // JSON 변환을 위한 ObjectMapper 생성
             ObjectMapper objectMapper = new ObjectMapper();
             // book, notice, communities를 JSON 문자열로 변환
-            List<Map<String, Object>> posts = service.homeGetPost(Accountbook, 0, 5);
+            List<Map<String, Object>> posts = service.homeGetPost(Accountbook, 0, 10);
 
             List<Map<String, Object>> truePosts = new ArrayList<>();
             List<Map<String, Object>> falsePosts = new ArrayList<>();

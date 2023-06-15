@@ -1,6 +1,7 @@
 package App.Gonggam.service;
 
 import java.sql.*;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -499,6 +500,56 @@ public class AccountBookService {
     public List<Map<String, Object>> homeGetPost(String name, int startIndex, int count) {
         String communityTableName = "Team5_" + name + "_Post";
 
+        List<Map<String, Object>> postlist = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
+            // Retrieve data without distinguishing between true and false
+            String selectSql = "SELECT * FROM " + communityTableName + " ORDER BY useDate DESC LIMIT ?";
+            try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
+                selectStmt.setInt(1, count);
+                try (ResultSet resultSet = selectStmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Map<String, Object> notice = new HashMap<>();
+                        notice.put("Num", resultSet.getLong("Num"));
+                        notice.put("Type", resultSet.getBoolean("Type"));
+                        notice.put("Used_Budget", resultSet.getLong("Used_Budget"));
+                        notice.put("Date", new java.util.Date(resultSet.getTimestamp("useDate").getTime()));
+                        String title = resultSet.getString("Title");
+                        if (title.length() > 30) {
+                            title = title.substring(0, 30);
+                        }
+                        notice.put("Title", title);
+                        notice.put("Text", resultSet.getString("Text"));
+                        postlist.add(notice);
+                    }
+                }
+            }
+
+            // Sort the postlist by Date in descending order
+            postlist.sort((n1, n2) -> {
+                java.util.Date date1 = (java.util.Date) n1.get("Date");
+                java.util.Date date2 = (java.util.Date) n2.get("Date");
+                return date2.compareTo(date1);
+            });
+
+            // Convert Date to formatted String ("yyyy-MM-dd")
+            java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            for (Map<String, Object> post : postlist) {
+                java.util.Date date = (java.util.Date) post.get("Date");
+                String formattedDate = dateFormat.format(date);
+                post.put("Date", formattedDate);
+            }
+
+        } catch (SQLException e) {
+            // Exception handling
+        }
+
+        return postlist;
+    }
+
+    public List<Map<String, Object>> temphomeGetPost(String name, int startIndex, int count) {
+        String communityTableName = "Team5_" + name + "_Post";
+
         List<Map<String, Object>> noticeList = new ArrayList<>();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -511,7 +562,7 @@ public class AccountBookService {
                 selectTrueStmt.setInt(1, count);
                 try (ResultSet trueResultSet = selectTrueStmt.executeQuery()) {
                     while (trueResultSet.next()) {
-                        Map<String, Object> notice = createNoticeMap(trueResultSet, dateFormat);
+                        Map<String, Object> notice = createPostMap(trueResultSet, dateFormat);
                         noticeList.add(notice);
                     }
                 }
@@ -524,7 +575,7 @@ public class AccountBookService {
                 selectFalseStmt.setInt(1, count);
                 try (ResultSet falseResultSet = selectFalseStmt.executeQuery()) {
                     while (falseResultSet.next()) {
-                        Map<String, Object> notice = createNoticeMap(falseResultSet, dateFormat);
+                        Map<String, Object> notice = createPostMap(falseResultSet, dateFormat);
                         noticeList.add(notice);
                     }
                 }
@@ -536,12 +587,12 @@ public class AccountBookService {
         return noticeList;
     }
 
-    private Map<String, Object> createNoticeMap(ResultSet resultSet, SimpleDateFormat dateFormat) throws SQLException {
+    private Map<String, Object> createPostMap(ResultSet resultSet, SimpleDateFormat dateFormat) throws SQLException {
         Map<String, Object> notice = new HashMap<>();
         notice.put("Num", resultSet.getLong("Num"));
         notice.put("Type", resultSet.getBoolean("Type"));
         notice.put("Used_Budget", resultSet.getLong("Used_Budget"));
-        notice.put("Date", dateFormat.format(new Date(resultSet.getTimestamp("useDate").getTime())));
+        notice.put("Date", dateFormat.format(new java.util.Date(resultSet.getTimestamp("useDate").getTime())));
         String title = resultSet.getString("Title");
         if (title.length() > 30) {
             title = title.substring(0, 30);
