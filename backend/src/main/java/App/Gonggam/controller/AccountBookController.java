@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mysql.cj.protocol.SocksProxySocketFactory;
 
@@ -404,9 +405,13 @@ public class AccountBookController {
         AccountBook book = service.getBook(AccountBook);
 
         ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode costArray = objectMapper.createArrayNode();
+        for (Long cost : costlist) {
+            costArray.add(cost);
+        }
         try {
             ObjectNode jsonNode = objectMapper.createObjectNode();
-            jsonNode.put("costList", objectMapper.writeValueAsString(costlist));
+            jsonNode.set("costList", costArray);
             jsonNode.put("minCost", minCost);
             jsonNode.put("maxCost", maxCost);
             jsonNode.put("Budget", book.getAccountBook_Budget());
@@ -451,6 +456,41 @@ public class AccountBookController {
         }
 
     }
+
+    @PostMapping(path = "/getcalenderbord", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> getCalenderBord(
+            @RequestBody String inputjson,
+            @CookieValue("memberId") String memberId) {
+
+        String start;
+        String end;
+        String AccountBook;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(inputjson);
+            AccountBook = jsonNode.get("AccountBook").asText();
+
+            start = jsonNode.get("start").asText();
+            end = jsonNode.get("end").asText();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error3\", \"status\": \"500\"}");
+        }
+
+        Map<java.sql.Date, Map<String, Long>> result = service.CalenderBord(AccountBook, start, end);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(result);
+            return ResponseEntity.ok(json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+        }
+
+    }
+
     // @PostMapping(path = "/getcost", produces = "application/json", consumes =
     // "application/json")
     // public ResponseEntity<String> getPostcosts(@RequestBody String inputjson,
