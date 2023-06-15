@@ -1,7 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/css';
-import Header from '../components/AcountBook/Header';
-import SideBar from '../components/AcountBook/SideBar';
+import Header from '../components/PersonalAcountBook/Header';
+import SideBar from '../components/PersonalAcountBook/SideBar';
 
 function AccountBookWrapper(props) {
     return (

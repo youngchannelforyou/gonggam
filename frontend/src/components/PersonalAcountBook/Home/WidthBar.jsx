@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 
 /*
-    type: 0 = 수익
+    type: 0 = 수입
     type: 1 = 지출
 */
 
