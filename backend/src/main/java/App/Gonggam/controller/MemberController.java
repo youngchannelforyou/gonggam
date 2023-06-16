@@ -8,11 +8,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import App.Gonggam.model.AccountBook;
 import App.Gonggam.model.Member;
+import App.Gonggam.service.AccountBookService;
 import App.Gonggam.service.MemberService;
 import jakarta.servlet.http.Cookie;
 
@@ -21,6 +30,7 @@ import jakarta.servlet.http.Cookie;
 @CrossOrigin(origins = "http://localhost:3000")
 public class MemberController {
     MemberService memberservice = new MemberService();
+    AccountBookService accountBookService = new AccountBookService();
 
     @PostMapping(path = "/createcode", produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> CreateCode(
@@ -167,10 +177,29 @@ public class MemberController {
             String Id = memberservice.FindMemberUseToken(memberId);
             Member member = memberservice.FindMemberUseId(Id);
             if (member != null) {
-                String memberJson = objectMapper.writeValueAsString(member);
+                List<String> MaccountBookNames = new ArrayList<>();
+                List<String> PaccountBookNames = new ArrayList<>();
 
-                // JSON 형식의 Member 객체를 응답으로 전송
-                return ResponseEntity.ok().body(memberJson);
+                // Retrieve AccountBook names from member.getMemberMAccountBook()
+                for (String accountBook : member.getMemberMAccountBook()) {
+                    MaccountBookNames.add(accountBookService.getBook(accountBook).getAccountBookName());
+                }
+
+                // Retrieve AccountBook names from member.getPemberMAccountBook()
+                for (String accountBook : member.getMemberPAccountBook()) {
+                    PaccountBookNames.add(accountBookService.getBook(accountBook).getAccountBookName());
+                }
+
+                // Create a map to hold the member information and account book names
+                Map<String, Object> response = new HashMap<>();
+                response.put("member", member);
+                response.put("MaccountBookNames", MaccountBookNames);
+                response.put("PaccountBookNames", PaccountBookNames);
+
+                String responseJson = objectMapper.writeValueAsString(response);
+
+                // JSON 형식의 응답을 전송
+                return ResponseEntity.ok().body(responseJson);
             } else {
                 // Member 객체를 찾지 못한 경우에 대한 처리
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
