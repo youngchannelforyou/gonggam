@@ -178,23 +178,31 @@ public class MemberController {
             Member member = memberservice.FindMemberUseId(Id);
             if (member != null) {
                 List<String> MaccountBookNames = new ArrayList<>();
+                List<Integer> MaccountBookURLs = new ArrayList<>();
                 List<String> PaccountBookNames = new ArrayList<>();
+                List<Integer> PaccountBookURLs = new ArrayList<>();
 
-                // Retrieve AccountBook names from member.getMemberMAccountBook()
+                // Retrieve AccountBook names and URLs from member.getMemberMAccountBook()
                 for (String accountBook : member.getMemberMAccountBook()) {
-                    MaccountBookNames.add(accountBookService.getBook(accountBook).getAccountBookName());
+                    AccountBook book = accountBookService.getBook(accountBook);
+                    MaccountBookNames.add(book.getAccountBookName());
+                    MaccountBookURLs.add(book.getURL());
                 }
 
-                // Retrieve AccountBook names from member.getPemberMAccountBook()
+                // Retrieve AccountBook names and URLs from member.getPemberMAccountBook()
                 for (String accountBook : member.getMemberPAccountBook()) {
-                    PaccountBookNames.add(accountBookService.getBook(accountBook).getAccountBookName());
+                    AccountBook book = accountBookService.getBook(accountBook);
+                    PaccountBookNames.add(book.getAccountBookName());
+                    PaccountBookURLs.add(book.getURL());
                 }
 
-                // Create a map to hold the member information and account book names
+                // Create a map to hold the member information, account book names, and URLs
                 Map<String, Object> response = new HashMap<>();
                 response.put("member", member);
                 response.put("MaccountBookNames", MaccountBookNames);
+                response.put("MaccountBookURLs", MaccountBookURLs);
                 response.put("PaccountBookNames", PaccountBookNames);
+                response.put("PaccountBookURLs", PaccountBookURLs);
 
                 String responseJson = objectMapper.writeValueAsString(response);
 

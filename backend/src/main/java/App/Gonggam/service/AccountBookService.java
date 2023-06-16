@@ -708,7 +708,7 @@ public class AccountBookService {
         });
 
         // 상위 6개 항목 선택
-        int limit = Math.min(expenseByTagList.size(), 6);
+        int limit = Math.min(expenseByTagList.size(), 5);
         List<Map<String, Object>> topExpenseByTagList = expenseByTagList.subList(0, limit);
 
         // 기타 항목 계산
