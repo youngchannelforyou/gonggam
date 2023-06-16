@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -547,44 +548,64 @@ public class AccountBookService {
         return postlist;
     }
 
-    public List<Map<String, Object>> temphomeGetPost(String name, int startIndex, int count) {
+    public Map<String, Object> temphomeGetPost(String name) {
         String communityTableName = "Team5_" + name + "_Post";
 
-        List<Map<String, Object>> noticeList = new ArrayList<>();
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> incomeList = new ArrayList<>();
+        List<Map<String, Object>> expenseList = new ArrayList<>();
+        long totalIncome = 0;
+        long totalExpense = 0;
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+        // 계산할 날짜 범위 설정
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1); // 한 달 전
+        java.util.Date oneMonthAgo = calendar.getTime();
+
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, SQL_PASSWORD)) {
-            // True인 항목 조회
-            String selectTrueSql = "SELECT * FROM " + communityTableName
-                    + " WHERE Type = true ORDER BY useDate DESC LIMIT ?";
-            try (PreparedStatement selectTrueStmt = connection.prepareStatement(selectTrueSql)) {
-                selectTrueStmt.setInt(1, count);
-                try (ResultSet trueResultSet = selectTrueStmt.executeQuery()) {
-                    while (trueResultSet.next()) {
-                        Map<String, Object> notice = createPostMap(trueResultSet, dateFormat);
-                        noticeList.add(notice);
+            String selectSql = "SELECT * FROM " + communityTableName
+                    + " WHERE useDate >= ? ORDER BY useDate DESC";
+            try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
+                selectStmt.setDate(1, new java.sql.Date(oneMonthAgo.getTime()));
+                try (ResultSet resultSet = selectStmt.executeQuery()) {
+                    while (resultSet.next()) {
+                        Map<String, Object> post = new HashMap<>();
+                        post.put("Num", resultSet.getLong("Num"));
+                        post.put("Type", resultSet.getBoolean("Type"));
+                        post.put("Used_Budget", resultSet.getLong("Used_Budget"));
+                        post.put("Date",
+                                dateFormat.format(new java.util.Date(resultSet.getTimestamp("useDate").getTime())));
+                        String title = resultSet.getString("Title");
+                        if (title.length() > 30) {
+                            title = title.substring(0, 30);
+                        }
+                        post.put("Title", title);
+                        post.put("Text", resultSet.getString("Text"));
+                        post.put("Amount", resultSet.getLong("Total_Budget"));
+
+                        boolean type = resultSet.getBoolean("Type");
+                        if (type) {
+                            incomeList.add(0, post); // Add at the beginning of the list
+                            totalIncome += (long) post.get("Amount");
+                        } else {
+                            expenseList.add(0, post); // Add at the beginning of the list
+                            totalExpense += (long) post.get("Amount");
+                        }
                     }
                 }
             }
 
-            // False인 항목 조회
-            String selectFalseSql = "SELECT * FROM " + communityTableName
-                    + " WHERE Type = false ORDER BY useDate DESC LIMIT ?";
-            try (PreparedStatement selectFalseStmt = connection.prepareStatement(selectFalseSql)) {
-                selectFalseStmt.setInt(1, count);
-                try (ResultSet falseResultSet = selectFalseStmt.executeQuery()) {
-                    while (falseResultSet.next()) {
-                        Map<String, Object> notice = createPostMap(falseResultSet, dateFormat);
-                        noticeList.add(notice);
-                    }
-                }
-            }
+            result.put("income", incomeList);
+            result.put("expense", expenseList);
+            result.put("totalIncome", totalIncome);
+            result.put("totalExpense", totalExpense);
         } catch (SQLException e) {
             // Exception handling
         }
 
-        return noticeList;
+        return result;
     }
 
     private Map<String, Object> createPostMap(ResultSet resultSet, SimpleDateFormat dateFormat) throws SQLException {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import App.Gonggam.model.AccountBook;
@@ -139,6 +140,53 @@ public class GonggamController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"message\": \"server error\", \"status\": \"500\"}");
         }
+    }
+
+    @GetMapping("/{Accountbook}/accountexpense")
+    public ResponseEntity<String> AccountexpenseGetRequest(@PathVariable("Accountbook") String Accountbook,
+            @CookieValue("memberId") String memberId) {
+
+        String Id = mService.FindMemberUseToken(memberId);
+        Member checkmember = mService.FindMemberUseId(Id);
+
+        if (checkmember == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"fail get cookie\", \"status\": \"204\"}");
+        }
+
+        AccountBook book = service.getBook(Accountbook);
+
+        if (book == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error\", \"status\": \"500\"}");
+        }
+        try {
+            // JSON 변환을 위한 ObjectMapper 생성
+            ObjectMapper objectMapper = new ObjectMapper();
+            // book, notice, communities를 JSON 문자열로 변환
+            Map<String, Object> posts = service.temphomeGetPost(Accountbook);
+            // Convert the posts map to JSON
+
+            try {
+                // Convert the posts map to JSON string
+                String postsJson = objectMapper.writeValueAsString(posts);
+
+                // JSON을 응답 본문에 포함하여 반환
+                return ResponseEntity.ok()
+                        .header("Content-Type", "application/json")
+                        .body(postsJson);
+            } catch (JsonProcessingException e) {
+                // Handle exception if JSON conversion fails
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"server error\", \"status\": \"500\"}");
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("{\"message\": \"server error\", \"status\": \"500\"}");
     }
 
     @GetMapping("/{Accountbook}/homepeed")
